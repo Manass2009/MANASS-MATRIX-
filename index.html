@@ -1229,3 +1229,51 @@
     </script>
 </body>
 </html>
+<script>
+    // --- MODULE DE COPIE RAPIDE DES MESSAGES ---
+    
+    function ajouterBoutonsCopie() {
+        // Sélectionne tous les messages de l'application (ajustez les sélecteurs selon votre structure)
+        const messages = document.querySelectorAll('.message, .bot-message');
+
+        messages.forEach(msg => {
+            // Vérifie si le bouton de copie existe déjà pour éviter les doublons
+            if (msg.querySelector('.btn-copier-message')) return;
+
+            // Crée le bouton de copie
+            const copyBtn = document.createElement('button');
+            copyBtn.className = 'btn-copier-message';
+            copyBtn.textContent = '📋 Copier';
+            copyBtn.style.marginTop = '6px';
+            copyBtn.style.padding = '4px 8px';
+            copyBtn.style.fontSize = '11px';
+            copyBtn.style.background = '#111111';
+            copyBtn.style.color = '#FFD700';
+            copyBtn.style.border = '1px solid #FFD700';
+            copyBtn.style.borderRadius = '4px';
+            copyBtn.style.cursor = 'pointer';
+            copyBtn.style.display = 'block';
+
+            // Action au clic pour copier le texte
+            copyBtn.addEventListener('click', function() {
+                // Récupère le texte du message en excluant le texte du bouton lui-même
+                const texteACopier = msg.textContent.replace('📋 Copier', '').trim();
+                
+                navigator.clipboard.writeText(texteACopier).then(() => {
+                    copyBtn.textContent = '✅ Copié !';
+                    setTimeout(() => {
+                        copyBtn.textContent = '📋 Copier';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Erreur lors de la copie : ', err);
+                });
+            });
+
+            msg.appendChild(copyBtn);
+        });
+    }
+
+    // Exécute la fonction régulièrement ou après l'ajout de nouveaux messages
+    setInterval(ajouterBoutonsCopie, 2000);
+    window.addEventListener('DOMContentLoaded', ajouterBoutonsCopie);
+</script>
