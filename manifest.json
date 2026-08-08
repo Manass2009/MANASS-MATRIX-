@@ -1,11 +1,11 @@
 {
-  "name": "Manassé IA",
+  "name": "Manassé Matrix",
   "short_name": "Manassé",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#FFD700",
-  "description": "Application intelligente et interactive Manassé IA",
+  "description": "Application intelligente et interactive Manassé Matrix",
   "icons": [
     {
       "src": "/logo.png",
