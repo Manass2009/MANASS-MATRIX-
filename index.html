@@ -1452,3 +1452,1803 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(ajouterOptionsDiscussions, 2000);
     window.addEventListener('DOMContentLoaded', ajouterOptionsDiscussions);
 </script>
+<script>
+/*
+=========================================================
+        MANASSE AI — JARVIS COMMAND ENGINE
+=========================================================
+
+Fonctions :
+- Activation vocale
+- Reconnaissance de commandes
+- Réponse vocale
+- Ouverture de sites
+- Heure / date
+- Recherche Web
+- Calculatrice
+- Commandes personnalisées
+- Système d'événements
+=========================================================
+*/
+
+const MANASSE = {
+
+    name: "MANASSE",
+
+    listening: false,
+
+    voiceEnabled: true,
+
+    commands: {},
+
+    /*
+    -----------------------------------------------------
+    INITIALISATION
+    -----------------------------------------------------
+    */
+
+    init() {
+
+        this.setupVoice();
+
+        this.registerDefaultCommands();
+
+        console.log("MANASSE AI : système opérationnel.");
+
+        this.say("Bonjour. MANASSE est prêt.");
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    SYNTHÈSE VOCALE
+    -----------------------------------------------------
+    */
+
+    say(text) {
+
+        console.log("MANASSE :", text);
+
+        if (!this.voiceEnabled) return;
+
+        if (!("speechSynthesis" in window)) return;
+
+        window.speechSynthesis.cancel();
+
+        const speech =
+            new SpeechSynthesisUtterance(text);
+
+        speech.lang = "fr-FR";
+
+        speech.rate = 1;
+
+        speech.pitch = 0.9;
+
+        speech.volume = 1;
+
+        window.speechSynthesis.speak(speech);
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    RECONNAISSANCE VOCALE
+    -----------------------------------------------------
+    */
+
+    setupVoice() {
+
+        const SpeechRecognition =
+            window.SpeechRecognition ||
+            window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+
+            console.warn(
+                "La reconnaissance vocale n'est pas disponible."
+            );
+
+            return;
+
+        }
+
+        this.recognition =
+            new SpeechRecognition();
+
+        this.recognition.lang =
+            "fr-FR";
+
+        this.recognition.continuous =
+            false;
+
+        this.recognition.interimResults =
+            false;
+
+
+        this.recognition.onstart = () => {
+
+            this.listening = true;
+
+            this.setStatus("Écoute...");
+
+            console.log(
+                "MANASSE écoute..."
+            );
+
+        };
+
+
+        this.recognition.onend = () => {
+
+            this.listening = false;
+
+            this.setStatus("Prêt");
+
+        };
+
+
+        this.recognition.onerror = event => {
+
+            console.error(
+                "Erreur vocale :",
+                event.error
+            );
+
+            this.setStatus("Erreur");
+
+        };
+
+
+        this.recognition.onresult = event => {
+
+            const text =
+                event.results[0][0].transcript;
+
+            console.log(
+                "Commande :",
+                text
+            );
+
+            this.process(text);
+
+        };
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    DÉMARRER L'ÉCOUTE
+    -----------------------------------------------------
+    */
+
+    listen() {
+
+        if (!this.recognition) {
+
+            this.say(
+                "La reconnaissance vocale n'est pas disponible sur cet appareil."
+            );
+
+            return;
+
+        }
+
+        if (this.listening) return;
+
+        try {
+
+            this.recognition.start();
+
+        } catch(error) {
+
+            console.log(error);
+
+        }
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    TRAITEMENT DES COMMANDES
+    -----------------------------------------------------
+    */
+
+    process(text) {
+
+        text =
+            text
+            .toLowerCase()
+            .trim();
+
+
+        /*
+        -----------------------------------------------
+        WAKE WORD
+        -----------------------------------------------
+        */
+
+        text =
+            text
+            .replace("hey manasse", "")
+            .replace("manasse", "")
+            .trim();
+
+
+        if (!text) {
+
+            this.say(
+                "Oui, je vous écoute."
+            );
+
+            return;
+
+        }
+
+
+        /*
+        -----------------------------------------------
+        RECHERCHE D'UNE COMMANDE
+        -----------------------------------------------
+        */
+
+        for (
+            const command in this.commands
+        ) {
+
+            const keywords =
+                this.commands[command].keywords;
+
+
+            for (
+                const keyword of keywords
+            ) {
+
+                if (text.includes(keyword)) {
+
+                    this.commands[command]
+                        .action(text);
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+
+        /*
+        -----------------------------------------------
+        COMMANDE INCONNUE
+        -----------------------------------------------
+        */
+
+        this.say(
+            "Je n'ai pas encore appris cette commande."
+        );
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    ENREGISTRER UNE COMMANDE
+    -----------------------------------------------------
+    */
+
+    register(name, keywords, action) {
+
+        this.commands[name] = {
+
+            keywords: keywords,
+
+            action: action
+
+        };
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    COMMANDES PAR DÉFAUT
+    -----------------------------------------------------
+    */
+
+    registerDefaultCommands() {
+
+
+        /*
+        ================================================
+        HEURE
+        ================================================
+        */
+
+        this.register(
+
+            "heure",
+
+            [
+                "quelle heure",
+                "donne moi l'heure",
+                "donne-moi l'heure",
+                "heure"
+            ],
+
+            () => {
+
+                const time =
+                    new Date()
+                    .toLocaleTimeString(
+                        "fr-FR",
+                        {
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        }
+                    );
+
+                this.say(
+                    "Il est actuellement " +
+                    time
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        DATE
+        ================================================
+        */
+
+        this.register(
+
+            "date",
+
+            [
+                "quelle date",
+                "quel jour",
+                "date"
+            ],
+
+            () => {
+
+                const date =
+                    new Date()
+                    .toLocaleDateString(
+                        "fr-FR",
+                        {
+                            weekday: "long",
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                        }
+                    );
+
+                this.say(
+                    "Nous sommes " +
+                    date
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        YOUTUBE
+        ================================================
+        */
+
+        this.register(
+
+            "youtube",
+
+            [
+                "ouvre youtube",
+                "lance youtube"
+            ],
+
+            () => {
+
+                this.say(
+                    "Ouverture de YouTube."
+                );
+
+                window.open(
+                    "https://www.youtube.com",
+                    "_blank"
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        GOOGLE
+        ================================================
+        */
+
+        this.register(
+
+            "google",
+
+            [
+                "ouvre google",
+                "lance google"
+            ],
+
+            () => {
+
+                this.say(
+                    "Ouverture de Google."
+                );
+
+                window.open(
+                    "https://www.google.com",
+                    "_blank"
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        RECHERCHE WEB
+        ================================================
+        */
+
+        this.register(
+
+            "recherche",
+
+            [
+                "cherche",
+                "fais une recherche",
+                "recherche"
+            ],
+
+            text => {
+
+                let query =
+                    text
+                    .replace("cherche", "")
+                    .replace(
+                        "fais une recherche",
+                        ""
+                    )
+                    .replace(
+                        "recherche",
+                        ""
+                    )
+                    .trim();
+
+
+                if (!query) {
+
+                    this.say(
+                        "Que dois-je rechercher ?"
+                    );
+
+                    return;
+
+                }
+
+
+                this.say(
+                    "Je lance une recherche pour " +
+                    query
+                );
+
+
+                window.open(
+
+                    "https://www.google.com/search?q=" +
+                    encodeURIComponent(query),
+
+                    "_blank"
+
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        CALCUL
+        ================================================
+        */
+
+        this.register(
+
+            "calcul",
+
+            [
+                "calcule",
+                "combien font",
+                "fais le calcul"
+            ],
+
+            text => {
+
+                let expression =
+                    text
+                    .replace("calcule", "")
+                    .replace(
+                        "combien font",
+                        ""
+                    )
+                    .replace(
+                        "fais le calcul",
+                        ""
+                    )
+                    .trim();
+
+
+                /*
+                Sécurité :
+                seulement chiffres et opérateurs.
+                */
+
+                if (
+                    !/^[0-9+\-*/().\s]+$/
+                    .test(expression)
+                ) {
+
+                    this.say(
+                        "Je ne peux pas effectuer ce calcul."
+                    );
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const result =
+                        Function(
+                            '"use strict"; return (' +
+                            expression +
+                            ')'
+                        )();
+
+
+                    this.say(
+                        "Le résultat est " +
+                        result
+                    );
+
+                }
+
+                catch {
+
+                    this.say(
+                        "Je n'arrive pas à calculer cette expression."
+                    );
+
+                }
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        SALUTATION
+        ================================================
+        */
+
+        this.register(
+
+            "bonjour",
+
+            [
+                "bonjour",
+                "salut",
+                "bonsoir"
+            ],
+
+            () => {
+
+                const hour =
+                    new Date().getHours();
+
+
+                let greeting;
+
+
+                if (hour < 12) {
+
+                    greeting =
+                        "Bonjour.";
+
+                }
+
+                else if (hour < 18) {
+
+                    greeting =
+                        "Bon après-midi.";
+
+                }
+
+                else {
+
+                    greeting =
+                        "Bonsoir.";
+
+                }
+
+
+                this.say(
+                    greeting +
+                    " Comment puis-je vous aider ?"
+                );
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        ARRÊT DE LA VOIX
+        ================================================
+        */
+
+        this.register(
+
+            "silence",
+
+            [
+                "tais toi",
+                "silence",
+                "arrête de parler"
+            ],
+
+            () => {
+
+                window.speechSynthesis.cancel();
+
+                this.voiceEnabled =
+                    false;
+
+            }
+
+        );
+
+
+        /*
+        ================================================
+        RÉACTIVER LA VOIX
+        ================================================
+        */
+
+        this.register(
+
+            "parler",
+
+            [
+                "parle",
+                "réactive ta voix",
+                "active ta voix"
+            ],
+
+            () => {
+
+                this.voiceEnabled =
+                    true;
+
+                this.say(
+                    "Synthèse vocale activée."
+                );
+
+            }
+
+        );
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    STATUT DE L'IA
+    -----------------------------------------------------
+    */
+
+    setStatus(status) {
+
+        /*
+        Si ton HTML possède un élément
+        id="ai-status", il sera automatiquement
+        mis à jour.
+        */
+
+        const element =
+            document.getElementById(
+                "ai-status"
+            );
+
+
+        if (element) {
+
+            element.textContent =
+                status;
+
+        }
+
+    },
+
+
+    /*
+    -----------------------------------------------------
+    AJOUTER UNE NOUVELLE COMPÉTENCE
+    -----------------------------------------------------
+    */
+
+    addSkill(
+        name,
+        keywords,
+        callback
+    ) {
+
+        this.register(
+            name,
+            keywords,
+            callback
+        );
+
+        console.log(
+            "Nouvelle compétence :",
+            name
+        );
+
+    }
+
+};
+
+
+/*
+=========================================================
+DÉMARRAGE
+=========================================================
+*/
+
+window.addEventListener(
+    "load",
+    () => {
+
+        MANASSE.init();
+
+    }
+);
+
+
+/*
+=========================================================
+BOUTON MICROPHONE
+=========================================================
+
+Dans ton HTML, tu peux mettre :
+
+<button onclick="MANASSE.listen()">
+🎤 Parler
+</button>
+
+=========================================================
+*/
+
+
+/*
+=========================================================
+EXEMPLE POUR AJOUTER UNE COMPÉTENCE
+=========================================================
+
+MANASSE.addSkill(
+
+    "musique",
+
+    [
+        "joue de la musique",
+        "mets de la musique"
+    ],
+
+    () => {
+
+        MANASSE.say(
+            "Je vais préparer la musique."
+        );
+
+    }
+
+);
+
+=========================================================
+*/
+
+    </script>
+<script>
+/* =========================================================
+   MANASSÉ MATRIX — NEURAL ORCHESTRATOR v1
+   Couche d'intelligence avancée pour ton IA
+
+   Ajoute :
+   - analyse d'intention
+   - mémoire contextuelle courte
+   - priorités d'actions
+   - détection des commandes complexes
+   - système de planification
+   - exécution séquentielle
+   - événements "cerveau"
+   - contexte système dynamique
+   - apprentissage local des préférences
+   ========================================================= */
+
+const MatrixNeuralCore = (() => {
+
+    const CONFIG = {
+        maxMemory: 25,
+        maxTasks: 20,
+        storageKey: "manasse_neural_core_v1",
+        debug: true
+    };
+
+    const state = {
+        initialized: false,
+        thinking: false,
+        memory: [],
+        tasks: [],
+        activeIntent: null,
+        lastCommand: null,
+        mode: "NORMAL",
+        confidence: 0
+    };
+
+    /* =====================================================
+       JOURNAL NEURAL
+       ===================================================== */
+
+    function log(...args) {
+        if (CONFIG.debug) {
+            console.log(
+                "%c[MATRIX NEURAL]",
+                "color:#d49b28;font-weight:bold",
+                ...args
+            );
+        }
+    }
+
+    /* =====================================================
+       CHARGEMENT MÉMOIRE
+       ===================================================== */
+
+    function load() {
+        try {
+            const saved =
+                localStorage.getItem(CONFIG.storageKey);
+
+            if (saved) {
+                const data = JSON.parse(saved);
+
+                state.memory =
+                    Array.isArray(data.memory)
+                        ? data.memory
+                        : [];
+
+                state.mode =
+                    data.mode || "NORMAL";
+            }
+        } catch (error) {
+            console.warn(
+                "Erreur mémoire Matrix:",
+                error
+            );
+        }
+    }
+
+    /* =====================================================
+       SAUVEGARDE
+       ===================================================== */
+
+    function save() {
+        try {
+
+            localStorage.setItem(
+                CONFIG.storageKey,
+                JSON.stringify({
+                    memory:
+                        state.memory.slice(-CONFIG.maxMemory),
+                    mode: state.mode
+                })
+            );
+
+        } catch (error) {
+            console.warn(
+                "Impossible de sauvegarder la mémoire."
+            );
+        }
+    }
+
+    /* =====================================================
+       MÉMOIRE CONTEXTUELLE
+       ===================================================== */
+
+    function remember(role, content, metadata = {}) {
+
+        if (!content) return;
+
+        state.memory.push({
+            role,
+            content,
+            timestamp: Date.now(),
+            metadata
+        });
+
+        if (
+            state.memory.length >
+            CONFIG.maxMemory
+        ) {
+            state.memory =
+                state.memory.slice(-CONFIG.maxMemory);
+        }
+
+        save();
+
+        log(
+            "Mémoire enregistrée:",
+            role,
+            content
+        );
+    }
+
+    function getMemory() {
+        return [...state.memory];
+    }
+
+    function clearMemory() {
+        state.memory = [];
+        save();
+
+        log("Mémoire neuronale effacée.");
+    }
+
+    /* =====================================================
+       NORMALISATION
+       ===================================================== */
+
+    function normalize(text) {
+
+        return String(text || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+
+    }
+
+    /* =====================================================
+       DÉTECTION D'INTENTION
+       ===================================================== */
+
+    function detectIntent(text) {
+
+        const t = normalize(text);
+
+        const intents = [
+
+            {
+                name: "VISION",
+                keywords: [
+                    "regarde",
+                    "analyse cette image",
+                    "analyse la camera",
+                    "vision",
+                    "camera",
+                    "decris ce que tu vois",
+                    "que vois tu"
+                ]
+            },
+
+            {
+                name: "CALCUL",
+                keywords: [
+                    "calcule",
+                    "calcul",
+                    "combien font",
+                    "resous"
+                ]
+            },
+
+            {
+                name: "RECHERCHE",
+                keywords: [
+                    "cherche",
+                    "recherche",
+                    "trouve",
+                    "informations sur"
+                ]
+            },
+
+            {
+                name: "CODE",
+                keywords: [
+                    "code",
+                    "programme",
+                    "script",
+                    "javascript",
+                    "python",
+                    "html",
+                    "developpe"
+                ]
+            },
+
+            {
+                name: "SYSTEME",
+                keywords: [
+                    "diagnostic",
+                    "systeme",
+                    "etat",
+                    "batterie",
+                    "performance"
+                ]
+            },
+
+            {
+                name: "VISION_DOUBLE",
+                keywords: [
+                    "double vision",
+                    "face et arriere",
+                    "deux cameras",
+                    "oeil de l aigle"
+                ]
+            },
+
+            {
+                name: "HOLOGRAMME",
+                keywords: [
+                    "hologramme",
+                    "mode holo",
+                    "avatar",
+                    "jarvis"
+                ]
+            },
+
+            {
+                name: "MEMOIRE",
+                keywords: [
+                    "souviens toi",
+                    "memorise",
+                    "rappelle toi",
+                    "oublie"
+                ]
+            },
+
+            {
+                name: "ASSISTANCE",
+                keywords: [
+                    "aide moi",
+                    "aide",
+                    "assiste moi",
+                    "que peux tu faire"
+                ]
+            }
+
+        ];
+
+        let best = {
+            name: "CONVERSATION",
+            score: 0
+        };
+
+        intents.forEach(intent => {
+
+            let score = 0;
+
+            intent.keywords.forEach(keyword => {
+
+                if (t.includes(keyword)) {
+                    score += keyword.length;
+                }
+
+            });
+
+            if (score > best.score) {
+
+                best = {
+                    name: intent.name,
+                    score
+                };
+
+            }
+
+        });
+
+        state.activeIntent = best.name;
+
+        state.confidence =
+            Math.min(
+                100,
+                Math.round(
+                    best.score * 4
+                )
+            );
+
+        return best;
+    }
+
+    /* =====================================================
+       ANALYSE AVANCÉE
+       ===================================================== */
+
+    function analyze(text) {
+
+        const intent =
+            detectIntent(text);
+
+        const words =
+            normalize(text)
+                .split(/\s+/)
+                .filter(Boolean);
+
+        const analysis = {
+
+            original: text,
+
+            normalized:
+                normalize(text),
+
+            intent:
+                intent.name,
+
+            confidence:
+                state.confidence,
+
+            wordCount:
+                words.length,
+
+            timestamp:
+                Date.now()
+
+        };
+
+        log(
+            "Analyse:",
+            analysis
+        );
+
+        return analysis;
+    }
+
+    /* =====================================================
+       CRÉATION DE PLAN
+       ===================================================== */
+
+    function createPlan(text) {
+
+        const analysis =
+            analyze(text);
+
+        const plan = [];
+
+        switch (analysis.intent) {
+
+            case "VISION_DOUBLE":
+
+                plan.push({
+                    type: "VISION_DOUBLE",
+                    priority: 10
+                });
+
+                break;
+
+            case "HOLOGRAMME":
+
+                plan.push({
+                    type: "HOLOGRAMME",
+                    priority: 9
+                });
+
+                break;
+
+            case "VISION":
+
+                plan.push({
+                    type: "VISION",
+                    priority: 9
+                });
+
+                break;
+
+            case "CALCUL":
+
+                plan.push({
+                    type: "CALCUL",
+                    priority: 8
+                });
+
+                break;
+
+            case "RECHERCHE":
+
+                plan.push({
+                    type: "RECHERCHE",
+                    priority: 7
+                });
+
+                break;
+
+            case "CODE":
+
+                plan.push({
+                    type: "CODE",
+                    priority: 7
+                });
+
+                break;
+
+            case "SYSTEME":
+
+                plan.push({
+                    type: "SYSTEME",
+                    priority: 6
+                });
+
+                break;
+
+            case "MEMOIRE":
+
+                plan.push({
+                    type: "MEMOIRE",
+                    priority: 5
+                });
+
+                break;
+
+            default:
+
+                plan.push({
+                    type: "IA",
+                    priority: 1
+                });
+
+        }
+
+        plan.sort(
+            (a, b) =>
+                b.priority -
+                a.priority
+        );
+
+        state.tasks =
+            plan.slice(0, CONFIG.maxTasks);
+
+        return plan;
+    }
+
+    /* =====================================================
+       EXECUTION DU PLAN
+       ===================================================== */
+
+    async function execute(text) {
+
+        state.thinking = true;
+
+        state.lastCommand = text;
+
+        remember(
+            "user",
+            text
+        );
+
+        const plan =
+            createPlan(text);
+
+        log(
+            "Plan neural:",
+            plan
+        );
+
+        for (const task of plan) {
+
+            try {
+
+                await executeTask(
+                    task,
+                    text
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Erreur tâche:",
+                    task,
+                    error
+                );
+
+            }
+
+        }
+
+        state.thinking = false;
+
+        return {
+            success: true,
+            plan,
+            intent:
+                state.activeIntent,
+            confidence:
+                state.confidence
+        };
+    }
+
+    /* =====================================================
+       EXÉCUTEUR DE TÂCHES
+       ===================================================== */
+
+    async function executeTask(task, text) {
+
+        switch (task.type) {
+
+            case "VISION_DOUBLE":
+
+                if (
+                    typeof activateDualVision ===
+                    "function"
+                ) {
+
+                    await activateDualVision();
+
+                    notify(
+                        "👁️ Double Vision activée."
+                    );
+
+                }
+
+                break;
+
+
+            case "HOLOGRAMME":
+
+                if (
+                    typeof toggleHologramMode ===
+                    "function"
+                ) {
+
+                    const holo =
+                        document.getElementById(
+                            "hologram-fullscreen"
+                        );
+
+                    if (
+                        !holo.classList.contains(
+                            "active"
+                        )
+                    ) {
+
+                        toggleHologramMode();
+
+                    }
+
+                }
+
+                break;
+
+
+            case "VISION":
+
+                if (
+                    typeof captureVideoFrame ===
+                    "function"
+                ) {
+
+                    const image =
+                        captureVideoFrame();
+
+                    if (image) {
+
+                        notify(
+                            "👁️ Flux visuel capturé."
+                        );
+
+                    } else {
+
+                        notify(
+                            "⚠️ Aucun flux caméra disponible."
+                        );
+
+                    }
+
+                }
+
+                break;
+
+
+            case "SYSTEME":
+
+                systemDiagnostic();
+
+                break;
+
+
+            case "MEMOIRE":
+
+                remember(
+                    "instruction",
+                    text
+                );
+
+                notify(
+                    "🧠 Information enregistrée dans la mémoire locale."
+                );
+
+                break;
+
+
+            case "CALCUL":
+
+                if (
+                    typeof checkSecretProtocols ===
+                    "function"
+                ) {
+
+                    const result =
+                        await checkSecretProtocols(
+                            text
+                        );
+
+                    if (result) {
+
+                        notify(result);
+
+                    }
+
+                }
+
+                break;
+
+
+            case "RECHERCHE":
+
+                notify(
+                    "🌐 Intention de recherche détectée."
+                );
+
+                break;
+
+
+            case "CODE":
+
+                notify(
+                    "💻 Mode ingénierie activé."
+                );
+
+                break;
+
+
+            case "IA":
+
+                /*
+                 Le moteur IA principal
+                 de ton application reste
+                 responsable de la réponse.
+                */
+
+                break;
+
+        }
+
+    }
+
+    /* =====================================================
+       DIAGNOSTIC SYSTÈME
+       ===================================================== */
+
+    function systemDiagnostic() {
+
+        const info = {
+
+            cpu:
+                navigator.hardwareConcurrency ||
+                "inconnu",
+
+            ram:
+                navigator.deviceMemory ||
+                "inconnue",
+
+            online:
+                navigator.onLine,
+
+            language:
+                navigator.language,
+
+            screen:
+                `${screen.width}x${screen.height}`,
+
+            battery:
+                "API batterie dépendante du navigateur"
+
+        };
+
+        log(
+            "DIAGNOSTIC MATRIX:",
+            info
+        );
+
+        notify(
+            `⚙️ Diagnostic Matrix : système ${navigator.onLine ? "EN LIGNE" : "HORS LIGNE"}.
+CPU logique : ${info.cpu}.
+Écran : ${info.screen}.`
+        );
+
+        return info;
+    }
+
+    /* =====================================================
+       NOTIFICATION
+       ===================================================== */
+
+    function notify(text) {
+
+        console.log(
+            "%cMANASSÉ:",
+            "color:#d49b28;font-weight:bold",
+            text
+        );
+
+        const container =
+            document.getElementById(
+                "chat-container"
+            );
+
+        if (!container) return;
+
+        const message =
+            document.createElement("div");
+
+        message.className =
+            "message bot";
+
+        message.textContent =
+            text;
+
+        container.appendChild(
+            message
+        );
+
+        if (
+            typeof scrollToBottom ===
+            "function"
+        ) {
+            scrollToBottom();
+        }
+
+    }
+
+    /* =====================================================
+       CONTEXTE POUR LE MODÈLE IA
+       ===================================================== */
+
+    function buildAIContext() {
+
+        const recent =
+            state.memory
+                .slice(-10)
+                .map(item => {
+
+                    return {
+                        role:
+                            item.role === "assistant"
+                                ? "assistant"
+                                : "user",
+
+                        content:
+                            item.content
+                    };
+
+                });
+
+        return recent;
+    }
+
+    /* =====================================================
+       MODE IA
+       ===================================================== */
+
+    function setMode(mode) {
+
+        state.mode =
+            String(mode)
+                .toUpperCase();
+
+        save();
+
+        log(
+            "Mode Matrix:",
+            state.mode
+        );
+    }
+
+    /* =====================================================
+       API PUBLIQUE
+       ===================================================== */
+
+    return {
+
+        init() {
+
+            if (state.initialized)
+                return;
+
+            load();
+
+            state.initialized =
+                true;
+
+            log(
+                "NEURAL ORCHESTRATOR ONLINE"
+            );
+
+        },
+
+        execute,
+
+        analyze,
+
+        createPlan,
+
+        remember,
+
+        getMemory,
+
+        clearMemory,
+
+        buildAIContext,
+
+        setMode,
+
+        diagnostic:
+            systemDiagnostic,
+
+        getState() {
+
+            return {
+                ...state,
+                memory:
+                    [...state.memory],
+                tasks:
+                    [...state.tasks]
+            };
+
+        }
+
+    };
+
+})();
+
+
+/* =========================================================
+   INITIALISATION
+   ========================================================= */
+
+window.addEventListener(
+    "load",
+    () => {
+
+        MatrixNeuralCore.init();
+
+    }
+);
+
+
+/* =========================================================
+   INTÉGRATION AVEC TON SENDMESSAGE
+   =========================================================
+
+   Le moteur ne remplace pas ton IA.
+
+   Il analyse d'abord la demande puis
+   laisse ton moteur Groq répondre.
+   ========================================================= */
+
+const ancienneFonctionSendMessage =
+    window.sendMessage;
+
+window.sendMessage = async function() {
+
+    const input =
+        document.getElementById(
+            "user-input"
+        );
+
+    if (!input)
+        return;
+
+    const text =
+        input.value.trim();
+
+    if (!text)
+        return;
+
+    /*
+       Analyse neuronale avant
+       l'appel au modèle IA.
+    */
+
+    await MatrixNeuralCore.execute(
+        text
+    );
+
+    /*
+       On laisse ensuite ton système
+       actuel continuer normalement.
+    */
+
+    if (
+        typeof ancienneFonctionSendMessage ===
+        "function"
+    ) {
+
+        return ancienneFonctionSendMessage();
+
+    }
+
+};
+
+
+/* =========================================================
+   COMMANDES CONSOLE POUR TEST
+   =========================================================
+
+   MatrixNeuralCore.analyze("analyse ce que tu vois")
+
+   MatrixNeuralCore.createPlan(
+       "active la double vision"
+   )
+
+   MatrixNeuralCore.diagnostic()
+
+   MatrixNeuralCore.getState()
+
+   ========================================================= */
+
+    </script> 
+  <script>
+/* ================================================
+   MANASSÉ MATRIX - SALUTATION AVEC NOM D'INSCRIPTION
+   ================================================ */
+
+function getUserName() {
+    // Récupère le nom complet utilisé à l'inscription
+    let fullName = localStorage.getItem('manasse_full_name') || "";
+    let firstName = localStorage.getItem('manasse_active_user') || "Maître";
+    
+    // Si c'est le maître, on dit juste le prénom
+    if(fullName.toLowerCase().includes("manassé")) {
+        return firstName;
+    }
+    // Sinon on prend le prénom de l'utilisateur
+    return firstName;
+}
+
+// 1. REMPLACE LA SALUTATION AU LANCEMENT DU HOLO
+const oldToggleHolo = window.toggleHologramMode;
+window.toggleHologramMode = function() {
+    oldToggleHolo();
+    setTimeout(() => {
+        const holo = document.getElementById('hologram-fullscreen');
+        const video = document.getElementById('holo-video-avatar  
+                                              </script >
