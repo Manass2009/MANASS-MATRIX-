@@ -1277,3 +1277,82 @@
     setInterval(ajouterBoutonsCopie, 2000);
     window.addEventListener('DOMContentLoaded', ajouterBoutonsCopie);
 </script>
+<script>
+/* =====================================================
+   MODULE DE GESTION DES AUTORISATIONS
+   ===================================================== */
+
+const AUTORISATIONS = [
+
+    {
+        nom: "whatsapp",
+        description: "autoriser Manassé IA à consulter mes notifications"
+    },
+
+    {
+        nom: "arrière-plan",
+        description: "autoriser Manassé IA à fonctionner en arrière-plan"
+    },
+
+    {
+        nom: "message",
+        description: "autoriser Manassé ia à répondre à mes messages si je le lui autorise"
+    },
+
+    {
+        
+
+/* =====================================================
+   CONTRÔLE DES AUTORISATIONS
+   ===================================================== */
+
+function demanderAutorisation(autorisation) {
+
+    if (!autorisation) return;
+
+    const nom = autorisation.nom;
+
+    if (!nom) {
+        console.warn("Nom d'autorisation manquant.");
+        return;
+    }
+
+    console.log("Autorisation demandée :", nom);
+
+    /*
+       TON CODE DE DEMANDE D'AUTORISATION
+       PEUT ÊTRE AJOUTÉ ICI.
+    */
+}
+
+
+/* =====================================================
+   AFFICHAGE DES AUTORISATIONS
+   ===================================================== */
+
+function afficherAutorisations() {
+
+    AUTORISATIONS.forEach((autorisation) => {
+
+        if (!autorisation.nom) return;
+
+        console.log(
+            "Autorisation disponible :",
+            autorisation.nom
+        );
+
+    });
+
+}
+
+
+/* =====================================================
+   INITIALISATION
+   ===================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    afficherAutorisations();
+
+});
+</script>
