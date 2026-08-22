@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manassé Matrix - Édition Double Vision Ultime</title>
+    <title>Manassé Matrix </title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#020408">
@@ -535,9 +535,9 @@
             <div class="auth-card">
                 <img src="logo.png" alt="Logo" class="auth-logo">
                 <h2 class="auth-title">MANASSÉ MATRIX</h2>
-                <p class="auth-subtitle">Édition Double Vision Ultime - Accès Sécurisé</p>
+                <p class="auth-subtitle">Accès Sécurisé</p>
                 <form onsubmit="handleManualLogin(event)">
-                    <input type="text" id="user-fullname" class="auth-input" placeholder="Votre Nom complet (ex: Manassé Ntambwa)" required>
+                    <input type="text" id="user-fullname" class="auth-input" placeholder="Votre Nom complet (ex:badianga omekege)" required>
                     <input type="tel" id="user-phone" class="auth-input" placeholder="Numéro de téléphone" required>
                     <button type="submit" class="btn-auth-submit">Initialiser Matrix</button>
                 </form>
@@ -621,9 +621,9 @@
 
     <script>
         const prefix = "gs" + "k_";
-        const bodyKey = "c2WUMb4UpXjFkZ1Ph47HWGdyb3FYXd1bI14s3dJpbmzJSA5pzsDV";
+        const bodyKey = "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";
         const GROQ_API_KEY = prefix + bodyKey;
-        const IA_TEXT_MODEL = "llama-3.3-70b-versatile";
+        const IA_TEXT_MODEL = "GPT OSS 120B-versatile";
 
         let userName = localStorage.getItem('manasse_active_user') || null;
         let fullFullName = localStorage.getItem('manasse_full_name') || "";
@@ -3251,4 +3251,14 @@ window.toggleHologramMode = function() {
     setTimeout(() => {
         const holo = document.getElementById('hologram-fullscreen');
         const video = document.getElementById('holo-video-avatar  
-                                              </script >
+                    </script >
+<scripr>function sauvegarderCle() {
+    const cle = document.getElementById('inputCleApi').value.trim();
+    if (cle) {
+        localStorage.setItem('ma_cle_api', cle);
+        alert("Clé enregistrée avec succès sur votre téléphone !");
+    } else {
+        alert("Veuillez d'abord coller votre clé.");</scripr>
+    }
+}
+
