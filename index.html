@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Manassé Matrix </title>
+    <title>Manassé Matrix - Édition HUD Ultime</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#020408">
@@ -17,23 +17,21 @@
 
     <style>
         :root {
-            --gold-main: #d49b28;
-            --gold-dark: #b37e1b;
-            --bg-dark: #030509;
-            --card-dark: #0a0d14;
-            --chat-user: #d49b28;
-            --chat-bot: #121824;
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-subtle: #1c2436;
-            --neon-glow: rgba(212, 155, 40, 0.5);
+            --hud-cyan: #00f0ff;
+            --hud-blue: #0077ff;
+            --hud-glow: rgba(0, 240, 255, 0.4);
+            --bg-dark: #020408;
+            --card-dark: rgba(5, 12, 24, 0.85);
+            --border-hud: rgba(0, 240, 255, 0.25);
+            --text-light: #f1f5f9;
+            --text-muted: #64748b;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -43,6 +41,11 @@
             background-color: var(--bg-dark);
             color: var(--text-light);
             overflow: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 119, 255, 0.05) 0%, transparent 80%),
+                linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 20px 20px, 20px 20px;
         }
 
         .app-container {
@@ -54,3211 +57,365 @@
             position: relative;
         }
 
-        /* AUTH SCREEN */
+        /* CONFIG SCREEN (Clé API & Auth) */
         .auth-screen {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: var(--bg-dark);
+            background: rgba(2, 4, 8, 0.95);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            backdrop-filter: blur(10px);
         }
 
         .auth-card {
             background: var(--card-dark);
-            border: 1px solid var(--border-subtle);
-            border-radius: 28px;
-            padding: 32px 22px;
+            border: 1px solid var(--hud-cyan);
+            border-radius: 20px;
+            padding: 30px 20px;
             width: 100%;
             max-width: 380px;
             text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 35px rgba(212, 155, 40, 0.15);
+            box-shadow: 0 0 30px var(--hud-glow), inset 0 0 15px rgba(0, 240, 255, 0.1);
         }
 
         .auth-logo {
-            width: 80px; height: 80px;
-            border-radius: 20px;
-            border: 2px solid var(--gold-main);
-            margin-bottom: 16px;
+            width: 70px; height: 70px;
+            border-radius: 50%;
+            border: 2px solid var(--hud-cyan);
+            margin-bottom: 15px;
             object-fit: cover;
-            box-shadow: 0 0 20px var(--neon-glow);
+            box-shadow: 0 0 15px var(--hud-cyan);
         }
 
         .auth-title {
-            color: var(--gold-main);
-            font-size: 1.6rem;
+            color: var(--hud-cyan);
+            font-size: 1.4rem;
             font-weight: 800;
-            margin-bottom: 6px;
-            letter-spacing: 1px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .auth-subtitle {
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 24px;
+            font-size: 0.8rem;
+            margin-bottom: 20px;
         }
 
-        .auth-input {
+        .hud-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-subtle);
+            background: rgba(0, 240, 255, 0.05);
+            border: 1px solid var(--border-hud);
             color: var(--text-light);
-            padding: 14px 16px;
-            border-radius: 14px;
-            font-size: 0.95rem;
-            margin-bottom: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
         }
-        .auth-input:focus { border-color: var(--gold-main); }
 
-        .btn-auth-submit {
+        .hud-input:focus {
+            border-color: var(--hud-cyan);
+            box-shadow: 0 0 10px var(--hud-glow);
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .hud-btn {
             width: 100%;
-            background: var(--gold-main);
-            color: #000;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
+            background: linear-gradient(135deg, var(--hud-cyan), var(--hud-blue));
+            color: #020408;
             font-weight: 800;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
             font-size: 0.95rem;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(212, 155, 40, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--hud-glow);
+            transition: transform 0.2s;
         }
 
-        /* HEADER */
-        header {
-            background: var(--card-dark);
-            padding: 12px 18px;
+        .hud-btn:active { transform: scale(0.98); }
+
+        /* MAIN APP HUD INTERFACE */
+        .main-app {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+
+        .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid var(--border-subtle);
-            flex-shrink: 0;
-            z-index: 10;
+            padding: 12px 16px;
+            background: var(--card-dark);
+            border-bottom: 1px solid var(--border-hud);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
 
-        .header-left {
+        .app-title-container {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
         }
 
-        .btn-burger {
-            background: none;
-            border: none;
-            color: var(--gold-main);
-            font-size: 1.6rem;
-            cursor: pointer;
+        .app-logo-mini {
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--hud-cyan);
         }
 
-        .app-logo {
-            width: 38px; height: 38px;
-            border-radius: 10px;
-            object-fit: cover;
-            border: 1px solid var(--gold-main);
-        }
-
-        .brand-info h1 {
-            font-size: 1.05rem;
-            color: var(--gold-main);
+        .app-title {
+            font-size: 1rem;
             font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-info p {
-            font-size: 0.72rem;
-            color: var(--text-muted);
-        }
-
-        /* SIDEBAR */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-        }
-
-        .sidebar {
-            position: fixed;
-            top: 0; left: -320px;
-            width: 320px; height: 100%;
-            background: #060911;
-            border-right: 1px solid var(--border-subtle);
-            z-index: 101;
-            transition: left 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
-            display: flex; flex-direction: column;
-            padding: 20px;
-        }
-        .sidebar.active { left: 0; }
-
-        .btn-new-chat {
-            background: var(--gold-main);
-            color: #000;
-            border: none;
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-bottom: 12px;
-        }
-
-        .btn-holo-toggle {
-            background: rgba(212, 155, 40, 0.12);
-            color: var(--gold-main);
-            border: 1px solid var(--gold-main);
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 0.88rem;
-            cursor: pointer;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .sidebar-section-title {
-            color: var(--gold-main);
-            font-size: 0.78rem;
-            font-weight: 800;
-            margin-bottom: 10px;
+            color: var(--hud-cyan);
             letter-spacing: 1px;
             text-transform: uppercase;
         }
 
-        .protocols-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 10px;
-            margin-bottom: 15px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            line-height: 1.5;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-        .protocols-box span { color: var(--gold-main); font-weight: 700; }
-
-        .history-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .history-item {
-            background: var(--card-dark);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-light);
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        .btn-logout {
-            background: rgba(239, 68, 68, 0.15);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.4);
-            padding: 10px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            margin-top: 15px;
-        }
-
-        /* MODE HOLO 3D MATRIX */
-        .hologram-fullscreen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background: radial-gradient(circle at center, #0b1325 0%, #020305 95%);
-            z-index: 500;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: inset 0 0 100px rgba(212, 155, 40, 0.2);
-        }
-        .hologram-fullscreen.active { display: flex; }
-
-        .hologram-fullscreen::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-            z-index: 515;
-            opacity: 0.6;
-        }
-
-        .gold-aura-glow {
-            position: absolute;
-            width: 420px; height: 420px;
-            background: radial-gradient(circle, rgba(212, 155, 40, 0.35) 0%, rgba(212, 155, 40, 0.08) 60%, transparent 100%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 502;
-            animation: pulse-aura 3s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulse-aura {
-            0% { transform: scale(0.9); opacity: 0.4; filter: drop-shadow(0 0 15px var(--gold-main)); }
-            100% { transform: scale(1.15); opacity: 0.85; filter: drop-shadow(0 0 35px var(--gold-main)); }
-        }
-
-        .btn-close-holo {
-            position: absolute;
-            top: 25px; right: 25px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-subtle);
-            color: var(--text-light);
-            width: 48px; height: 48px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 520;
-        }
-
-        .hud-overlay {
-            position: absolute;
-            top: 30px; left: 30px;
-            z-index: 510;
-            pointer-events: none;
-            font-family: monospace;
-        }
-        .hud-status {
-            color: var(--gold-main);
-            font-size: 0.85rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-shadow: 0 0 12px var(--neon-glow);
-            margin-bottom: 4px;
-        }
-        .hud-sub { color: var(--text-muted); font-size: 0.72rem; }
-
-        /* DOUBLE MONITEURS DE VISION (Haut à gauche & Haut à droite) */
-        .camera-vision-box {
-            position: fixed;
-            top: 75px;
-            width: 150px; height: 200px;
-            border: 2px solid var(--gold-main);
-            border-radius: 12px;
-            overflow: hidden;
-            background: #000;
-            display: none;
-            z-index: 600;
-            box-shadow: 0 0 25px var(--neon-glow);
-        }
-        #camera-vision-box-left { left: 20px; }
-        #camera-vision-box-right { right: 20px; }
-
-        .camera-vision-box video { width: 100%; height: 100%; object-fit: cover; }
-        .camera-vision-box video.front-cam { transform: scaleX(-1); }
-        .camera-vision-label {
-            position: absolute;
-            bottom: 0; width: 100%;
-            background: rgba(0,0,0,0.8);
-            color: var(--gold-main);
-            font-size: 0.58rem;
-            text-align: center;
-            font-family: monospace;
-            padding: 3px;
-        }
-
-        .hud-transcript-container {
-            position: absolute;
-            bottom: 35px;
-            width: 90%;
-            max-width: 650px;
-            text-align: center;
-            z-index: 510;
-            padding: 15px;
-            background: rgba(5, 8, 14, 0.75);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8), 0 0 20px rgba(212, 155, 40, 0.2);
-        }
-        .hud-transcript-text { color: var(--text-light); font-size: 0.95rem; line-height: 1.5; }
-
-        /* Conteneur et affichage central pour la vidéo hologramme.mp4 */
-        #jarvis-sphere-container {
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0; left: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            pointer-events: none;
-            z-index: 505;
-        }
-
-        #holo-video-avatar {
-            width: 100%;
-            max-width: 480px;
-            height: auto;
-            max-height: 70vh;
-            object-fit: contain;
+        .status-badge {
+            font-size: 0.7rem;
+            color: var(--hud-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-hud);
+            padding: 4px 8px;
             border-radius: 20px;
-            filter: drop-shadow(0 0 25px var(--gold-main)) brightness(1.1) contrast(1.1);
-            mix-blend-mode: screen;
-            transition: opacity 0.3s ease;
+            text-transform: uppercase;
         }
 
-        /* CHAT */
         .chat-container {
             flex: 1;
-            padding: 16px;
             overflow-y: auto;
+            padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            scroll-behavior: smooth;
-            position: relative;
+            gap: 12px;
         }
 
         .message {
             max-width: 85%;
-            padding: 14px 18px;
-            border-radius: 20px;
-            font-size: 0.94rem;
-            line-height: 1.6;
-            word-wrap: break-word;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            position: relative;
+            animation: fadeIn 0.3s ease;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 119, 255, 0.2));
+            border: 1px solid var(--hud-cyan);
+            color: var(--text-light);
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+        }
+
         .message.bot {
-            background-color: var(--chat-bot);
+            background: var(--card-dark);
+            border: 1px solid var(--border-hud);
             color: var(--text-light);
             align-self: flex-start;
-            border: 1px solid var(--border-subtle);
-            border-bottom-left-radius: 4px;
-        }
-        .message.user {
-            background-color: var(--chat-user);
-            color: #000;
-            font-weight: 700;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .btn-speak {
-            margin-top: 10px;
-            background: rgba(212, 155, 40, 0.12);
-            color: var(--gold-main);
-            border: 1px solid var(--gold-main);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.78rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* INPUT BAR */
-        .input-bar-wrapper {
-            background: var(--card-dark);
-            border-top: 1px solid var(--border-subtle);
+        .input-area {
             padding: 12px 16px;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-        .input-bar {
+            background: var(--card-dark);
+            border-top: 1px solid var(--border-hud);
             display: flex;
-            gap: 8px;
-            align-items: center;
-            max-width: 800px;
-            margin: 0 auto;
+            gap: 10px;
+            backdrop-filter: blur(10px);
         }
-        .input-bar input[type="text"] {
+
+        .chat-input {
             flex: 1;
-            background: var(--bg-dark);
-            border: 1px solid var(--border-subtle);
+            background: rgba(0, 240, 255, 0.03);
+            border: 1px solid var(--border-hud);
             color: var(--text-light);
-            padding: 14px 18px;
-            border-radius: 26px;
+            padding: 12px 16px;
+            border-radius: 12px;
             font-size: 0.95rem;
             outline: none;
+            transition: all 0.3s;
         }
-        .input-bar input[type="text"]:focus { border-color: var(--gold-main); }
 
-        .btn-action {
-            background: var(--bg-dark);
-            border: 1px solid var(--border-subtle);
-            color: var(--gold-main);
-            width: 46px; height: 46px;
-            border-radius: 50%;
-            font-size: 1.2rem;
+        .chat-input:focus {
+            border-color: var(--hud-cyan);
+            box-shadow: 0 0 10px var(--hud-glow);
+        }
+
+        .send-btn {
+            background: var(--hud-cyan);
+            color: #020408;
+            border: none;
+            padding: 0 18px;
+            border-radius: 12px;
+            font-weight: 800;
             cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px var(--hud-glow);
+            transition: transform 0.2s;
         }
-        .btn-action.recording {
-            background: #ef4444; color: #fff; border-color: #ef4444;
-            animation: pulse-mic 1s infinite;
-        }
-        @keyframes pulse-mic {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
-        .btn-send {
-            background: var(--gold-main); color: #000; border: none;
-            width: 46px; height: 46px; border-radius: 50%; font-weight: 800;
-            font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
+
+        .send-btn:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="guest-mode">
+<body>
 
     <div class="app-container">
-
-        <div id="auth-screen" class="auth-screen">
+        <!-- Auth & API Key Screen -->
+        <div class="auth-screen" id="authScreen">
             <div class="auth-card">
-                <img src="logo.png" alt="Logo" class="auth-logo">
-                <h2 class="auth-title">MANASSÉ MATRIX</h2>
-                <p class="auth-subtitle">Accès Sécurisé</p>
-                <form onsubmit="handleManualLogin(event)">
-                    <input type="text" id="user-fullname" class="auth-input" placeholder="Votre Nom complet (ex:badianga omekege)" required>
-                    <input type="tel" id="user-phone" class="auth-input" placeholder="Numéro de téléphone" required>
-                    <button type="submit" class="btn-auth-submit">Initialiser Matrix</button>
-                </form>
+                <img src="logo.png" alt="Logo" class="auth-logo" onerror="this.src='https://via.placeholder.com/80/020408/00f0ff?text=HUD'">
+                <h1 class="auth-title">Manassé Matrix</h1>
+                <p class="auth-subtitle">Système HUD Neural - Double Vision</p>
+                
+                <input type="password" id="apiKeyInput" class="hud-input" placeholder="Entrez votre clé API Groq (gsk_...)">
+                <button class="hud-btn" id="initBtn">Initialiser le système</button>
             </div>
         </div>
 
-        <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-        <div id="sidebar" class="sidebar">
-            <button class="btn-new-chat" onclick="createNewChat()">➕ Nouvelle session</button>
-            <button class="btn-holo-toggle" onclick="toggleHologramMode()">🌐 Mode Holo-Avatar 3D</button>
-            
-            <div class="sidebar-section-title">Protocoles en Cache</div>
-            <div class="protocols-box">
-                • <span>"Grandes visions"</span> / <span>"Œil de l'aigle face"</span><br>
-                • <span>"Œil de l'aigle arrière"</span> / <span>"Activer double vision"</span><br>
-                • <span>"Protocole Mur de Jéricho"</span> (Sécurité & Chiffrement)<br>
-                • <span>"Protocole assistance WhatsApp & Apps"</span><br>
-                • <span>"Diagnostic système"</span> / <span>"Batterie"</span><br>
-                • <span>"Analyse environnementale & OCR"</span><br>
-                • <span>"Calculs scientifiques & Code"</span>
-            </div>
-
-            <div class="sidebar-section-title">Historique</div>
-            <div id="history-list" class="history-list"></div>
-            <button class="btn-logout" onclick="logoutUser()">🚪 Déconnexion</button>
-        </div>
-
-        <header>
-            <div class="header-left">
-                <button class="btn-burger" onclick="openSidebar()">☰</button>
-                <img src="logo.png" alt="Logo" class="app-logo">
-                <div class="brand-info">
-                    <h1>MANASSÉ MATRIX</h1>
-                    <p id="user-display-name">Système Prêt</p>
+        <!-- Main App Interface -->
+        <div class="main-app" id="mainApp">
+            <header class="app-header">
+                <div class="app-title-container">
+                    <img src="logo.png" alt="Logo" class="app-logo-mini" onerror="this.src='https://via.placeholder.com/32/020408/00f0ff?text=M'">
+                    <span class="app-title">Manassé Matrix</span>
                 </div>
-            </div>
-        </header>
-
-        <div id="camera-vision-box-left" class="camera-vision-box">
-            <video id="holo-video-left" autoplay playsinline muted></video>
-            <div class="camera-vision-label" id="cam-label-left">VISION : ARRIÈRE</div>
-        </div>
-        <div id="camera-vision-box-right" class="camera-vision-box">
-            <video id="holo-video-right" autoplay playsinline muted class="front-cam"></video>
-            <div class="camera-vision-label" id="cam-label-right">VISION : FACE</div>
-        </div>
-
-        <div id="hologram-fullscreen" class="hologram-fullscreen">
-            <div class="gold-aura-glow"></div>
-            <button class="btn-close-holo" onclick="toggleHologramMode()">✕</button>
-            <div class="hud-overlay">
-                <div class="hud-status" id="hud-status-text">STATUT : ÉCOUTE CONTINUE (ALWAYS-ON)</div>
-                <div class="hud-sub">MATRIX REACTOR // v8.0</div>
+                <span class="status-badge">HUD Actif</span>
+            </header>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="message bot">Matrice initialisée, Maître Manassé. Systèmes holographiques et liaisons neuronales prêts. Que commandez-vous ?</div>
             </div>
 
-            <div id="jarvis-sphere-container">
-                <video id="holo-video-avatar" src="hologramme.mp4" loop muted playsinline></video>
-            </div>
-
-            <div class="hud-transcript-container">
-                <div class="hud-transcript-text" id="hud-transcript">"En attente de vos directives, Maître..."</div>
+            <div class="input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Commandez l'IA ici...">
+                <button class="send-btn" id="sendBtn">➤</button>
             </div>
         </div>
-
-        <main class="chat-container" id="chat-container">
-            <div class="message bot" id="welcome-msg">
-                Bonjour et bienvenue ! 👋<br><br>
-                Je suis <b>Manassé Matrix</b>. Les protocoles de double vision simultanée (face et arrière) et de sécurité intégrale sont prêts. Commandez ! 😊
-            </div>
-        </main>
-
-        <footer class="input-bar-wrapper">
-            <div class="input-bar">
-                <button id="btn-mic" class="btn-action" onclick="toggleVoiceInput()" title="Parler">🎤</button>
-                <input type="text" id="user-input" placeholder="Commandez l'IA ici..." onkeypress="if(event.key==='Enter') sendMessage()" onfocus="scrollToBottom()">
-                <button class="btn-send" onclick="sendMessage()" title="Envoyer">➔</button>
-            </div>
-        </footer>
-
     </div>
 
     <script>
-        const prefix = "gs" + "k_";
-        const bodyKey = "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";
-        const GROQ_API_KEY = prefix + bodyKey;
-        const IA_TEXT_MODEL = "openai/gpt-oss-120b.";
-
-        let userName = localStorage.getItem('manasse_active_user') || null;
-        let fullFullName = localStorage.getItem('manasse_full_name') || "";
-        let currentChatId = Date.now().toString();
-        let currentMessages = [];
-        let isRecording = false;
-        let recognition = null;
-        let holoRecognition = null;
-        let hologramModeActive = false;
-        let isAssistantSpeaking = false;
-        let isAiThinking = false;
+        // Gestion de la clé API et de l'initialisation
+        const authScreen = document.getElementById('authScreen');
+        const mainApp = document.getElementById('mainApp');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const initBtn = document.getElementById('initBtn');
         
-        let cameraStreamLeft = null;
-        let cameraStreamRight = null;
+        const chatContainer = document.getElementById('chatContainer');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendBtn');
 
-        const SecurityAccessManager = {
-            masterName: "Manassé Ntambwa",
-            isMasterAuthenticated: false,
-
-            authenticate: function(inputName) {
-                if (inputName && inputName.trim().toLowerCase() === this.masterName.toLowerCase()) {
-                    this.isMasterAuthenticated = true;
-                    return "Authentification réussie. Bienvenue, maître Manassé. Accès total aux protocoles de la matrice accordé.";
-                } else {
-                    this.isMasterAuthenticated = false;
-                    return "Utilisateur non reconnu. Mode assistance standard activé.";
-                }
-            }
-        };
-
-        const ProtocolManager = {
-            activeProtocols: new Set(),
-
-            activer: function(nomProtocole) {
-                this.activeProtocols.add(nomProtocole);
-                let lower = nomProtocole.toLowerCase();
-                if (lower.includes('jericho')) {
-                    document.body.classList.add('jericho-active');
-                    document.body.style.boxShadow = "inset 0 0 50px rgba(212, 155, 40, 0.5)";
-                    return "Protocole Jéricho activé avec succès. Bouclier virtuel déployé.";
-                } else if (lower.includes('double') || (lower.includes('face') && lower.includes('arrière'))) {
-                    activateDualVision();
-                    return "Double Vision (Œil de l'Aigle Face & Arrière) déployée simultanément.";
-                } else if (lower.includes('arrière') || lower.includes('dos')) {
-                    switchCameraVision('environment', 'left');
-                    return "Œil de l'Aigle Arrière activé (moniteur haut gauche).";
-                } else if (lower.includes('face') || lower.includes('avant')) {
-                    switchCameraVision('user', 'right');
-                    return "Œil de l'Aigle Face activé (moniteur haut droite).";
-                }
-                return `Protocole ${nomProtocole} enclenché.`;
-            },
-
-            desactiver: function(nomProtocole) {
-                let lower = nomProtocole.toLowerCase();
-                if (lower.includes('jericho')) {
-                    document.body.classList.remove('jericho-active');
-                    document.body.style.boxShadow = "none";
-                    return "Protocole Jéricho désactivé.";
-                } else if (lower.includes('vision') || lower.includes('caméra') || lower.includes('aigle')) {
-                    stopCameraVision('left');
-                    stopCameraVision('right');
-                    return "Tous les flux de vision désactivés.";
-                }
-                return `Protocole ${nomProtocole} désactivé.`;
-            }
-        };
-
-        class MatrixEngine {
-            static solveEquation(expr) {
-                try {
-                    let sanitized = expr.replace(/[^0-9+\-*/().]/g, '');
-                    let result = Function('"use strict"; return (' + sanitized + ')')();
-                    return `🔢 **Résultat du calcul scientifique** : ${result}`;
-                } catch(e) {
-                    return "Impossible de résoudre cette expression mathématique.";
-                }
-            }
-
-            static generateCodeSnippet(language, objective) {
-                return `💻 **Code Matrix généré (${language.toUpperCase()})** :\n\`\`\`${language}\n// Objectif : ${objective}\n// Conçu par Manassé Matrix\nconsole.log("Protocole d'exécution sécurisé réussi.");\n\`\`\``;
-            }
+        // Vérifier si une clé est déjà enregistrée sur l'appareil
+        const savedKey = localStorage.getItem('manasse_api_key');
+        if (savedKey) {
+            apiKeyInput.value = savedKey;
+            // Optionnel : passer directement si la clé existe déjà
+            authScreen.style.display = 'none';
+            mainApp.style.display = 'flex';
         }
 
-        window.onload = function() {
-            if (userName) {
-                document.getElementById('auth-screen').style.display = 'none';
-                SecurityAccessManager.authenticate(fullFullName || userName);
-                updateWelcomeMessage(userName, fullFullName);
-            }
-            setupSpeechRecognition();
-            
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.getVoices();
-                window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-                document.addEventListener('click', () => {
-                    const silentUtter = new SpeechSynthesisUtterance('');
-                    silentUtter.volume = 0;
-                    window.speechSynthesis.speak(silentUtter);
-                }, { once: true });
-            }
-        };
-
-        function updateHologramVideoState(speaking) {
-            const holoVid = document.getElementById('holo-video-avatar');
-            if (!holoVid) return;
-            if (speaking) {
-                holoVid.play().catch(e => console.log("Lecture vidéo bloquée:", e));
-            } else {
-                holoVid.pause();
-            }
-        }
-
-        function getStorageKey() {
-            return 'manasse_matrix_chats_' + (userName ? userName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'default');
-        }
-
-        function handleManualLogin(e) {
-            e.preventDefault();
-            const nameInput = document.getElementById('user-fullname').value.trim();
-            if(!nameInput) return;
-            
-            fullFullName = nameInput;
-            userName = nameInput.split(' ')[0];
-            userName = userName.charAt(0).toUpperCase() + userName.slice(1);
-            
-            localStorage.setItem('manasse_active_user', userName);
-            localStorage.setItem('manasse_full_name', fullFullName);
-            
-            document.getElementById('auth-screen').style.display = 'none';
-            SecurityAccessManager.authenticate(fullFullName);
-            createNewChat();
-            updateWelcomeMessage(userName, fullFullName);
-        }
-
-        function logoutUser() {
-            saveCurrentChat();
-            stopCameraVision('left');
-            stopCameraVision('right');
-            localStorage.removeItem('manasse_active_user');
-            localStorage.removeItem('manasse_full_name');
-            userName = null;
-            fullFullName = "";
-            closeSidebar();
-            document.getElementById('auth-screen').style.display = 'flex';
-        }
-
-        function updateWelcomeMessage(name, fullName) {
-            document.getElementById('user-display-name').innerText = "Matrix // " + name;
-            let greetingText = (fullName.toLowerCase().includes("manassé") || name.toLowerCase().includes("manassé"))
-                ? `Matrice initialisée, Maître ${name}. Double moniteur de vision et protocoles actifs. ❤️`
-                : `Salutations ${name} ! Bienvenue sur Manassé Matrix.`;
-
-            const msg = `${greetingText}<br><button class="btn-speak" onclick="speakText('${greetingText.replace(/'/g, "\\'")}')">🔊 Écouter</button>`;
-            document.getElementById('welcome-msg').innerHTML = msg;
-        }
-
-        function toggleHologramMode() {
-            hologramModeActive = !hologramModeActive;
-            const holoScreen = document.getElementById('hologram-fullscreen');
-            if (hologramModeActive) {
-                holoScreen.classList.add('active');
-                updateHologramVideoState(false);
-                startSafeListening();
-            } else {
-                holoScreen.classList.remove('active');
-                updateHologramVideoState(false);
-                if(holoRecognition) { try { holoRecognition.stop(); } catch(e) {} }
-            }
-            closeSidebar();
-        }
-
-        function setupSpeechRecognition() {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) return;
-
-            recognition = new SpeechRecognition();
-            recognition.lang = 'fr-FR';
-            recognition.continuous = false;
-            recognition.interimResults = false;
-            recognition.onresult = (e) => {
-                document.getElementById('user-input').value = e.results[0][0].transcript;
-                stopVoiceInput();
-                sendMessage();
-            };
-            recognition.onerror = () => stopVoiceInput();
-            recognition.onend = () => stopVoiceInput();
-
-            holoRecognition = new SpeechRecognition();
-            holoRecognition.lang = 'fr-FR';
-            holoRecognition.continuous = false;
-            holoRecognition.interimResults = true;
-
-            holoRecognition.onstart = () => {
-                document.getElementById('hud-status-text').innerText = "STATUT : ÉCOUTE CONTINUE ACTIVE";
-                updateHologramVideoState(false);
-            };
-
-            holoRecognition.onresult = (e) => {
-                let interim = '';
-                let final = '';
-                for (let i = e.resultIndex; i < e.results.length; ++i) {
-                    if (e.results[i].isFinal) { final += e.results[i][0].transcript; } 
-                    else { interim += e.results[i][0].transcript; }
-                }
-
-                let spoken = final || interim;
-                if (spoken.trim().length > 0) {
-                    if ('speechSynthesis' in window && window.speechSynthesis.speaking) {
-                        window.speechSynthesis.cancel();
-                        isAssistantSpeaking = false;
-                        updateHologramVideoState(false);
+        initBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key !== "") {
+                localStorage.setItem('manasse_api_key', key);
+                gsap.to(authScreen, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => {
+                        authScreen.style.display = 'none';
+                        mainApp.style.display = 'flex';
+                        gsap.from(mainApp, {opacity: 0, duration: 0.5});
                     }
-                    document.getElementById('hud-transcript').innerText = `"${spoken}"`;
-                    if (final.trim().length > 0) {
-                        try { holoRecognition.stop(); } catch(err) {}
-                        processProtocolOrAI(final, true);
-                    }
-                }
-            };
-
-            holoRecognition.onerror = () => {
-                if (hologramModeActive && !isAiThinking) {
-                    setTimeout(() => { try { holoRecognition.start(); } catch(err) {} }, 800);
-                }
-            };
-            holoRecognition.onend = () => {
-                if (hologramModeActive && !isAiThinking) {
-                    setTimeout(() => { try { holoRecognition.start(); } catch(err) {} }, 500);
-                }
-            };
-        }
-
-        function startSafeListening() {
-            if (!holoRecognition || isAiThinking) return;
-            try { holoRecognition.start(); } catch(e) {}
-        }
-
-        function toggleVoiceInput() {
-            if (!recognition) return alert("Reconnaissance vocale non supportée.");
-            if (isRecording) {
-                try { recognition.stop(); } catch(e){}
-                stopVoiceInput();
+                });
             } else {
-                if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); }
-                try {
-                    recognition.start();
-                    isRecording = true;
-                    document.getElementById('btn-mic').classList.add('recording');
-                } catch(e) {
-                    alert("Veuillez autoriser l'accès au micro.");
-                }
+                gsap.to(apiKeyInput, {x: [-10, 10, -10, 10, 0], duration: 0.4});
             }
+        });
+
+        // Fonction d'affichage des messages
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            messageDiv.textContent = text;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        function stopVoiceInput() {
-            isRecording = false;
-            const micBtn = document.getElementById('btn-mic');
-            if(micBtn) micBtn.classList.remove('recording');
-        }
-
-        // --- GESTION DE LA DOUBLE VISION (FACE ET ARRIÈRE SIMULTANÉMENT) ---
-        async function switchCameraVision(facingMode, side) {
-            const boxId = side === 'left' ? 'camera-vision-box-left' : 'camera-vision-box-right';
-            const videoId = side === 'left' ? 'holo-video-left' : 'holo-video-right';
-            const labelId = side === 'left' ? 'cam-label-left' : 'cam-label-right';
-            
-            const box = document.getElementById(boxId);
-            const video = document.getElementById(videoId);
-            const label = document.getElementById(labelId);
-            
-            box.style.display = 'block';
-
-            if (side === 'left' && cameraStreamLeft) { cameraStreamLeft.getTracks().forEach(t => t.stop()); }
-            if (side === 'right' && cameraStreamRight) { cameraStreamRight.getTracks().forEach(t => t.stop()); }
+        // Communication avec l'API Groq (Modèle openai/gpt-oss-120b)
+        async function callGroqAPI(userMessage) {
+            const apiKey = localStorage.getItem('manasse_api_key');
+            const url = "https://api.groq.com/openai/v1/chat/completions";
 
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: facingMode }, 
-                    audio: false 
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${apiKey}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: "openai/gpt-oss-120b",
+                        messages: [
+                            { role: "system", content: "Tu es Manassé Matrix, une intelligence artificielle futuriste hautement avancée, inspirée des systèmes holographiques de type HUD de Tony Stark. Tu réponds avec précision, efficacité et élégance." },
+                            { role: "user", content: userMessage }
+                        ]
+                    })
                 });
-                
-                if (side === 'left') { cameraStreamLeft = stream; } 
-                else { cameraStreamRight = stream; }
 
-                video.srcObject = stream;
-                if (facingMode === 'user') {
-                    video.classList.add('front-cam');
-                    label.innerText = "VISION : FACE";
-                } else {
-                    video.classList.remove('front-cam');
-                    label.innerText = "VISION : ARRIÈRE";
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error.message);
                 }
-            } catch (e) {
-                box.style.display = 'none';
-                return `Impossible d'accéder à la caméra (${side === 'left' ? 'Arrière' : 'Face'}).`;
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error(error);
+                return "Erreur de liaison avec le serveur neural de la matrice. Vérifiez votre clé API.";
             }
         }
 
-        async function activateDualVision() {
-            await switchCameraVision('environment', 'left'); // Haut gauche = Arrière
-            await switchCameraVision('user', 'right');       // Haut droite = Face
-        }
-
-        function stopCameraVision(side) {
-            if (side === 'left' || !side) {
-                const boxLeft = document.getElementById('camera-vision-box-left');
-                if (boxLeft) boxLeft.style.display = 'none';
-                if (cameraStreamLeft) {
-                    cameraStreamLeft.getTracks().forEach(t => t.stop());
-                    cameraStreamLeft = null;
-                }
-            }
-            if (side === 'right' || !side) {
-                const boxRight = document.getElementById('camera-vision-box-right');
-                if (boxRight) boxRight.style.display = 'none';
-                if (cameraStreamRight) {
-                    cameraStreamRight.getTracks().forEach(t => t.stop());
-                    cameraStreamRight = null;
-                }
-            }
-        }
-
-        function captureVideoFrame() {
-            const video = document.getElementById('holo-video-right') || document.getElementById('holo-video-left');
-            const stream = cameraStreamRight || cameraStreamLeft;
-            if (!video || !stream) return null;
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.85);
-        }
-
-        function speakText(text, isHologram = false) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                let clean = text.replace(/<[^>]*>?/gm, '').replace(/\*/g, '');
-                const u = new SpeechSynthesisUtterance(clean);
-                u.lang = 'fr-FR';
-                u.rate = 1.15; 
-                u.pitch = 1.0; 
-
-                const voices = window.speechSynthesis.getVoices();
-                const selectedVoice = voices.find(v => v.lang.includes('fr'));
-                if (selectedVoice) { u.voice = selectedVoice; }
-
-                u.onstart = () => {
-                    isAssistantSpeaking = true;
-                    isAiThinking = false;
-                    if (isHologram) {
-                        document.getElementById('hud-status-text').innerText = "STATUT : SYNTHÈSE VOCALE (PARLE)";
-                        updateHologramVideoState(true);
-                        if (holoRecognition) { try { holoRecognition.stop(); } catch(e) {} }
-                    }
-                };
-                u.onend = () => {
-                    isAssistantSpeaking = false;
-                    updateHologramVideoState(false);
-                    if (isHologram && hologramModeActive) {
-                        document.getElementById('hud-status-text').innerText = "STATUT : ÉCOUTE CONTINUE ACTIVE";
-                        setTimeout(() => {
-                            if (hologramModeActive && !isAssistantSpeaking && !isAiThinking) {
-                                try { holoRecognition.start(); } catch(e){}
-                            }
-                        }, 300);
-                    }
-                };
-                u.onerror = () => {
-                    isAssistantSpeaking = false;
-                    isAiThinking = false;
-                    updateHologramVideoState(false);
-                    if (isHologram && hologramModeActive) { try { holoRecognition.start(); } catch(e){} }
-                };
-
-                window.speechSynthesis.speak(u);
-                if (window.speechSynthesis.paused) { window.speechSynthesis.resume(); }
-            }
-        }
-
-        function openSidebar() {
-            renderHistory();
-            document.getElementById('sidebar').classList.add('active');
-            document.getElementById('sidebar-overlay').style.display = 'block';
-        }
-
-        function closeSidebar() {
-            document.getElementById('sidebar').classList.remove('active');
-            document.getElementById('sidebar-overlay').style.display = 'none';
-        }
-
-        function scrollToBottom() {
-            setTimeout(() => {
-                const container = document.getElementById('chat-container');
-                container.scrollTop = container.scrollHeight;
-            }, 200);
-        }
-
-        function createNewChat() {
-            saveCurrentChat();
-            stopCameraVision('left');
-            stopCameraVision('right');
-            currentChatId = Date.now().toString();
-            currentMessages = [];
-            
-            let defaultText = SecurityAccessManager.isMasterAuthenticated 
-                ? `Nouvelle session Matrix initialisée, Maître ${userName}. Double moniteur opérationnel.` 
-                : `Session prête, ${userName || ''} ! 👋 Que faisons-nous ?`;
-
-            document.getElementById('chat-container').innerHTML = `<div class="message bot">${defaultText}</div>`;
-            closeSidebar();
-        }
-
-        function saveCurrentChat() {
-            if (currentMessages.length === 0) return;
-            const key = getStorageKey();
-            let chats = JSON.parse(localStorage.getItem(key) || '{}');
-            let first = currentMessages.find(m => m.role === 'user');
-            let title = first ? first.content.substring(0,24) : "Discussion";
-            chats[currentChatId] = { title: title + "...", messages: currentMessages };
-            localStorage.setItem(key, JSON.stringify(chats));
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('history-list');
-            container.innerHTML = '';
-            const key = getStorageKey();
-            let chats = JSON.parse(localStorage.getItem(key) || '{}');
-            Object.keys(chats).sort((a,b)=>b-a).forEach(k => {
-                let div = document.createElement('div');
-                div.className = 'history-item';
-                div.innerText = chats[k].title;
-                div.onclick = () => loadChat(k);
-                container.appendChild(div);
-            });
-        }
-
-        function loadChat(key) {
-            saveCurrentChat();
-            const storageKey = getStorageKey();
-            let chats = JSON.parse(localStorage.getItem(storageKey) || '{}');
-            if (!chats[key]) return;
-            currentChatId = key;
-            currentMessages = chats[key].messages;
-            const container = document.getElementById('chat-container');
-            container.innerHTML = '';
-            currentMessages.forEach(m => {
-                let cls = m.role === 'user' ? 'user' : 'bot';
-                let btn = m.role === 'assistant' ? `<br><button class="btn-speak" onclick="speakText('${m.content.replace(/'/g, "\\'")}')">🔊 Écouter</button>` : '';
-                container.innerHTML += `<div class="message ${cls}">${m.content}${btn}</div>`;
-            });
-            closeSidebar();
-            scrollToBottom();
-        }
-
-        async function checkSecretProtocols(text) {
-            const lower = text.toLowerCase();
-            
-            if (lower.includes("je suis manassé") || lower.includes("authentification")) {
-                return SecurityAccessManager.authenticate("Manassé Ntambwa");
-            }
-
-            if (lower.startsWith("activer")) {
-                const proto = text.replace(/activer/i, "").trim();
-                return ProtocolManager.activer(proto);
-            }
-            if (lower.startsWith("désactiver")) {
-                const proto = text.replace(/désactiver/i, "").trim();
-                return ProtocolManager.desactiver(proto);
-            }
-
-            if (lower.includes("calcule") || lower.includes("résous")) {
-                let expr = text.replace(/calcule|résous/gi, '').trim();
-                return MatrixEngine.solveEquation(expr);
-            }
-            if (lower.includes("génère du code") || lower.includes("écris un code")) {
-                return MatrixEngine.generateCodeSnippet("javascript", text);
-            }
-
-            if (lower.includes("double vision") || (lower.includes("face") && lower.includes("arrière"))) {
-                await activateDualVision();
-                return "👁️ **Double Vision activée** : Moniteur Arrière en haut à gauche, Moniteur Face en haut à droite.";
-            }
-            if (lower.includes("œil de l'aigle arrière") || lower.includes("caméra arrière")) {
-                await switchCameraVision('environment', 'left');
-                return "👁️ **Œil de l'Aigle Arrière** affiché en haut à gauche.";
-            }
-            if (lower.includes("œil de l'aigle face") || lower.includes("caméra face") || lower.includes("grandes visions")) {
-                await switchCameraVision('user', 'right');
-                return "👁️ **Œil de l'Aigle Face** affiché en haut à droite.";
-            }
-            if (lower.includes("mur de jéricho") || lower.includes("sécurité")) {
-                return "🛡️ **Protocole Mur de Jéricho activé** : Bouclier virtuel déployé.";
-            }
-            if (lower.includes("whatsapp") || lower.includes("messages")) {
-                return "📱 **Protocole Assistant & WhatsApp** : Passerelle connectée.";
-            }
-            if (lower.includes("diagnostic") || lower.includes("batterie")) {
-                return "⚙️ **Diagnostic Matrix** : Systèmes de double flux vidéo pleinement opérationnels.";
-            }
-            return null;
-        }
-
-        async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const container = document.getElementById('chat-container');
-            const text = input.value.trim();
-
+        async function handleSendMessage() {
+            const text = chatInput.value.trim();
             if (!text) return;
 
-            container.innerHTML += `<div class="message user">${text}</div>`;
-            currentMessages.push({ role: 'user', content: text });
-            input.value = '';
-            scrollToBottom();
+            addMessage(text, 'user');
+            chatInput.value = '';
 
-            let protocolReply = await checkSecretProtocols(text);
-            if (protocolReply) {
-                appendBotReply(protocolReply, false);
-                return;
-            }
-
-            const botId = "bot-" + Date.now();
-            container.innerHTML += `<div class="message bot" id="${botId}">Analyse neuronale en cours...</div>`;
-            scrollToBottom();
-
-            let systemPrompt = `Tu es Manassé Matrix, assistant personnel d'élite de la matrice. L'utilisateur est ${fullFullName || userName}. Ton unique créateur et maître est Manassé Ntambwa.`;
-
-            try {
-                let frameImg = captureVideoFrame();
-                if (frameImg && (text.toLowerCase().includes("analyse") || text.toLowerCase().includes("regarde"))) {
-                    systemPrompt += " [CONTEXTE VISUEL ACTIF : Analyse des flux de double vision en cours].";
-                }
-
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: IA_TEXT_MODEL,
-                        messages: [{ role: "system", content: systemPrompt }, ...currentMessages]
-                    })
-                });
-                const data = await response.json();
-                let reply = data.choices[0].message.content;
-                
-                document.getElementById(botId).innerHTML = `${reply.replace(/\n/g, '<br>')}<br><button class="btn-speak" onclick="speakText('${reply.replace(/'/g, "\\'")}')">🔊 Écouter</button>`;
-                currentMessages.push({ role: 'assistant', content: reply });
-                speakText(reply, false);
-                saveCurrentChat();
-            } catch (e) {
-                document.getElementById(botId).innerText = "Erreur de liaison avec le serveur neural de la matrice.";
-            }
-            scrollToBottom();
+            // Indicateur de traitement (optionnel) ou appel direct
+            const botReply = await callGroqAPI(text);
+            addMessage(botReply, 'bot');
         }
 
-        function appendBotReply(replyText, isHologram) {
-            const container = document.getElementById('chat-container');
-            container.innerHTML += `<div class="message bot">${replyText}<br><button class="btn-speak" onclick="speakText('${replyText.replace(/'/g, "\\'")}')">🔊 Écouter</button></div>`;
-            currentMessages.push({ role: 'assistant', content: replyText });
-            speakText(replyText, isHologram);
-            saveCurrentChat();
-            scrollToBottom();
-        }
-
-        async function processProtocolOrAI(text, isHologram) {
-            currentMessages.push({ role: 'user', content: text });
-            isAiThinking = true;
-            if (isHologram) { document.getElementById('hud-status-text').innerText = "STATUT : ANALYSE NEURALE PROFONDE"; }
-
-            let protocolReply = await checkSecretProtocols(text);
-            if (protocolReply) {
-                isAiThinking = false;
-                currentMessages.push({ role: 'assistant', content: protocolReply });
-                speakText(protocolReply, true);
-                saveCurrentChat();
-                return;
+        sendBtn.addEventListener('click', handleSendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSendMessage();
             }
+        });
 
-            let systemPrompt = `Tu es Manassé Matrix, assistant d'élite. L'utilisateur est ${fullFullName || userName}. Créateur : Manassé Ntambwa.`;
-
-            try {
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: "POST",
-                    headers: { "Authorization": `Bearer ${GROQ_API_KEY}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        model: IA_TEXT_MODEL,
-                        messages: [{ role: "system", content: systemPrompt }, ...currentMessages]
-                    })
-                });
-                const data = await response.json();
-                let reply = data.choices[0].message.content;
-                
-                currentMessages.push({ role: 'assistant', content: reply });
-                isAiThinking = false;
-                speakText(reply, true);
-                saveCurrentChat();
-            } catch (e) {
-                let errReply = "Erreur de transmission.";
-                isAiThinking = false;
-                speakText(errReply, true);
-            }
+        // Enregistrement du Service Worker pour compilation APK / mode hors-ligne
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((reg) => console.log('HUD Service Worker enregistré !', reg.scope))
+                    .catch((err) => console.log('Erreur SW :', err));
+            });
         }
     </script>
 </body>
 </html>
-<script>
-    // --- MODULE DE COPIE RAPIDE DES MESSAGES ---
-    
-    function ajouterBoutonsCopie() {
-        // Sélectionne tous les messages de l'application (ajustez les sélecteurs selon votre structure)
-        const messages = document.querySelectorAll('.message, .bot-message');
-
-        messages.forEach(msg => {
-            // Vérifie si le bouton de copie existe déjà pour éviter les doublons
-            if (msg.querySelector('.btn-copier-message')) return;
-
-            // Crée le bouton de copie
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'btn-copier-message';
-            copyBtn.textContent = '📋 Copier';
-            copyBtn.style.marginTop = '6px';
-            copyBtn.style.padding = '4px 8px';
-            copyBtn.style.fontSize = '11px';
-            copyBtn.style.background = '#111111';
-            copyBtn.style.color = '#FFD700';
-            copyBtn.style.border = '1px solid #FFD700';
-            copyBtn.style.borderRadius = '4px';
-            copyBtn.style.cursor = 'pointer';
-            copyBtn.style.display = 'block';
-
-            // Action au clic pour copier le texte
-            copyBtn.addEventListener('click', function() {
-                // Récupère le texte du message en excluant le texte du bouton lui-même
-                const texteACopier = msg.textContent.replace('📋 Copier', '').trim();
-                
-                navigator.clipboard.writeText(texteACopier).then(() => {
-                    copyBtn.textContent = '✅ Copié !';
-                    setTimeout(() => {
-                        copyBtn.textContent = '📋 Copier';
-                    }, 2000);
-                }).catch(err => {
-                    console.error('Erreur lors de la copie : ', err);
-                });
-            });
-
-            msg.appendChild(copyBtn);
-        });
-    }
-
-    // Exécute la fonction régulièrement ou après l'ajout de nouveaux messages
-    setInterval(ajouterBoutonsCopie, 2000);
-    window.addEventListener('DOMContentLoaded', ajouterBoutonsCopie);
-</script>
-<script>
-/* =====================================================
-   MODULE DE GESTION DES AUTORISATIONS
-   ===================================================== */
-
-const AUTORISATIONS = [
-
-    {
-        nom: "whatsapp",
-        description: "autoriser Manassé IA à consulter mes notifications"
-    },
-
-    {
-        nom: "arrière-plan",
-        description: "autoriser Manassé IA à fonctionner en arrière-plan"
-    },
-
-    {
-        nom: "message",
-        description: "autoriser Manassé ia à répondre à mes messages si je le lui autorise"
-    },
-
-    {
-        
-
-/* =====================================================
-   CONTRÔLE DES AUTORISATIONS
-   ===================================================== */
-
-function demanderAutorisation(autorisation) {
-
-    if (!autorisation) return;
-
-    const nom = autorisation.nom;
-
-    if (!nom) {
-        console.warn("Nom d'autorisation manquant.");
-        return;
-    }
-
-    console.log("Autorisation demandée :", nom);
-
-    /*
-       TON CODE DE DEMANDE D'AUTORISATION
-       PEUT ÊTRE AJOUTÉ ICI.
-    */
-}
-
-
-/* =====================================================
-   AFFICHAGE DES AUTORISATIONS
-   ===================================================== */
-
-function afficherAutorisations() {
-
-    AUTORISATIONS.forEach((autorisation) => {
-
-        if (!autorisation.nom) return;
-
-        console.log(
-            "Autorisation disponible :",
-            autorisation.nom
-        );
-
-    });
-
-}
-
-
-/* =====================================================
-   INITIALISATION
-   ===================================================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-    afficherAutorisations();
-
-});
-</script>
-<script>
-    // --- MODULE DE SUPPRESSION DES DISCUSSIONS ---
-    
-    function ajouterOptionsDiscussions() {
-        // Sélectionne tous les éléments de l'historique (ajustez le sélecteur selon votre structure HTML)
-        const discussions = document.querySelectorAll('.historique-item, .historique div, #historique div');
-
-        discussions.forEach(item => {
-            // Vérifie si le conteneur d'options existe déjà pour éviter les doublons
-            if (item.querySelector('.menu-container')) return;
-
-            // Rend l'élément positionné en relatif pour bien placer le menu
-            item.style.position = 'relative';
-            item.style.display = 'flex';
-            item.style.justifyContent = 'space-between';
-            item.style.alignItems = 'center';
-
-            // Crée le conteneur du bouton des 3 points
-            const menuContainer = document.createElement('div');
-            menuContainer.className = 'menu-container';
-            menuContainer.style.position = 'relative';
-            menuContainer.style.marginLeft = '10px';
-
-            // Bouton des 3 points
-            const btnTroisPoints = document.createElement('button');
-            btnTroisPoints.textContent = '⋮';
-            btnTroisPoints.style.background = 'transparent';
-            btnTroisPoints.style.color = '#FFD700';
-            btnTroisPoints.style.border = 'none';
-            btnTroisPoints.style.fontSize = '18px';
-            btnTroisPoints.style.cursor = 'pointer';
-            btnTroisPoints.style.padding = '0 5px';
-
-            // Menu déroulant (caché par défaut)
-            const menuPopup = document.createElement('div');
-            menuPopup.className = 'menu-popup';
-            menuPopup.style.display = 'none';
-            menuPopup.style.position = 'absolute';
-            menuPopup.style.right = '0';
-            menuPopup.style.top = '25px';
-            menuPopup.style.background = '#1a1a1a';
-            menuPopup.style.border = '1px solid #FFD700';
-            menuPopup.style.borderRadius = '6px';
-            menuPopup.style.zIndex = '1000';
-            menuPopup.style.boxShadow = '0 4px 8px rgba(0,0,0,0.5)';
-
-            // Option "Supprimer"
-            const btnSupprimer = document.createElement('button');
-            btnSupprimer.textContent = '🗑️ Supprimer';
-            btnSupprimer.style.background = 'transparent';
-            btnSupprimer.style.color = '#ff4d4d';
-            btnSupprimer.style.border = 'none';
-            btnSupprimer.style.padding = '8px 12px';
-            btnSupprimer.style.fontSize = '12px';
-            btnSupprimer.style.cursor = 'pointer';
-            btnSupprimer.style.display = 'block';
-            btnSupprimer.style.width = '100%';
-            btnSupprimer.style.textAlign = 'left';
-
-            // Action au clic sur les 3 points pour afficher/masquer le menu
-            btnTroisPoints.addEventListener('click', function(e) {
-                e.stopPropagation();
-                // Ferme les autres menus ouverts
-                document.querySelectorAll('.menu-popup').forEach(p => {
-                    if (p !== menuPopup) p.style.display = 'none';
-                });
-                menuPopup.style.display = menuPopup.style.display === 'block' ? 'none' : 'block';
-            });
-
-            // Action pour supprimer la discussion
-            btnSupprimer.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (confirm('Voulez-vous vraiment supprimer cette discussion ?')) {
-                    item.remove();
-                }
-            });
-
-            // Assemblage des éléments
-            menuPopup.appendChild(btnSupprimer);
-            menuContainer.appendChild(btnTroisPoints);
-            menuContainer.appendChild(menuPopup);
-            item.appendChild(menuContainer);
-        });
-    }
-
-    // Ferme les menus si on clique ailleurs sur la page
-    window.addEventListener('click', function() {
-        document.querySelectorAll('.menu-popup').forEach(p => {
-            p.style.display = 'none';
-        });
-    });
-
-    // Exécute la fonction régulièrement pour s'adapter si de nouvelles discussions sont chargées
-    setInterval(ajouterOptionsDiscussions, 2000);
-    window.addEventListener('DOMContentLoaded', ajouterOptionsDiscussions);
-</script>
-<script>
-/*
-=========================================================
-        MANASSE AI — JARVIS COMMAND ENGINE
-=========================================================
-
-Fonctions :
-- Activation vocale
-- Reconnaissance de commandes
-- Réponse vocale
-- Ouverture de sites
-- Heure / date
-- Recherche Web
-- Calculatrice
-- Commandes personnalisées
-- Système d'événements
-=========================================================
-*/
-
-const MANASSE = {
-
-    name: "MANASSE",
-
-    listening: false,
-
-    voiceEnabled: true,
-
-    commands: {},
-
-    /*
-    -----------------------------------------------------
-    INITIALISATION
-    -----------------------------------------------------
-    */
-
-    init() {
-
-        this.setupVoice();
-
-        this.registerDefaultCommands();
-
-        console.log("MANASSE AI : système opérationnel.");
-
-        this.say("Bonjour. MANASSE est prêt.");
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    SYNTHÈSE VOCALE
-    -----------------------------------------------------
-    */
-
-    say(text) {
-
-        console.log("MANASSE :", text);
-
-        if (!this.voiceEnabled) return;
-
-        if (!("speechSynthesis" in window)) return;
-
-        window.speechSynthesis.cancel();
-
-        const speech =
-            new SpeechSynthesisUtterance(text);
-
-        speech.lang = "fr-FR";
-
-        speech.rate = 1;
-
-        speech.pitch = 0.9;
-
-        speech.volume = 1;
-
-        window.speechSynthesis.speak(speech);
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    RECONNAISSANCE VOCALE
-    -----------------------------------------------------
-    */
-
-    setupVoice() {
-
-        const SpeechRecognition =
-            window.SpeechRecognition ||
-            window.webkitSpeechRecognition;
-
-        if (!SpeechRecognition) {
-
-            console.warn(
-                "La reconnaissance vocale n'est pas disponible."
-            );
-
-            return;
-
-        }
-
-        this.recognition =
-            new SpeechRecognition();
-
-        this.recognition.lang =
-            "fr-FR";
-
-        this.recognition.continuous =
-            false;
-
-        this.recognition.interimResults =
-            false;
-
-
-        this.recognition.onstart = () => {
-
-            this.listening = true;
-
-            this.setStatus("Écoute...");
-
-            console.log(
-                "MANASSE écoute..."
-            );
-
-        };
-
-
-        this.recognition.onend = () => {
-
-            this.listening = false;
-
-            this.setStatus("Prêt");
-
-        };
-
-
-        this.recognition.onerror = event => {
-
-            console.error(
-                "Erreur vocale :",
-                event.error
-            );
-
-            this.setStatus("Erreur");
-
-        };
-
-
-        this.recognition.onresult = event => {
-
-            const text =
-                event.results[0][0].transcript;
-
-            console.log(
-                "Commande :",
-                text
-            );
-
-            this.process(text);
-
-        };
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    DÉMARRER L'ÉCOUTE
-    -----------------------------------------------------
-    */
-
-    listen() {
-
-        if (!this.recognition) {
-
-            this.say(
-                "La reconnaissance vocale n'est pas disponible sur cet appareil."
-            );
-
-            return;
-
-        }
-
-        if (this.listening) return;
-
-        try {
-
-            this.recognition.start();
-
-        } catch(error) {
-
-            console.log(error);
-
-        }
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    TRAITEMENT DES COMMANDES
-    -----------------------------------------------------
-    */
-
-    process(text) {
-
-        text =
-            text
-            .toLowerCase()
-            .trim();
-
-
-        /*
-        -----------------------------------------------
-        WAKE WORD
-        -----------------------------------------------
-        */
-
-        text =
-            text
-            .replace("hey manasse", "")
-            .replace("manasse", "")
-            .trim();
-
-
-        if (!text) {
-
-            this.say(
-                "Oui, je vous écoute."
-            );
-
-            return;
-
-        }
-
-
-        /*
-        -----------------------------------------------
-        RECHERCHE D'UNE COMMANDE
-        -----------------------------------------------
-        */
-
-        for (
-            const command in this.commands
-        ) {
-
-            const keywords =
-                this.commands[command].keywords;
-
-
-            for (
-                const keyword of keywords
-            ) {
-
-                if (text.includes(keyword)) {
-
-                    this.commands[command]
-                        .action(text);
-
-                    return;
-
-                }
-
-            }
-
-        }
-
-
-        /*
-        -----------------------------------------------
-        COMMANDE INCONNUE
-        -----------------------------------------------
-        */
-
-        this.say(
-            "Je n'ai pas encore appris cette commande."
-        );
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    ENREGISTRER UNE COMMANDE
-    -----------------------------------------------------
-    */
-
-    register(name, keywords, action) {
-
-        this.commands[name] = {
-
-            keywords: keywords,
-
-            action: action
-
-        };
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    COMMANDES PAR DÉFAUT
-    -----------------------------------------------------
-    */
-
-    registerDefaultCommands() {
-
-
-        /*
-        ================================================
-        HEURE
-        ================================================
-        */
-
-        this.register(
-
-            "heure",
-
-            [
-                "quelle heure",
-                "donne moi l'heure",
-                "donne-moi l'heure",
-                "heure"
-            ],
-
-            () => {
-
-                const time =
-                    new Date()
-                    .toLocaleTimeString(
-                        "fr-FR",
-                        {
-                            hour: "2-digit",
-                            minute: "2-digit"
-                        }
-                    );
-
-                this.say(
-                    "Il est actuellement " +
-                    time
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        DATE
-        ================================================
-        */
-
-        this.register(
-
-            "date",
-
-            [
-                "quelle date",
-                "quel jour",
-                "date"
-            ],
-
-            () => {
-
-                const date =
-                    new Date()
-                    .toLocaleDateString(
-                        "fr-FR",
-                        {
-                            weekday: "long",
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric"
-                        }
-                    );
-
-                this.say(
-                    "Nous sommes " +
-                    date
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        YOUTUBE
-        ================================================
-        */
-
-        this.register(
-
-            "youtube",
-
-            [
-                "ouvre youtube",
-                "lance youtube"
-            ],
-
-            () => {
-
-                this.say(
-                    "Ouverture de YouTube."
-                );
-
-                window.open(
-                    "https://www.youtube.com",
-                    "_blank"
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        GOOGLE
-        ================================================
-        */
-
-        this.register(
-
-            "google",
-
-            [
-                "ouvre google",
-                "lance google"
-            ],
-
-            () => {
-
-                this.say(
-                    "Ouverture de Google."
-                );
-
-                window.open(
-                    "https://www.google.com",
-                    "_blank"
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        RECHERCHE WEB
-        ================================================
-        */
-
-        this.register(
-
-            "recherche",
-
-            [
-                "cherche",
-                "fais une recherche",
-                "recherche"
-            ],
-
-            text => {
-
-                let query =
-                    text
-                    .replace("cherche", "")
-                    .replace(
-                        "fais une recherche",
-                        ""
-                    )
-                    .replace(
-                        "recherche",
-                        ""
-                    )
-                    .trim();
-
-
-                if (!query) {
-
-                    this.say(
-                        "Que dois-je rechercher ?"
-                    );
-
-                    return;
-
-                }
-
-
-                this.say(
-                    "Je lance une recherche pour " +
-                    query
-                );
-
-
-                window.open(
-
-                    "https://www.google.com/search?q=" +
-                    encodeURIComponent(query),
-
-                    "_blank"
-
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        CALCUL
-        ================================================
-        */
-
-        this.register(
-
-            "calcul",
-
-            [
-                "calcule",
-                "combien font",
-                "fais le calcul"
-            ],
-
-            text => {
-
-                let expression =
-                    text
-                    .replace("calcule", "")
-                    .replace(
-                        "combien font",
-                        ""
-                    )
-                    .replace(
-                        "fais le calcul",
-                        ""
-                    )
-                    .trim();
-
-
-                /*
-                Sécurité :
-                seulement chiffres et opérateurs.
-                */
-
-                if (
-                    !/^[0-9+\-*/().\s]+$/
-                    .test(expression)
-                ) {
-
-                    this.say(
-                        "Je ne peux pas effectuer ce calcul."
-                    );
-
-                    return;
-
-                }
-
-
-                try {
-
-                    const result =
-                        Function(
-                            '"use strict"; return (' +
-                            expression +
-                            ')'
-                        )();
-
-
-                    this.say(
-                        "Le résultat est " +
-                        result
-                    );
-
-                }
-
-                catch {
-
-                    this.say(
-                        "Je n'arrive pas à calculer cette expression."
-                    );
-
-                }
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        SALUTATION
-        ================================================
-        */
-
-        this.register(
-
-            "bonjour",
-
-            [
-                "bonjour",
-                "salut",
-                "bonsoir"
-            ],
-
-            () => {
-
-                const hour =
-                    new Date().getHours();
-
-
-                let greeting;
-
-
-                if (hour < 12) {
-
-                    greeting =
-                        "Bonjour.";
-
-                }
-
-                else if (hour < 18) {
-
-                    greeting =
-                        "Bon après-midi.";
-
-                }
-
-                else {
-
-                    greeting =
-                        "Bonsoir.";
-
-                }
-
-
-                this.say(
-                    greeting +
-                    " Comment puis-je vous aider ?"
-                );
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        ARRÊT DE LA VOIX
-        ================================================
-        */
-
-        this.register(
-
-            "silence",
-
-            [
-                "tais toi",
-                "silence",
-                "arrête de parler"
-            ],
-
-            () => {
-
-                window.speechSynthesis.cancel();
-
-                this.voiceEnabled =
-                    false;
-
-            }
-
-        );
-
-
-        /*
-        ================================================
-        RÉACTIVER LA VOIX
-        ================================================
-        */
-
-        this.register(
-
-            "parler",
-
-            [
-                "parle",
-                "réactive ta voix",
-                "active ta voix"
-            ],
-
-            () => {
-
-                this.voiceEnabled =
-                    true;
-
-                this.say(
-                    "Synthèse vocale activée."
-                );
-
-            }
-
-        );
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    STATUT DE L'IA
-    -----------------------------------------------------
-    */
-
-    setStatus(status) {
-
-        /*
-        Si ton HTML possède un élément
-        id="ai-status", il sera automatiquement
-        mis à jour.
-        */
-
-        const element =
-            document.getElementById(
-                "ai-status"
-            );
-
-
-        if (element) {
-
-            element.textContent =
-                status;
-
-        }
-
-    },
-
-
-    /*
-    -----------------------------------------------------
-    AJOUTER UNE NOUVELLE COMPÉTENCE
-    -----------------------------------------------------
-    */
-
-    addSkill(
-        name,
-        keywords,
-        callback
-    ) {
-
-        this.register(
-            name,
-            keywords,
-            callback
-        );
-
-        console.log(
-            "Nouvelle compétence :",
-            name
-        );
-
-    }
-
-};
-
-
-/*
-=========================================================
-DÉMARRAGE
-=========================================================
-*/
-
-window.addEventListener(
-    "load",
-    () => {
-
-        MANASSE.init();
-
-    }
-);
-
-
-/*
-=========================================================
-BOUTON MICROPHONE
-=========================================================
-
-Dans ton HTML, tu peux mettre :
-
-<button onclick="MANASSE.listen()">
-🎤 Parler
-</button>
-
-=========================================================
-*/
-
-
-/*
-=========================================================
-EXEMPLE POUR AJOUTER UNE COMPÉTENCE
-=========================================================
-
-MANASSE.addSkill(
-
-    "musique",
-
-    [
-        "joue de la musique",
-        "mets de la musique"
-    ],
-
-    () => {
-
-        MANASSE.say(
-            "Je vais préparer la musique."
-        );
-
-    }
-
-);
-
-=========================================================
-*/
-
-    </script>
-<script>
-/* =========================================================
-   MANASSÉ MATRIX — NEURAL ORCHESTRATOR v1
-   Couche d'intelligence avancée pour ton IA
-
-   Ajoute :
-   - analyse d'intention
-   - mémoire contextuelle courte
-   - priorités d'actions
-   - détection des commandes complexes
-   - système de planification
-   - exécution séquentielle
-   - événements "cerveau"
-   - contexte système dynamique
-   - apprentissage local des préférences
-   ========================================================= */
-
-const MatrixNeuralCore = (() => {
-
-    const CONFIG = {
-        maxMemory: 25,
-        maxTasks: 20,
-        storageKey: "manasse_neural_core_v1",
-        debug: true
-    };
-
-    const state = {
-        initialized: false,
-        thinking: false,
-        memory: [],
-        tasks: [],
-        activeIntent: null,
-        lastCommand: null,
-        mode: "NORMAL",
-        confidence: 0
-    };
-
-    /* =====================================================
-       JOURNAL NEURAL
-       ===================================================== */
-
-    function log(...args) {
-        if (CONFIG.debug) {
-            console.log(
-                "%c[MATRIX NEURAL]",
-                "color:#d49b28;font-weight:bold",
-                ...args
-            );
-        }
-    }
-
-    /* =====================================================
-       CHARGEMENT MÉMOIRE
-       ===================================================== */
-
-    function load() {
-        try {
-            const saved =
-                localStorage.getItem(CONFIG.storageKey);
-
-            if (saved) {
-                const data = JSON.parse(saved);
-
-                state.memory =
-                    Array.isArray(data.memory)
-                        ? data.memory
-                        : [];
-
-                state.mode =
-                    data.mode || "NORMAL";
-            }
-        } catch (error) {
-            console.warn(
-                "Erreur mémoire Matrix:",
-                error
-            );
-        }
-    }
-
-    /* =====================================================
-       SAUVEGARDE
-       ===================================================== */
-
-    function save() {
-        try {
-
-            localStorage.setItem(
-                CONFIG.storageKey,
-                JSON.stringify({
-                    memory:
-                        state.memory.slice(-CONFIG.maxMemory),
-                    mode: state.mode
-                })
-            );
-
-        } catch (error) {
-            console.warn(
-                "Impossible de sauvegarder la mémoire."
-            );
-        }
-    }
-
-    /* =====================================================
-       MÉMOIRE CONTEXTUELLE
-       ===================================================== */
-
-    function remember(role, content, metadata = {}) {
-
-        if (!content) return;
-
-        state.memory.push({
-            role,
-            content,
-            timestamp: Date.now(),
-            metadata
-        });
-
-        if (
-            state.memory.length >
-            CONFIG.maxMemory
-        ) {
-            state.memory =
-                state.memory.slice(-CONFIG.maxMemory);
-        }
-
-        save();
-
-        log(
-            "Mémoire enregistrée:",
-            role,
-            content
-        );
-    }
-
-    function getMemory() {
-        return [...state.memory];
-    }
-
-    function clearMemory() {
-        state.memory = [];
-        save();
-
-        log("Mémoire neuronale effacée.");
-    }
-
-    /* =====================================================
-       NORMALISATION
-       ===================================================== */
-
-    function normalize(text) {
-
-        return String(text || "")
-            .toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .trim();
-
-    }
-
-    /* =====================================================
-       DÉTECTION D'INTENTION
-       ===================================================== */
-
-    function detectIntent(text) {
-
-        const t = normalize(text);
-
-        const intents = [
-
-            {
-                name: "VISION",
-                keywords: [
-                    "regarde",
-                    "analyse cette image",
-                    "analyse la camera",
-                    "vision",
-                    "camera",
-                    "decris ce que tu vois",
-                    "que vois tu"
-                ]
-            },
-
-            {
-                name: "CALCUL",
-                keywords: [
-                    "calcule",
-                    "calcul",
-                    "combien font",
-                    "resous"
-                ]
-            },
-
-            {
-                name: "RECHERCHE",
-                keywords: [
-                    "cherche",
-                    "recherche",
-                    "trouve",
-                    "informations sur"
-                ]
-            },
-
-            {
-                name: "CODE",
-                keywords: [
-                    "code",
-                    "programme",
-                    "script",
-                    "javascript",
-                    "python",
-                    "html",
-                    "developpe"
-                ]
-            },
-
-            {
-                name: "SYSTEME",
-                keywords: [
-                    "diagnostic",
-                    "systeme",
-                    "etat",
-                    "batterie",
-                    "performance"
-                ]
-            },
-
-            {
-                name: "VISION_DOUBLE",
-                keywords: [
-                    "double vision",
-                    "face et arriere",
-                    "deux cameras",
-                    "oeil de l aigle"
-                ]
-            },
-
-            {
-                name: "HOLOGRAMME",
-                keywords: [
-                    "hologramme",
-                    "mode holo",
-                    "avatar",
-                    "jarvis"
-                ]
-            },
-
-            {
-                name: "MEMOIRE",
-                keywords: [
-                    "souviens toi",
-                    "memorise",
-                    "rappelle toi",
-                    "oublie"
-                ]
-            },
-
-            {
-                name: "ASSISTANCE",
-                keywords: [
-                    "aide moi",
-                    "aide",
-                    "assiste moi",
-                    "que peux tu faire"
-                ]
-            }
-
-        ];
-
-        let best = {
-            name: "CONVERSATION",
-            score: 0
-        };
-
-        intents.forEach(intent => {
-
-            let score = 0;
-
-            intent.keywords.forEach(keyword => {
-
-                if (t.includes(keyword)) {
-                    score += keyword.length;
-                }
-
-            });
-
-            if (score > best.score) {
-
-                best = {
-                    name: intent.name,
-                    score
-                };
-
-            }
-
-        });
-
-        state.activeIntent = best.name;
-
-        state.confidence =
-            Math.min(
-                100,
-                Math.round(
-                    best.score * 4
-                )
-            );
-
-        return best;
-    }
-
-    /* =====================================================
-       ANALYSE AVANCÉE
-       ===================================================== */
-
-    function analyze(text) {
-
-        const intent =
-            detectIntent(text);
-
-        const words =
-            normalize(text)
-                .split(/\s+/)
-                .filter(Boolean);
-
-        const analysis = {
-
-            original: text,
-
-            normalized:
-                normalize(text),
-
-            intent:
-                intent.name,
-
-            confidence:
-                state.confidence,
-
-            wordCount:
-                words.length,
-
-            timestamp:
-                Date.now()
-
-        };
-
-        log(
-            "Analyse:",
-            analysis
-        );
-
-        return analysis;
-    }
-
-    /* =====================================================
-       CRÉATION DE PLAN
-       ===================================================== */
-
-    function createPlan(text) {
-
-        const analysis =
-            analyze(text);
-
-        const plan = [];
-
-        switch (analysis.intent) {
-
-            case "VISION_DOUBLE":
-
-                plan.push({
-                    type: "VISION_DOUBLE",
-                    priority: 10
-                });
-
-                break;
-
-            case "HOLOGRAMME":
-
-                plan.push({
-                    type: "HOLOGRAMME",
-                    priority: 9
-                });
-
-                break;
-
-            case "VISION":
-
-                plan.push({
-                    type: "VISION",
-                    priority: 9
-                });
-
-                break;
-
-            case "CALCUL":
-
-                plan.push({
-                    type: "CALCUL",
-                    priority: 8
-                });
-
-                break;
-
-            case "RECHERCHE":
-
-                plan.push({
-                    type: "RECHERCHE",
-                    priority: 7
-                });
-
-                break;
-
-            case "CODE":
-
-                plan.push({
-                    type: "CODE",
-                    priority: 7
-                });
-
-                break;
-
-            case "SYSTEME":
-
-                plan.push({
-                    type: "SYSTEME",
-                    priority: 6
-                });
-
-                break;
-
-            case "MEMOIRE":
-
-                plan.push({
-                    type: "MEMOIRE",
-                    priority: 5
-                });
-
-                break;
-
-            default:
-
-                plan.push({
-                    type: "IA",
-                    priority: 1
-                });
-
-        }
-
-        plan.sort(
-            (a, b) =>
-                b.priority -
-                a.priority
-        );
-
-        state.tasks =
-            plan.slice(0, CONFIG.maxTasks);
-
-        return plan;
-    }
-
-    /* =====================================================
-       EXECUTION DU PLAN
-       ===================================================== */
-
-    async function execute(text) {
-
-        state.thinking = true;
-
-        state.lastCommand = text;
-
-        remember(
-            "user",
-            text
-        );
-
-        const plan =
-            createPlan(text);
-
-        log(
-            "Plan neural:",
-            plan
-        );
-
-        for (const task of plan) {
-
-            try {
-
-                await executeTask(
-                    task,
-                    text
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Erreur tâche:",
-                    task,
-                    error
-                );
-
-            }
-
-        }
-
-        state.thinking = false;
-
-        return {
-            success: true,
-            plan,
-            intent:
-                state.activeIntent,
-            confidence:
-                state.confidence
-        };
-    }
-
-    /* =====================================================
-       EXÉCUTEUR DE TÂCHES
-       ===================================================== */
-
-    async function executeTask(task, text) {
-
-        switch (task.type) {
-
-            case "VISION_DOUBLE":
-
-                if (
-                    typeof activateDualVision ===
-                    "function"
-                ) {
-
-                    await activateDualVision();
-
-                    notify(
-                        "👁️ Double Vision activée."
-                    );
-
-                }
-
-                break;
-
-
-            case "HOLOGRAMME":
-
-                if (
-                    typeof toggleHologramMode ===
-                    "function"
-                ) {
-
-                    const holo =
-                        document.getElementById(
-                            "hologram-fullscreen"
-                        );
-
-                    if (
-                        !holo.classList.contains(
-                            "active"
-                        )
-                    ) {
-
-                        toggleHologramMode();
-
-                    }
-
-                }
-
-                break;
-
-
-            case "VISION":
-
-                if (
-                    typeof captureVideoFrame ===
-                    "function"
-                ) {
-
-                    const image =
-                        captureVideoFrame();
-
-                    if (image) {
-
-                        notify(
-                            "👁️ Flux visuel capturé."
-                        );
-
-                    } else {
-
-                        notify(
-                            "⚠️ Aucun flux caméra disponible."
-                        );
-
-                    }
-
-                }
-
-                break;
-
-
-            case "SYSTEME":
-
-                systemDiagnostic();
-
-                break;
-
-
-            case "MEMOIRE":
-
-                remember(
-                    "instruction",
-                    text
-                );
-
-                notify(
-                    "🧠 Information enregistrée dans la mémoire locale."
-                );
-
-                break;
-
-
-            case "CALCUL":
-
-                if (
-                    typeof checkSecretProtocols ===
-                    "function"
-                ) {
-
-                    const result =
-                        await checkSecretProtocols(
-                            text
-                        );
-
-                    if (result) {
-
-                        notify(result);
-
-                    }
-
-                }
-
-                break;
-
-
-            case "RECHERCHE":
-
-                notify(
-                    "🌐 Intention de recherche détectée."
-                );
-
-                break;
-
-
-            case "CODE":
-
-                notify(
-                    "💻 Mode ingénierie activé."
-                );
-
-                break;
-
-
-            case "IA":
-
-                /*
-                 Le moteur IA principal
-                 de ton application reste
-                 responsable de la réponse.
-                */
-
-                break;
-
-        }
-
-    }
-
-    /* =====================================================
-       DIAGNOSTIC SYSTÈME
-       ===================================================== */
-
-    function systemDiagnostic() {
-
-        const info = {
-
-            cpu:
-                navigator.hardwareConcurrency ||
-                "inconnu",
-
-            ram:
-                navigator.deviceMemory ||
-                "inconnue",
-
-            online:
-                navigator.onLine,
-
-            language:
-                navigator.language,
-
-            screen:
-                `${screen.width}x${screen.height}`,
-
-            battery:
-                "API batterie dépendante du navigateur"
-
-        };
-
-        log(
-            "DIAGNOSTIC MATRIX:",
-            info
-        );
-
-        notify(
-            `⚙️ Diagnostic Matrix : système ${navigator.onLine ? "EN LIGNE" : "HORS LIGNE"}.
-CPU logique : ${info.cpu}.
-Écran : ${info.screen}.`
-        );
-
-        return info;
-    }
-
-    /* =====================================================
-       NOTIFICATION
-       ===================================================== */
-
-    function notify(text) {
-
-        console.log(
-            "%cMANASSÉ:",
-            "color:#d49b28;font-weight:bold",
-            text
-        );
-
-        const container =
-            document.getElementById(
-                "chat-container"
-            );
-
-        if (!container) return;
-
-        const message =
-            document.createElement("div");
-
-        message.className =
-            "message bot";
-
-        message.textContent =
-            text;
-
-        container.appendChild(
-            message
-        );
-
-        if (
-            typeof scrollToBottom ===
-            "function"
-        ) {
-            scrollToBottom();
-        }
-
-    }
-
-    /* =====================================================
-       CONTEXTE POUR LE MODÈLE IA
-       ===================================================== */
-
-    function buildAIContext() {
-
-        const recent =
-            state.memory
-                .slice(-10)
-                .map(item => {
-
-                    return {
-                        role:
-                            item.role === "assistant"
-                                ? "assistant"
-                                : "user",
-
-                        content:
-                            item.content
-                    };
-
-                });
-
-        return recent;
-    }
-
-    /* =====================================================
-       MODE IA
-       ===================================================== */
-
-    function setMode(mode) {
-
-        state.mode =
-            String(mode)
-                .toUpperCase();
-
-        save();
-
-        log(
-            "Mode Matrix:",
-            state.mode
-        );
-    }
-
-    /* =====================================================
-       API PUBLIQUE
-       ===================================================== */
-
-    return {
-
-        init() {
-
-            if (state.initialized)
-                return;
-
-            load();
-
-            state.initialized =
-                true;
-
-            log(
-                "NEURAL ORCHESTRATOR ONLINE"
-            );
-
-        },
-
-        execute,
-
-        analyze,
-
-        createPlan,
-
-        remember,
-
-        getMemory,
-
-        clearMemory,
-
-        buildAIContext,
-
-        setMode,
-
-        diagnostic:
-            systemDiagnostic,
-
-        getState() {
-
-            return {
-                ...state,
-                memory:
-                    [...state.memory],
-                tasks:
-                    [...state.tasks]
-            };
-
-        }
-
-    };
-
-})();
-
-
-/* =========================================================
-   INITIALISATION
-   ========================================================= */
-
-window.addEventListener(
-    "load",
-    () => {
-
-        MatrixNeuralCore.init();
-
-    }
-);
-
-
-/* =========================================================
-   INTÉGRATION AVEC TON SENDMESSAGE
-   =========================================================
-
-   Le moteur ne remplace pas ton IA.
-
-   Il analyse d'abord la demande puis
-   laisse ton moteur Groq répondre.
-   ========================================================= */
-
-const ancienneFonctionSendMessage =
-    window.sendMessage;
-
-window.sendMessage = async function() {
-
-    const input =
-        document.getElementById(
-            "user-input"
-        );
-
-    if (!input)
-        return;
-
-    const text =
-        input.value.trim();
-
-    if (!text)
-        return;
-
-    /*
-       Analyse neuronale avant
-       l'appel au modèle IA.
-    */
-
-    await MatrixNeuralCore.execute(
-        text
-    );
-
-    /*
-       On laisse ensuite ton système
-       actuel continuer normalement.
-    */
-
-    if (
-        typeof ancienneFonctionSendMessage ===
-        "function"
-    ) {
-
-        return ancienneFonctionSendMessage();
-
-    }
-
-};
-
-
-/* =========================================================
-   COMMANDES CONSOLE POUR TEST
-   =========================================================
-
-   MatrixNeuralCore.analyze("analyse ce que tu vois")
-
-   MatrixNeuralCore.createPlan(
-       "active la double vision"
-   )
-
-   MatrixNeuralCore.diagnostic()
-
-   MatrixNeuralCore.getState()
-
-   ========================================================= */
-
-    </script> 
-  <script>
-/* ================================================
-   MANASSÉ MATRIX - SALUTATION AVEC NOM D'INSCRIPTION
-   ================================================ */
-
-function getUserName() {
-    // Récupère le nom complet utilisé à l'inscription
-    let fullName = localStorage.getItem('manasse_full_name') || "";
-    let firstName = localStorage.getItem('manasse_active_user') || "Maître";
-    
-    // Si c'est le maître, on dit juste le prénom
-    if(fullName.toLowerCase().includes("manassé")) {
-        return firstName;
-    }
-    // Sinon on prend le prénom de l'utilisateur
-    return firstName;
-}
-
-// 1. REMPLACE LA SALUTATION AU LANCEMENT DU HOLO
-const oldToggleHolo = window.toggleHologramMode;
-window.toggleHologramMode = function() {
-    oldToggleHolo();
-    setTimeout(() => {
-        const holo = document.getElementById('hologram-fullscreen');
-        const video = document.getElementById('holo-video-avatar  
-                    </script >
-<scripr>function sauvegarderCle() {
-    const cle = document.getElementById('inputCleApi').value.trim();
-    if (cle) {
-        localStorage.setItem('ma_cle_api', cle);
-        alert("Clé enregistrée avec succès sur votre téléphone !");
-    } else {
-        alert("Veuillez d'abord coller votre clé.");</scripr>
-    }
-}
-
