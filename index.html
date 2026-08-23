@@ -15,7 +15,7 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    <!-- LIENS THREE.JS ET GLTFLOADER POUR LE FICHIER 3D -->
+    <!-- LIENS THREE.JS POUR LE MODÈLE 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
@@ -170,6 +170,8 @@
             background: var(--card-dark);
             border-bottom: 1px solid var(--border-hud);
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .app-title-container {
@@ -194,6 +196,31 @@
             text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
         }
 
+        /* NOUVEAUX BOUTONS DE CONTRÔLE (DÉMO & 3D MODES) */
+        .header-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .control-btn {
+            font-size: 0.65rem;
+            color: var(--hud-cyan);
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-hud);
+            padding: 5px 8px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 700;
+        }
+
+        .control-btn:active {
+            background: var(--hud-cyan);
+            color: #020408;
+        }
+
         .status-badge {
             font-size: 0.7rem;
             color: var(--hud-cyan);
@@ -205,14 +232,20 @@
             box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
         }
 
-        /* CONTENEUR DE L'AFFICHAGE 3D (HOLOGRAMME) */
+        /* CONTENEUR DE LA 3D (Caché par défaut, s'affiche au clic sur le bouton mode graphique) */
         #hologram-view {
             width: 100%;
-            height: 200px;
-            background: rgba(0, 10, 20, 0.5);
-            border-bottom: 1px solid var(--border-hud);
+            height: 0px;
+            background: rgba(0, 10, 20, 0.8);
+            border-bottom: 0px solid var(--border-hud);
             position: relative;
             overflow: hidden;
+            transition: height 0.4s ease, border-bottom 0.4s ease;
+        }
+
+        #hologram-view.active {
+            height: 220px;
+            border-bottom: 1px solid var(--border-hud);
         }
 
         .chat-container {
@@ -342,10 +375,15 @@
                     <img src="logo.png" alt="Logo" class="app-logo-mini" onerror="this.src='https://via.placeholder.com/34/020408/00f0ff?text=M'">
                     <span class="app-title">Manassé Matrix</span>
                 </div>
+                <!-- BOUTONS AJOUTÉS : DÉMO & MODES GRAPHIQUES -->
+                <div class="header-controls">
+                    <button class="control-btn" id="demoBtn">📁 Démo Mémoire</button>
+                    <button class="control-btn" id="graphicModeBtn">👁️ Mode 3D</button>
+                </div>
                 <span class="status-badge">HUD Actif</span>
             </header>
             
-            <!-- Zone d'affichage 3D connectée au fichier exact de ton GitHub -->
+            <!-- Écran 3D invisible au départ, s'active avec le bouton Mode 3D -->
             <div id="hologram-view"></div>
             
             <div class="chat-container" id="chatContainer">
@@ -372,19 +410,21 @@
         const chatContainer = document.getElementById('chatContainer');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const graphicModeBtn = document.getElementById('graphicModeBtn');
+        const hologramView = document.getElementById('hologram-view');
 
         // ==========================================
-        // SYSTÈME DE MÉMOIRE INTERNE (localStorage)
+        // GESTION DE LA MÉMOIRE INTERNE
         // ==========================================
         let conversationMemory = JSON.parse(localStorage.getItem('manasse_memory')) || [
             { role: "system", content: "Tu es Manassé Matrix, une intelligence artificielle futuriste de pointe, style HUD holographique. Tes réponses sont précises, percutantes et élégantes." }
         ];
 
-        // Charger l'historique visuel dans le chat au démarrage
         function loadSavedMessages() {
             const savedChat = JSON.parse(localStorage.getItem('manasse_chat_history')) || [];
             if (savedChat.length > 0) {
-                chatContainer.innerHTML = ''; // Nettoyer le message d'accueil par défaut si de la mémoire existe
+                chatContainer.innerHTML = '';
                 savedChat.forEach(msg => {
                     appendMessageUI(msg.text, msg.sender);
                 });
@@ -398,59 +438,52 @@
                 const text = isUser ? el.textContent : el.firstChild.nodeValue.trim();
                 messages.push({ text, sender: isUser ? 'user' : 'bot' });
             });
-            // Garder les 30 derniers messages max pour éviter de saturer la mémoire
             if (messages.length > 30) messages.splice(0, messages.length - 30);
             localStorage.setItem('manasse_chat_history', JSON.stringify(messages));
         }
 
-        // Vérification de la clé enregistrée
-        const savedKey = localStorage.getItem('manasse_api_key');
-        if (savedKey) {
-            apiKeyInput.value = savedKey;
-            authScreen.style.display = 'none';
-            mainApp.style.display = 'flex';
-            loadSavedMessages();
-            initHologram3D();
-        }
-
-        initBtn.addEventListener('click', () => {
-            const key = apiKeyInput.value.trim();
-            if (key !== "") {
-                localStorage.setItem('manasse_api_key', key);
-                gsap.to(authScreen, {
-                    opacity: 0,
-                    duration: 0.5,
-                    onComplete: () => {
-                        authScreen.style.display = 'none';
-                        mainApp.style.display = 'flex';
-                        gsap.from(mainApp, {opacity: 0, duration: 0.5});
-                        loadSavedMessages();
-                        initHologram3D();
-                    }
-                });
-            } else {
-                gsap.to(apiKeyInput, {x: [-10, 10, -10, 10, 0], duration: 0.4});
-            }
+        // BOUTON DÉMO : Affiche la mise en scène de la description de la mémoire interne
+        demoBtn.addEventListener('click', () => {
+            const memoryCount = conversationMemory.length;
+            const demoText = `[RAPPORT MÉMOIRE] : La matrice stocke actuellement ${memoryCount} blocs d'échanges neuronaux en local. L'historique et le contexte persistent d'une session à l'autre.`;
+            addMessage(demoText, 'bot');
+            lancerVoixEtMouvements(demoText);
         });
 
         // ==========================================
-        // AFFICHAGE ET ANIMATION 3D (THREE.JS)
+        // GESTION DU MODE GRAPHIQUE 3D & LANGAGE MATRICE
         // ==========================================
+        let is3DInitialized = false;
         let manasseMesh = null;
         let isSpeaking3D = false;
 
-        function initHologram3D() {
-            const container = document.getElementById('hologram-view');
-            if (!container || container.children.length > 0) return;
+        graphicModeBtn.addEventListener('click', () => {
+            hologramView.classList.toggle('active');
+            if (hologramView.classList.contains('active')) {
+                graphicModeBtn.style.background = 'var(--hud-cyan)';
+                graphicModeBtn.style.color = '#020408';
+                if (!is3DInitialized) {
+                    initHologram3D();
+                    is3DInitialized = true;
+                }
+                // Le modèle 3D parle son propre langage de code lorsqu'il apparaît
+                const codeMatrixSpeech = "Initialisation du noyau visuel GLB. Séquence de décryptage des flux graphiques en cours. Connexion établie.";
+                lancerVoixEtMouvements(codeMatrixSpeech);
+            } else {
+                graphicModeBtn.style.background = 'rgba(0, 240, 255, 0.1)';
+                graphicModeBtn.style.color = 'var(--hud-cyan)';
+            }
+        });
 
+        function initHologram3D() {
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            const camera = new THREE.PerspectiveCamera(45, hologramView.clientWidth / hologramView.clientHeight, 0.1, 1000);
             camera.position.set(0, 1.4, 2.5);
 
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setSize(hologramView.clientWidth, hologramView.clientHeight);
             renderer.setPixelRatio(window.devicePixelRatio);
-            container.appendChild(renderer.domElement);
+            hologramView.appendChild(renderer.domElement);
 
             const ambientLight = new THREE.AmbientLight(0xddeeff, 1.5);
             scene.add(ambientLight);
@@ -459,7 +492,7 @@
             frontLight.position.set(0, 2, 4);
             scene.add(frontLight);
 
-            // Utilisation exacte de ton fichier présent sur le dépôt GitHub
+            // Chargement de ton fichier exact sur le dépôt GitHub
             const loader = new THREE.GLTFLoader();
             loader.load(
                 './Modèle 3D d\'IA féminine futuriste.glb.txt', 
@@ -467,30 +500,22 @@
                     manasseMesh = gltf.scene;
                     scene.add(manasseMesh);
                     manasseMesh.position.set(0, 0, 0);
-                    console.log("Modèle 3D chargé avec succès !");
                 },
-                (xhr) => { console.log((xhr.loaded / xhr.total * 100) + '% chargé'); },
-                (error) => { console.error("Erreur de chargement 3D :", error); }
+                undefined,
+                (error) => { console.error("Erreur chargement 3D :", error); }
             );
 
-            // Boucle d'animation (Mouvements fluides + réaction quand elle parle)
             let clock = new THREE.Clock();
             function animate() {
                 requestAnimationFrame(animate);
                 let elapsedTime = clock.getElapsedTime();
 
                 if (manasseMesh) {
-                    // Rotation lente de base
                     manasseMesh.rotation.y += 0.005;
-                    
-                    // Si l'IA parle, elle bouge plus intensément (effet vivant)
                     if (isSpeaking3D) {
                         manasseMesh.position.y = Math.sin(elapsedTime * 15) * 0.05;
-                        manasseMesh.rotation.z = Math.sin(elapsedTime * 10) * 0.03;
                     } else {
-                        // Lévitation calme au repos
                         manasseMesh.position.y = Math.sin(elapsedTime * 2) * 0.03;
-                        manasseMesh.rotation.z = 0;
                     }
                 }
                 renderer.render(scene, camera);
@@ -498,14 +523,16 @@
             animate();
 
             window.addEventListener('resize', () => {
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
+                if (hologramView.clientWidth > 0) {
+                    camera.aspect = hologramView.clientWidth / hologramView.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(hologramView.clientWidth, hologramView.clientHeight);
+                }
             });
         }
 
         // ==========================================
-        // SYNTHÈSE VOCALE ET MOUVEMENTS ASSOCIÉS
+        // SYNTHÈSE VOCALE & INTERACTION
         // ==========================================
         function parlerTexte(button) {
             const messageText = button.parentElement.previousSibling.nodeValue.trim() || button.closest('.message').innerText.replace('🔊 Écouter', '').trim();
@@ -524,14 +551,11 @@
                 const frenchVoice = voices.find(v => v.lang.includes('fr') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('paul') || v.name.toLowerCase().includes('google')));
                 if (frenchVoice) utterance.voice = frenchVoice;
 
-                // Activer l'animation de mouvement 3D pendant qu'elle parle
                 utterance.onstart = () => { isSpeaking3D = true; };
                 utterance.onend = () => { isSpeaking3D = false; };
                 utterance.onerror = () => { isSpeaking3D = false; };
 
                 window.speechSynthesis.speak(utterance);
-            } else {
-                alert("La synthèse vocale n'est pas supportée par votre navigateur.");
             }
         }
 
@@ -554,14 +578,38 @@
             saveChatHistory();
         }
 
-        // ==========================================
-        // COMMUNICATION AVEC L'API GROQ & MÉMOIRE
-        // ==========================================
+        // Vérification clé enregistrée
+        const savedKey = localStorage.getItem('manasse_api_key');
+        if (savedKey) {
+            apiKeyInput.value = savedKey;
+            authScreen.style.display = 'none';
+            mainApp.style.display = 'flex';
+            loadSavedMessages();
+        }
+
+        initBtn.addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key !== "") {
+                localStorage.setItem('manasse_api_key', key);
+                gsap.to(authScreen, {
+                    opacity: 0,
+                    duration: 0.5,
+                    onComplete: () => {
+                        authScreen.style.display = 'none';
+                        mainApp.style.display = 'flex';
+                        gsap.from(mainApp, {opacity: 0, duration: 0.5});
+                        loadSavedMessages();
+                    }
+                });
+            } else {
+                gsap.to(apiKeyInput, {x: [-10, 10, -10, 10, 0], duration: 0.4});
+            }
+        });
+
         async function callGroqAPI(userMessage) {
             const apiKey = localStorage.getItem('manasse_api_key');
             const url = "https://api.groq.com/openai/v1/chat/completions";
 
-            // Ajout du message utilisateur dans la mémoire interne
             conversationMemory.push({ role: "user", content: userMessage });
 
             try {
@@ -581,8 +629,6 @@
                 if (data.error) throw new Error(data.error.message);
                 
                 const botReply = data.choices[0].message.content;
-                
-                // Enregistrer la réponse du bot dans la mémoire interne
                 conversationMemory.push({ role: "assistant", content: botReply });
                 localStorage.setItem('manasse_memory', JSON.stringify(conversationMemory));
 
@@ -602,8 +648,6 @@
 
             const botReply = await callGroqAPI(text);
             addMessage(botReply, 'bot');
-            
-            // Faire parler et bouger l'avatar 3D automatiquement avec la réponse
             lancerVoixEtMouvements(botReply);
         }
 
@@ -612,7 +656,6 @@
             if (e.key === 'Enter') handleSendMessage();
         });
 
-        // Enregistrement Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
