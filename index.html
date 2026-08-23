@@ -19,10 +19,10 @@
         :root {
             --hud-cyan: #00f0ff;
             --hud-blue: #0077ff;
-            --hud-glow: rgba(0, 240, 255, 0.4);
+            --hud-glow: rgba(0, 240, 255, 0.5);
             --bg-dark: #020408;
-            --card-dark: rgba(5, 12, 24, 0.85);
-            --border-hud: rgba(0, 240, 255, 0.25);
+            --card-dark: rgba(5, 12, 24, 0.9);
+            --border-hud: rgba(0, 240, 255, 0.3);
             --text-light: #f1f5f9;
             --text-muted: #64748b;
         }
@@ -42,10 +42,10 @@
             color: var(--text-light);
             overflow: hidden;
             background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 119, 255, 0.05) 0%, transparent 80%),
-                linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
-            background-size: 100% 100%, 20px 20px, 20px 20px;
+                radial-gradient(circle at 50% 50%, rgba(0, 119, 255, 0.08) 0%, transparent 85%),
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 25px 25px, 25px 25px;
         }
 
         .app-container {
@@ -57,47 +57,54 @@
             position: relative;
         }
 
-        /* CONFIG SCREEN (Clé API & Auth) */
+        /* AUTH SCREEN */
         .auth-screen {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(2, 4, 8, 0.95);
+            background: rgba(2, 4, 8, 0.96);
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
 
         .auth-card {
             background: var(--card-dark);
             border: 1px solid var(--hud-cyan);
-            border-radius: 20px;
-            padding: 30px 20px;
+            border-radius: 24px;
+            padding: 32px 20px;
             width: 100%;
             max-width: 380px;
             text-align: center;
-            box-shadow: 0 0 30px var(--hud-glow), inset 0 0 15px rgba(0, 240, 255, 0.1);
+            box-shadow: 0 0 40px var(--hud-glow), inset 0 0 20px rgba(0, 240, 255, 0.15);
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
+            100% { box-shadow: 0 0 45px rgba(0, 240, 255, 0.7); }
         }
 
         .auth-logo {
-            width: 70px; height: 70px;
+            width: 75px; height: 75px;
             border-radius: 50%;
             border: 2px solid var(--hud-cyan);
             margin-bottom: 15px;
             object-fit: cover;
-            box-shadow: 0 0 15px var(--hud-cyan);
+            box-shadow: 0 0 20px var(--hud-cyan);
         }
 
         .auth-title {
             color: var(--hud-cyan);
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             font-weight: 800;
             margin-bottom: 5px;
             text-transform: uppercase;
             letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--hud-glow);
         }
 
         .auth-subtitle {
@@ -111,8 +118,8 @@
             background: rgba(0, 240, 255, 0.05);
             border: 1px solid var(--border-hud);
             color: var(--text-light);
-            padding: 12px 16px;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border-radius: 12px;
             font-size: 0.9rem;
             outline: none;
             transition: all 0.3s ease;
@@ -121,7 +128,7 @@
 
         .hud-input:focus {
             border-color: var(--hud-cyan);
-            box-shadow: 0 0 10px var(--hud-glow);
+            box-shadow: 0 0 15px var(--hud-glow);
             background: rgba(0, 240, 255, 0.1);
         }
 
@@ -130,18 +137,18 @@
             background: linear-gradient(135deg, var(--hud-cyan), var(--hud-blue));
             color: #020408;
             font-weight: 800;
-            padding: 12px;
-            border-radius: 10px;
+            padding: 14px;
+            border-radius: 12px;
             border: none;
             font-size: 0.95rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 0 15px var(--hud-glow);
+            box-shadow: 0 0 20px var(--hud-glow);
             transition: transform 0.2s;
         }
 
-        .hud-btn:active { transform: scale(0.98); }
+        .hud-btn:active { transform: scale(0.97); }
 
         /* MAIN APP HUD INTERFACE */
         .main-app {
@@ -158,7 +165,7 @@
             padding: 12px 16px;
             background: var(--card-dark);
             border-bottom: 1px solid var(--border-hud);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
         }
 
         .app-title-container {
@@ -168,9 +175,10 @@
         }
 
         .app-logo-mini {
-            width: 32px; height: 32px;
+            width: 34px; height: 34px;
             border-radius: 50%;
             border: 1px solid var(--hud-cyan);
+            box-shadow: 0 0 10px var(--hud-cyan);
         }
 
         .app-title {
@@ -179,6 +187,7 @@
             color: var(--hud-cyan);
             letter-spacing: 1px;
             text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
         }
 
         .status-badge {
@@ -186,9 +195,10 @@
             color: var(--hud-cyan);
             background: rgba(0, 240, 255, 0.1);
             border: 1px solid var(--border-hud);
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 20px;
             text-transform: uppercase;
+            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
         }
 
         .chat-container {
@@ -197,31 +207,31 @@
             padding: 16px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 14px;
         }
 
         .message {
-            max-width: 85%;
-            padding: 12px 16px;
-            border-radius: 14px;
+            max-width: 88%;
+            padding: 14px 16px;
+            border-radius: 16px;
             font-size: 0.9rem;
-            line-height: 1.4;
+            line-height: 1.5;
             position: relative;
             animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         .message.user {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 119, 255, 0.2));
+            background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(0, 119, 255, 0.25));
             border: 1px solid var(--hud-cyan);
             color: var(--text-light);
             align-self: flex-end;
-            border-bottom-right-radius: 2px;
-            box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+            border-bottom-right-radius: 3px;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
         }
 
         .message.bot {
@@ -229,8 +239,30 @@
             border: 1px solid var(--border-hud);
             color: var(--text-light);
             align-self: flex-start;
-            border-bottom-left-radius: 2px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            border-bottom-left-radius: 3px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+        }
+
+        .msg-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .action-btn {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--border-hud);
+            color: var(--hud-cyan);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:active {
+            background: var(--hud-cyan);
+            color: #020408;
         }
 
         .input-area {
@@ -239,7 +271,7 @@
             border-top: 1px solid var(--border-hud);
             display: flex;
             gap: 10px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
         }
 
         .chat-input {
@@ -256,18 +288,18 @@
 
         .chat-input:focus {
             border-color: var(--hud-cyan);
-            box-shadow: 0 0 10px var(--hud-glow);
+            box-shadow: 0 0 12px var(--hud-glow);
         }
 
         .send-btn {
             background: var(--hud-cyan);
             color: #020408;
             border: none;
-            padding: 0 18px;
+            padding: 0 20px;
             border-radius: 12px;
             font-weight: 800;
             cursor: pointer;
-            box-shadow: 0 0 10px var(--hud-glow);
+            box-shadow: 0 0 15px var(--hud-glow);
             transition: transform 0.2s;
         }
 
@@ -277,7 +309,7 @@
 <body>
 
     <div class="app-container">
-        <!-- Auth & API Key Screen -->
+        <!-- Auth Screen -->
         <div class="auth-screen" id="authScreen">
             <div class="auth-card">
                 <img src="logo.png" alt="Logo" class="auth-logo" onerror="this.src='https://via.placeholder.com/80/020408/00f0ff?text=HUD'">
@@ -293,14 +325,19 @@
         <div class="main-app" id="mainApp">
             <header class="app-header">
                 <div class="app-title-container">
-                    <img src="logo.png" alt="Logo" class="app-logo-mini" onerror="this.src='https://via.placeholder.com/32/020408/00f0ff?text=M'">
+                    <img src="logo.png" alt="Logo" class="app-logo-mini" onerror="this.src='https://via.placeholder.com/34/020408/00f0ff?text=M'">
                     <span class="app-title">Manassé Matrix</span>
                 </div>
                 <span class="status-badge">HUD Actif</span>
             </header>
             
             <div class="chat-container" id="chatContainer">
-                <div class="message bot">Matrice initialisée, Maître Manassé. Systèmes holographiques et liaisons neuronales prêts. Que commandez-vous ?</div>
+                <div class="message bot">
+                    Matrice initialisée, Maître Manassé. Systèmes holographiques et liaisons neuronales prêts. Que commandez-vous ?
+                    <div class="msg-actions">
+                        <button class="action-btn" onclick="parlerTexte(this)">🔊 Écouter</button>
+                    </div>
+                </div>
             </div>
 
             <div class="input-area">
@@ -311,21 +348,18 @@
     </div>
 
     <script>
-        // Gestion de la clé API et de l'initialisation
         const authScreen = document.getElementById('authScreen');
         const mainApp = document.getElementById('mainApp');
         const apiKeyInput = document.getElementById('apiKeyInput');
         const initBtn = document.getElementById('initBtn');
-        
         const chatContainer = document.getElementById('chatContainer');
         const chatInput = document.getElementById('chatInput');
         const sendBtn = document.getElementById('sendBtn');
 
-        // Vérifier si une clé est déjà enregistrée sur l'appareil
+        // Vérification de la clé enregistrée
         const savedKey = localStorage.getItem('manasse_api_key');
         if (savedKey) {
             apiKeyInput.value = savedKey;
-            // Optionnel : passer directement si la clé existe déjà
             authScreen.style.display = 'none';
             mainApp.style.display = 'flex';
         }
@@ -348,16 +382,41 @@
             }
         });
 
-        // Fonction d'affichage des messages
+        // Fonction pour lire le texte avec une voix masculine (synthèse vocale)
+        function parlerTexte(button) {
+            const messageText = button.parentElement.previousSibling.nodeValue.trim() || button.closest('.message').innerText.replace('🔊 Écouter', '').trim();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Arrêter la voix en cours
+                const utterance = new SpeechSynthesisUtterance(messageText);
+                utterance.lang = 'fr-FR';
+                utterance.pitch = 0.8; // Voix plus grave (masculine)
+                utterance.rate = 1.0;  // Vitesse normale
+                
+                // Essayer de trouver une voix masculine en français si disponible
+                const voices = window.speechSynthesis.getVoices();
+                const frenchVoice = voices.find(v => v.lang.includes('fr') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('paul') || v.name.toLowerCase().includes('google')));
+                if (frenchVoice) utterance.voice = frenchVoice;
+
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("La synthèse vocale n'est pas supportée par votre navigateur.");
+            }
+        }
+
         function addMessage(text, sender) {
             const messageDiv = document.createElement('div');
             messageDiv.classList.add('message', sender);
-            messageDiv.textContent = text;
+            
+            if (sender === 'bot') {
+                messageDiv.innerHTML = `${text} <div class="msg-actions"><button class="action-btn" onclick="parlerTexte(this)">🔊 Écouter</button></div>`;
+            } else {
+                messageDiv.textContent = text;
+            }
+
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Communication avec l'API Groq (Modèle openai/gpt-oss-120b)
         async function callGroqAPI(userMessage) {
             const apiKey = localStorage.getItem('manasse_api_key');
             const url = "https://api.groq.com/openai/v1/chat/completions";
@@ -372,16 +431,14 @@
                     body: JSON.stringify({
                         model: "openai/gpt-oss-120b",
                         messages: [
-                            { role: "system", content: "Tu es Manassé Matrix, une intelligence artificielle futuriste hautement avancée, inspirée des systèmes holographiques de type HUD de Tony Stark. Tu réponds avec précision, efficacité et élégance." },
+                            { role: "system", content: "Tu es Manassé Matrix, une intelligence artificielle futuriste de pointe, style HUD holographique. Tes réponses sont précises, percutantes et élégantes." },
                             { role: "user", content: userMessage }
                         ]
                     })
                 });
 
                 const data = await response.json();
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
+                if (data.error) throw new Error(data.error.message);
                 return data.choices[0].message.content;
             } catch (error) {
                 console.error(error);
@@ -396,24 +453,19 @@
             addMessage(text, 'user');
             chatInput.value = '';
 
-            // Indicateur de traitement (optionnel) ou appel direct
             const botReply = await callGroqAPI(text);
             addMessage(botReply, 'bot');
         }
 
         sendBtn.addEventListener('click', handleSendMessage);
         chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSendMessage();
-            }
+            if (e.key === 'Enter') handleSendMessage();
         });
 
-        // Enregistrement du Service Worker pour compilation APK / mode hors-ligne
+        // Enregistrement Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then((reg) => console.log('HUD Service Worker enregistré !', reg.scope))
-                    .catch((err) => console.log('Erreur SW :', err));
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
             });
         }
     </script>
