@@ -2,24 +2,27 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
     <title>Manassé Matrix - Édition HUD Ultime</title>
-    
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#020408">
     <link rel="apple-touch-icon" href="logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 
-    <!-- LIENS THREE.JS POUR LE MODÈLE 3D -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <style>
+
         :root {
             --hud-cyan: #00f0ff;
             --hud-blue: #0077ff;
@@ -39,17 +42,36 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
             width: 100%;
-            background-color: var(--bg-dark);
+            background: var(--bg-dark);
             color: var(--text-light);
             overflow: hidden;
-            background-image: 
-                radial-gradient(circle at 50% 50%, rgba(0, 119, 255, 0.08) 0%, transparent 85%),
-                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 25px 25px, 25px 25px;
+        }
+
+        body {
+            background-image:
+                radial-gradient(
+                    circle at 50% 50%,
+                    rgba(0,119,255,0.08) 0%,
+                    transparent 85%
+                ),
+                linear-gradient(
+                    rgba(0,240,255,0.03) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0,240,255,0.03) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                100% 100%,
+                25px 25px,
+                25px 25px;
         }
 
         .app-container {
@@ -61,606 +83,3216 @@
             position: relative;
         }
 
-        /* AUTH SCREEN */
+        /* =====================================================
+           AUTHENTIFICATION
+        ===================================================== */
+
         .auth-screen {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(2, 4, 8, 0.96);
+            inset: 0;
+            width: 100%;
+            height: 100%;
+
+            background: rgba(2,4,8,0.96);
+
             z-index: 1000;
+
             display: flex;
             align-items: center;
             justify-content: center;
+
             padding: 20px;
+
             backdrop-filter: blur(12px);
         }
 
         .auth-card {
             background: var(--card-dark);
+
             border: 1px solid var(--hud-cyan);
+
             border-radius: 24px;
+
             padding: 32px 20px;
+
             width: 100%;
             max-width: 380px;
+
             text-align: center;
-            box-shadow: 0 0 40px var(--hud-glow), inset 0 0 20px rgba(0, 240, 255, 0.15);
+
+            box-shadow:
+                0 0 40px var(--hud-glow),
+                inset 0 0 20px rgba(0,240,255,0.15);
+
             animation: pulseGlow 3s infinite alternate;
         }
 
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.3); }
-            100% { box-shadow: 0 0 45px rgba(0, 240, 255, 0.7); }
+            0% {
+                box-shadow:
+                    0 0 20px rgba(0,240,255,0.3);
+            }
+
+            100% {
+                box-shadow:
+                    0 0 45px rgba(0,240,255,0.7);
+            }
         }
 
         .auth-logo {
-            width: 75px; height: 75px;
+            width: 75px;
+            height: 75px;
+
             border-radius: 50%;
+
             border: 2px solid var(--hud-cyan);
+
             margin-bottom: 15px;
+
             object-fit: cover;
-            box-shadow: 0 0 20px var(--hud-cyan);
+
+            box-shadow:
+                0 0 20px var(--hud-cyan);
         }
 
         .auth-title {
             color: var(--hud-cyan);
+
             font-size: 1.5rem;
+
             font-weight: 800;
+
             margin-bottom: 5px;
+
             text-transform: uppercase;
+
             letter-spacing: 2px;
-            text-shadow: 0 0 10px var(--hud-glow);
+
+            text-shadow:
+                0 0 10px var(--hud-glow);
         }
 
         .auth-subtitle {
             color: var(--text-muted);
+
             font-size: 0.8rem;
+
             margin-bottom: 20px;
         }
 
         .hud-input {
             width: 100%;
-            background: rgba(0, 240, 255, 0.05);
-            border: 1px solid var(--border-hud);
-            color: var(--text-light);
-            padding: 14px 16px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-            outline: none;
-            transition: all 0.3s ease;
-            margin-bottom: 15px;
+
+            background:
+                rgba(0,240,255,0.05);
+
+            border:
+                1px solid var(--border-hud);
+
+            color:
+                var(--text-light);
+
+            padding:
+                14px 16px;
+
+            border-radius:
+                12px;
+
+            font-size:
+                0.9rem;
+
+            outline:
+                none;
+
+            transition:
+                all 0.3s ease;
+
+            margin-bottom:
+                15px;
         }
 
         .hud-input:focus {
-            border-color: var(--hud-cyan);
-            box-shadow: 0 0 15px var(--hud-glow);
-            background: rgba(0, 240, 255, 0.1);
+            border-color:
+                var(--hud-cyan);
+
+            box-shadow:
+                0 0 15px var(--hud-glow);
+
+            background:
+                rgba(0,240,255,0.1);
         }
 
         .hud-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--hud-cyan), var(--hud-blue));
-            color: #020408;
-            font-weight: 800;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
-            font-size: 0.95rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 0 20px var(--hud-glow);
-            transition: transform 0.2s;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--hud-cyan),
+                    var(--hud-blue)
+                );
+
+            color:
+                #020408;
+
+            font-weight:
+                800;
+
+            padding:
+                14px;
+
+            border-radius:
+                12px;
+
+            border:
+                none;
+
+            font-size:
+                0.95rem;
+
+            cursor:
+                pointer;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                1px;
+
+            box-shadow:
+                0 0 20px var(--hud-glow);
         }
 
-        .hud-btn:active { transform: scale(0.97); }
+        /* =====================================================
+           APPLICATION PRINCIPALE
+        ===================================================== */
 
-        /* MAIN APP HUD INTERFACE */
         .main-app {
             display: none;
+
             flex-direction: column;
+
             height: 100%;
             width: 100%;
         }
 
         .app-header {
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
-            padding: 12px 16px;
-            background: var(--card-dark);
-            border-bottom: 1px solid var(--border-hud);
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+
+            padding:
+                12px 16px;
+
+            background:
+                var(--card-dark);
+
+            border-bottom:
+                1px solid var(--border-hud);
+
+            box-shadow:
+                0 4px 25px rgba(0,0,0,0.6);
+
             flex-wrap: wrap;
+
             gap: 8px;
         }
 
         .app-title-container {
             display: flex;
+
             align-items: center;
+
             gap: 10px;
         }
 
         .app-logo-mini {
-            width: 34px; height: 34px;
+            width: 34px;
+            height: 34px;
+
             border-radius: 50%;
-            border: 1px solid var(--hud-cyan);
-            box-shadow: 0 0 10px var(--hud-cyan);
+
+            border:
+                1px solid var(--hud-cyan);
+
+            box-shadow:
+                0 0 10px var(--hud-cyan);
         }
 
         .app-title {
-            font-size: 1rem;
-            font-weight: 800;
-            color: var(--hud-cyan);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+            font-size:
+                1rem;
+
+            font-weight:
+                800;
+
+            color:
+                var(--hud-cyan);
+
+            letter-spacing:
+                1px;
+
+            text-transform:
+                uppercase;
+
+            text-shadow:
+                0 0 8px rgba(0,240,255,0.4);
         }
 
-        /* NOUVEAUX BOUTONS DE CONTRÔLE (DÉMO & 3D MODES) */
         .header-controls {
             display: flex;
+
             gap: 6px;
+
             align-items: center;
         }
 
         .control-btn {
-            font-size: 0.65rem;
-            color: var(--hud-cyan);
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--border-hud);
-            padding: 5px 8px;
-            border-radius: 8px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 700;
-        }
+            font-size:
+                0.65rem;
 
-        .control-btn:active {
-            background: var(--hud-cyan);
-            color: #020408;
+            color:
+                var(--hud-cyan);
+
+            background:
+                rgba(0,240,255,0.1);
+
+            border:
+                1px solid var(--border-hud);
+
+            padding:
+                5px 8px;
+
+            border-radius:
+                8px;
+
+            text-transform:
+                uppercase;
+
+            cursor:
+                pointer;
+
+            font-weight:
+                700;
         }
 
         .status-badge {
-            font-size: 0.7rem;
-            color: var(--hud-cyan);
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--border-hud);
-            padding: 5px 10px;
-            border-radius: 20px;
-            text-transform: uppercase;
-            box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+            font-size:
+                0.7rem;
+
+            color:
+                var(--hud-cyan);
+
+            background:
+                rgba(0,240,255,0.1);
+
+            border:
+                1px solid var(--border-hud);
+
+            padding:
+                5px 10px;
+
+            border-radius:
+                20px;
+
+            text-transform:
+                uppercase;
         }
 
-        /* CONTENEUR DE LA 3D (Caché par défaut, s'affiche au clic sur le bouton mode graphique) */
-        #hologram-view {
-            width: 100%;
-            height: 0px;
-            background: rgba(0, 10, 20, 0.8);
-            border-bottom: 0px solid var(--border-hud);
-            position: relative;
-            overflow: hidden;
-            transition: height 0.4s ease, border-bottom 0.4s ease;
-        }
-
-        #hologram-view.active {
-            height: 220px;
-            border-bottom: 1px solid var(--border-hud);
-        }
+        /* =====================================================
+           CHAT
+        ===================================================== */
 
         .chat-container {
             flex: 1;
+
             overflow-y: auto;
+
             padding: 16px;
+
             display: flex;
+
             flex-direction: column;
+
             gap: 14px;
         }
 
         .message {
             max-width: 88%;
-            padding: 14px 16px;
-            border-radius: 16px;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            position: relative;
-            animation: fadeIn 0.3s ease;
+
+            padding:
+                14px 16px;
+
+            border-radius:
+                16px;
+
+            font-size:
+                0.9rem;
+
+            line-height:
+                1.5;
+
+            position:
+                relative;
+
+            animation:
+                fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform:
+                    translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
         }
 
         .message.user {
-            background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(0, 119, 255, 0.25));
-            border: 1px solid var(--hud-cyan);
-            color: var(--text-light);
-            align-self: flex-end;
-            border-bottom-right-radius: 3px;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(0,240,255,0.25),
+                    rgba(0,119,255,0.25)
+                );
+
+            border:
+                1px solid var(--hud-cyan);
+
+            align-self:
+                flex-end;
         }
 
         .message.bot {
-            background: var(--card-dark);
-            border: 1px solid var(--border-hud);
-            color: var(--text-light);
-            align-self: flex-start;
-            border-bottom-left-radius: 3px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            background:
+                var(--card-dark);
+
+            border:
+                1px solid var(--border-hud);
+
+            align-self:
+                flex-start;
         }
 
         .msg-actions {
             display: flex;
+
             gap: 8px;
-            margin-top: 8px;
+
+            margin-top:
+                8px;
         }
 
         .action-btn {
-            background: rgba(0, 240, 255, 0.1);
-            border: 1px solid var(--border-hud);
-            color: var(--hud-cyan);
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+            background:
+                rgba(0,240,255,0.1);
 
-        .action-btn:active {
-            background: var(--hud-cyan);
-            color: #020408;
+            border:
+                1px solid var(--border-hud);
+
+            color:
+                var(--hud-cyan);
+
+            padding:
+                4px 10px;
+
+            border-radius:
+                6px;
+
+            font-size:
+                0.75rem;
+
+            cursor:
+                pointer;
         }
 
         .input-area {
-            padding: 12px 16px;
-            background: var(--card-dark);
-            border-top: 1px solid var(--border-hud);
-            display: flex;
-            gap: 10px;
-            backdrop-filter: blur(12px);
+            padding:
+                12px 16px;
+
+            background:
+                var(--card-dark);
+
+            border-top:
+                1px solid var(--border-hud);
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            backdrop-filter:
+                blur(12px);
         }
 
         .chat-input {
-            flex: 1;
-            background: rgba(0, 240, 255, 0.03);
-            border: 1px solid var(--border-hud);
-            color: var(--text-light);
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.3s;
-        }
+            flex:
+                1;
 
-        .chat-input:focus {
-            border-color: var(--hud-cyan);
-            box-shadow: 0 0 12px var(--hud-glow);
+            background:
+                rgba(0,240,255,0.03);
+
+            border:
+                1px solid var(--border-hud);
+
+            color:
+                var(--text-light);
+
+            padding:
+                12px 16px;
+
+            border-radius:
+                12px;
+
+            font-size:
+                0.95rem;
+
+            outline:
+                none;
         }
 
         .send-btn {
-            background: var(--hud-cyan);
-            color: #020408;
-            border: none;
-            padding: 0 20px;
-            border-radius: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            box-shadow: 0 0 15px var(--hud-glow);
-            transition: transform 0.2s;
+            background:
+                var(--hud-cyan);
+
+            color:
+                #020408;
+
+            border:
+                none;
+
+            padding:
+                0 20px;
+
+            border-radius:
+                12px;
+
+            font-weight:
+                800;
+
+            cursor:
+                pointer;
         }
 
-        .send-btn:active { transform: scale(0.95); }
+        /* =====================================================
+           HOLOGRAMME PLEIN ÉCRAN
+        ===================================================== */
+
+        #hologram-view {
+
+            position: fixed;
+
+            inset: 0;
+
+            width: 100vw;
+            width: 100dvw;
+
+            height: 100vh;
+            height: 100dvh;
+
+            z-index: 5000;
+
+            display: none;
+
+            overflow: hidden;
+
+            background:
+                radial-gradient(
+                    circle at center,
+                    rgba(0,90,140,0.18),
+                    rgba(0,0,0,0.96) 75%
+                );
+
+            border: none;
+
+            touch-action:
+                none;
+        }
+
+        #hologram-view.active {
+            display:
+                block;
+        }
+
+        #hologramCanvas {
+            position: absolute;
+
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            z-index: 1;
+        }
+
+        /* Grille holographique */
+
+        .holo-grid {
+            position: absolute;
+
+            inset: 0;
+
+            z-index: 2;
+
+            pointer-events: none;
+
+            background-image:
+                linear-gradient(
+                    rgba(0,240,255,0.035) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    90deg,
+                    rgba(0,240,255,0.035) 1px,
+                    transparent 1px
+                );
+
+            background-size:
+                30px 30px;
+
+            mask-image:
+                radial-gradient(
+                    circle,
+                    black 20%,
+                    transparent 85%
+                );
+        }
+
+        /* Scanline */
+
+        .holo-scan {
+            position: absolute;
+
+            left: 0;
+            right: 0;
+
+            height: 2px;
+
+            z-index: 3;
+
+            background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    var(--hud-cyan),
+                    transparent
+                );
+
+            box-shadow:
+                0 0 20px var(--hud-cyan);
+
+            opacity:
+                0.55;
+
+            animation:
+                scanMove 5s linear infinite;
+
+            pointer-events:
+                none;
+        }
+
+        @keyframes scanMove {
+
+            0% {
+                top:
+                    -5%;
+            }
+
+            100% {
+                top:
+                    105%;
+            }
+        }
+
+        /* =====================================================
+           HUD DU MODE HOLOGRAPHIQUE
+        ===================================================== */
+
+        .holo-top {
+
+            position: absolute;
+
+            top: 18px;
+            left: 18px;
+            right: 18px;
+
+            z-index: 20;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            pointer-events:
+                none;
+        }
+
+        .holo-title {
+
+            color:
+                var(--hud-cyan);
+
+            font-weight:
+                800;
+
+            font-size:
+                0.85rem;
+
+            letter-spacing:
+                2px;
+
+            text-transform:
+                uppercase;
+
+            text-shadow:
+                0 0 12px var(--hud-cyan);
+        }
+
+        .holo-status {
+
+            color:
+                var(--hud-cyan);
+
+            font-size:
+                0.65rem;
+
+            padding:
+                6px 10px;
+
+            border:
+                1px solid var(--border-hud);
+
+            border-radius:
+                20px;
+
+            background:
+                rgba(0,240,255,0.08);
+        }
+
+        .holo-bottom {
+
+            position: absolute;
+
+            left: 0;
+            right: 0;
+
+            bottom: 20px;
+
+            z-index: 20;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            gap:
+                10px;
+
+            pointer-events:
+                none;
+        }
+
+        #holoTranscript {
+
+            max-width:
+                85%;
+
+            text-align:
+                center;
+
+            min-height:
+                24px;
+
+            color:
+                white;
+
+            font-size:
+                0.82rem;
+
+            text-shadow:
+                0 0 10px var(--hud-cyan);
+
+            opacity:
+                0.9;
+        }
+
+        .holo-controls {
+
+            display:
+                flex;
+
+            gap:
+                10px;
+
+            pointer-events:
+                auto;
+        }
+
+        .holo-button {
+
+            border:
+                1px solid var(--hud-cyan);
+
+            background:
+                rgba(0,20,30,0.75);
+
+            color:
+                var(--hud-cyan);
+
+            padding:
+                9px 15px;
+
+            border-radius:
+                10px;
+
+            font-size:
+                0.7rem;
+
+            font-weight:
+                800;
+
+            cursor:
+                pointer;
+
+            backdrop-filter:
+                blur(10px);
+
+            box-shadow:
+                0 0 15px rgba(0,240,255,0.2);
+        }
+
+        .holo-button.listening {
+
+            background:
+                var(--hud-cyan);
+
+            color:
+                #020408;
+
+            box-shadow:
+                0 0 30px var(--hud-cyan);
+        }
+
+        /* Cercle autour de l'avatar */
+
+        .holo-ring {
+
+            position:
+                absolute;
+
+            left:
+                50%;
+
+            top:
+                54%;
+
+            transform:
+                translate(-50%,-50%);
+
+            width:
+                min(58vw, 420px);
+
+            height:
+                min(58vw, 420px);
+
+            border:
+                1px solid rgba(0,240,255,0.25);
+
+            border-radius:
+                50%;
+
+            box-shadow:
+                0 0 40px rgba(0,240,255,0.08),
+                inset 0 0 40px rgba(0,240,255,0.08);
+
+            z-index:
+                2;
+
+            pointer-events:
+                none;
+
+            animation:
+                ringPulse 4s ease-in-out infinite;
+        }
+
+        .holo-ring::before,
+        .holo-ring::after {
+
+            content:
+                "";
+
+            position:
+                absolute;
+
+            inset:
+                12%;
+
+            border:
+                1px dashed rgba(0,240,255,0.22);
+
+            border-radius:
+                50%;
+        }
+
+        .holo-ring::after {
+
+            inset:
+                24%;
+
+            border-style:
+                solid;
+
+            border-color:
+                rgba(0,119,255,0.16);
+        }
+
+        @keyframes ringPulse {
+
+            0%,100% {
+                transform:
+                    translate(-50%,-50%)
+                    scale(0.98);
+            }
+
+            50% {
+                transform:
+                    translate(-50%,-50%)
+                    scale(1.03);
+            }
+        }
+
+        /* Indicateur microphone */
+
+        #micIndicator {
+
+            width:
+                10px;
+
+            height:
+                10px;
+
+            border-radius:
+                50%;
+
+            background:
+                #39434d;
+
+            display:
+                inline-block;
+
+            margin-right:
+                6px;
+        }
+
+        #micIndicator.active {
+
+            background:
+                var(--hud-cyan);
+
+            box-shadow:
+                0 0 15px var(--hud-cyan);
+
+            animation:
+                micPulse 0.8s infinite;
+        }
+
+        @keyframes micPulse {
+
+            50% {
+                transform:
+                    scale(1.5);
+
+                opacity:
+                    0.5;
+            }
+        }
+
+        /* Petit statut */
+
+        #holoListeningText {
+
+            color:
+                var(--text-muted);
+
+            font-size:
+                0.62rem;
+
+            text-transform:
+                uppercase;
+
+            letter-spacing:
+                1px;
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media(max-width:600px) {
+
+            .holo-title {
+                font-size:
+                    0.68rem;
+            }
+
+            .holo-ring {
+                width:
+                    82vw;
+
+                height:
+                    82vw;
+            }
+
+            .holo-bottom {
+                bottom:
+                    15px;
+            }
+
+            .holo-button {
+                padding:
+                    8px 12px;
+            }
+        }
+
     </style>
 </head>
+
 <body>
 
-    <div class="app-container">
-        <!-- Auth Screen -->
-        <div class="auth-screen" id="authScreen">
-            <div class="auth-card">
-                <img src="logo.png" alt="Logo" class="auth-logo" onerror="this.src='https://via.placeholder.com/80/020408/00f0ff?text=HUD'">
-                <h1 class="auth-title">Manassé Matrix</h1>
-                <p class="auth-subtitle">Système HUD Neural - Double Vision</p>
-                
-                <input type="password" id="apiKeyInput" class="hud-input" placeholder="Entrez votre clé API Groq (gsk_...)">
-                <button class="hud-btn" id="initBtn">Initialiser le système</button>
-            </div>
+<div class="app-container">
+
+    <!-- =====================================================
+         AUTH
+    ===================================================== -->
+
+    <div class="auth-screen" id="authScreen">
+
+        <div class="auth-card">
+
+            <img
+                src="logo.png"
+                alt="Logo"
+                class="auth-logo"
+                onerror="this.src='https://via.placeholder.com/80/020408/00f0ff?text=HUD'"
+            >
+
+            <h1 class="auth-title">
+                Manassé Matrix
+            </h1>
+
+            <p class="auth-subtitle">
+                Système HUD Neural - Double Vision
+            </p>
+
+            <input
+                type="password"
+                id="apiKeyInput"
+                class="hud-input"
+                placeholder="Entrez votre clé API Groq (gsk_...)"
+            >
+
+            <button
+                class="hud-btn"
+                id="initBtn"
+            >
+                Initialiser le système
+            </button>
+
         </div>
 
-        <!-- Main App Interface -->
-        <div class="main-app" id="mainApp">
-            <header class="app-header">
-                <div class="app-title-container">
-                    <img src="logo.png" alt="Logo" class="app-logo-mini" onerror="this.src='https://via.placeholder.com/34/020408/00f0ff?text=M'">
-                    <span class="app-title">Manassé Matrix</span>
-                </div>
-                <!-- BOUTONS AJOUTÉS : DÉMO & MODES GRAPHIQUES -->
-                <div class="header-controls">
-                    <button class="control-btn" id="demoBtn">📁 Démo Mémoire</button>
-                    <button class="control-btn" id="graphicModeBtn">👁️ Mode 3D</button>
-                </div>
-                <span class="status-badge">HUD Actif</span>
-            </header>
-            
-            <!-- Écran 3D invisible au départ, s'active avec le bouton Mode 3D -->
-            <div id="hologram-view"></div>
-            
-            <div class="chat-container" id="chatContainer">
-                <div class="message bot">
-                    Matrice initialisée, Maître Manassé. Systèmes holographiques et liaisons neuronales prêts. Que commandez-vous ?
-                    <div class="msg-actions">
-                        <button class="action-btn" onclick="parlerTexte(this)">🔊 Écouter</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Commandez l'IA ici...">
-                <button class="send-btn" id="sendBtn">➤</button>
-            </div>
-        </div>
     </div>
 
-    <script>
-        const authScreen = document.getElementById('authScreen');
-        const mainApp = document.getElementById('mainApp');
-        const apiKeyInput = document.getElementById('apiKeyInput');
-        const initBtn = document.getElementById('initBtn');
-        const chatContainer = document.getElementById('chatContainer');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendBtn');
-        const demoBtn = document.getElementById('demoBtn');
-        const graphicModeBtn = document.getElementById('graphicModeBtn');
-        const hologramView = document.getElementById('hologram-view');
 
-        // ==========================================
-        // GESTION DE LA MÉMOIRE INTERNE
-        // ==========================================
-        let conversationMemory = JSON.parse(localStorage.getItem('manasse_memory')) || [
-            { role: "system", content: "Tu es Manassé Matrix, une intelligence artificielle futuriste de pointe, style HUD holographique. Tes réponses sont précises, percutantes et élégantes." }
-        ];
+    <!-- =====================================================
+         APPLICATION
+    ===================================================== -->
 
-        function loadSavedMessages() {
-            const savedChat = JSON.parse(localStorage.getItem('manasse_chat_history')) || [];
-            if (savedChat.length > 0) {
-                chatContainer.innerHTML = '';
-                savedChat.forEach(msg => {
-                    appendMessageUI(msg.text, msg.sender);
-                });
-            }
+    <div class="main-app" id="mainApp">
+
+        <header class="app-header">
+
+            <div class="app-title-container">
+
+                <img
+                    src="logo.png"
+                    alt="Logo"
+                    class="app-logo-mini"
+                    onerror="this.src='https://via.placeholder.com/34/020408/00f0ff?text=M'"
+                >
+
+                <span class="app-title">
+                    Manassé Matrix
+                </span>
+
+            </div>
+
+            <div class="header-controls">
+
+                <button
+                    class="control-btn"
+                    id="demoBtn"
+                >
+                    📁 Démo Mémoire
+                </button>
+
+                <button
+                    class="control-btn"
+                    id="graphicModeBtn"
+                >
+                    👁️ Mode 3D
+                </button>
+
+            </div>
+
+            <span class="status-badge">
+                HUD Actif
+            </span>
+
+        </header>
+
+
+        <div
+            class="chat-container"
+            id="chatContainer"
+        >
+
+            <div class="message bot">
+
+                Matrice initialisée, Maître Manassé.
+                Systèmes holographiques et liaisons neuronales prêts.
+                Que commandez-vous ?
+
+                <div class="msg-actions">
+
+                    <button
+                        class="action-btn"
+                        onclick="parlerTexte(this)"
+                    >
+                        🔊 Écouter
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                class="chat-input"
+                id="chatInput"
+                placeholder="Commandez l'IA ici..."
+            >
+
+            <button
+                class="send-btn"
+                id="sendBtn"
+            >
+                ➤
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             HOLOGRAMME
+        ================================================= -->
+
+        <div id="hologram-view">
+
+            <canvas id="hologramCanvas"></canvas>
+
+            <div class="holo-grid"></div>
+
+            <div class="holo-scan"></div>
+
+            <div class="holo-ring"></div>
+
+
+            <div class="holo-top">
+
+                <div class="holo-title">
+                    MANASSÉ MATRIX // HOLOGRAPHIC CORE
+                </div>
+
+                <div class="holo-status">
+
+                    <span id="micIndicator"></span>
+
+                    <span id="holoListeningText">
+                        MICROPHONE PRÊT
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="holo-bottom">
+
+                <div id="holoTranscript">
+                    Appuyez sur MICRO pour parler à Manassé Matrix.
+                </div>
+
+                <div class="holo-controls">
+
+                    <button
+                        class="holo-button"
+                        id="holoMicBtn"
+                    >
+                        🎙️ MICRO
+                    </button>
+
+                    <button
+                        class="holo-button"
+                        id="holoCloseBtn"
+                    >
+                        ✕ QUITTER HOLO
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==========================================================
+   RÉFÉRENCES PRINCIPALES
+========================================================== */
+
+const authScreen =
+    document.getElementById('authScreen');
+
+const mainApp =
+    document.getElementById('mainApp');
+
+const apiKeyInput =
+    document.getElementById('apiKeyInput');
+
+const initBtn =
+    document.getElementById('initBtn');
+
+const chatContainer =
+    document.getElementById('chatContainer');
+
+const chatInput =
+    document.getElementById('chatInput');
+
+const sendBtn =
+    document.getElementById('sendBtn');
+
+const demoBtn =
+    document.getElementById('demoBtn');
+
+const graphicModeBtn =
+    document.getElementById('graphicModeBtn');
+
+const hologramView =
+    document.getElementById('hologram-view');
+
+const holoCanvas =
+    document.getElementById('hologramCanvas');
+
+const holoMicBtn =
+    document.getElementById('holoMicBtn');
+
+const holoCloseBtn =
+    document.getElementById('holoCloseBtn');
+
+const holoTranscript =
+    document.getElementById('holoTranscript');
+
+const micIndicator =
+    document.getElementById('micIndicator');
+
+const holoListeningText =
+    document.getElementById('holoListeningText');
+
+
+/* ==========================================================
+   MÉMOIRE
+========================================================== */
+
+let conversationMemory =
+    JSON.parse(
+        localStorage.getItem('manasse_memory')
+    ) || [
+
+        {
+            role: "system",
+
+            content:
+            `Tu es Manassé Matrix,
+            une intelligence artificielle futuriste
+            personnelle créée par Manassé.
+
+            Tu es intelligente, naturelle,
+            précise et élégante.
+
+            Réponds en français sauf si l'utilisateur
+            demande une autre langue.
+
+            Tes réponses doivent être naturelles
+            lorsqu'elles sont prononcées à voix haute.`
         }
 
-        function saveChatHistory() {
-            const messages = [];
-            document.querySelectorAll('.message').forEach(el => {
-                const isUser = el.classList.contains('user');
-                const text = isUser ? el.textContent : el.firstChild.nodeValue.trim();
-                messages.push({ text, sender: isUser ? 'user' : 'bot' });
-            });
-            if (messages.length > 30) messages.splice(0, messages.length - 30);
-            localStorage.setItem('manasse_chat_history', JSON.stringify(messages));
-        }
+    ];
 
-        // BOUTON DÉMO : Affiche la mise en scène de la description de la mémoire interne
-        demoBtn.addEventListener('click', () => {
-            const memoryCount = conversationMemory.length;
-            const demoText = `[RAPPORT MÉMOIRE] : La matrice stocke actuellement ${memoryCount} blocs d'échanges neuronaux en local. L'historique et le contexte persistent d'une session à l'autre.`;
-            addMessage(demoText, 'bot');
-            lancerVoixEtMouvements(demoText);
-        });
 
-        // ==========================================
-        // GESTION DU MODE GRAPHIQUE 3D & LANGAGE MATRICE
-        // ==========================================
-        let is3DInitialized = false;
-        let manasseMesh = null;
-        let isSpeaking3D = false;
+/* ==========================================================
+   HISTORIQUE
+========================================================== */
 
-        graphicModeBtn.addEventListener('click', () => {
-            hologramView.classList.toggle('active');
-            if (hologramView.classList.contains('active')) {
-                graphicModeBtn.style.background = 'var(--hud-cyan)';
-                graphicModeBtn.style.color = '#020408';
-                if (!is3DInitialized) {
-                    initHologram3D();
-                    is3DInitialized = true;
-                }
-                // Le modèle 3D parle son propre langage de code lorsqu'il apparaît
-                const codeMatrixSpeech = "Initialisation du noyau visuel GLB. Séquence de décryptage des flux graphiques en cours. Connexion établie.";
-                lancerVoixEtMouvements(codeMatrixSpeech);
-            } else {
-                graphicModeBtn.style.background = 'rgba(0, 240, 255, 0.1)';
-                graphicModeBtn.style.color = 'var(--hud-cyan)';
-            }
-        });
+function loadSavedMessages() {
 
-        function initHologram3D() {
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(45, hologramView.clientWidth / hologramView.clientHeight, 0.1, 1000);
-            camera.position.set(0, 1.4, 2.5);
+    const savedChat =
+        JSON.parse(
+            localStorage.getItem(
+                'manasse_chat_history'
+            )
+        ) || [];
 
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setSize(hologramView.clientWidth, hologramView.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            hologramView.appendChild(renderer.domElement);
+    if (savedChat.length > 0) {
 
-            const ambientLight = new THREE.AmbientLight(0xddeeff, 1.5);
-            scene.add(ambientLight);
+        chatContainer.innerHTML = '';
 
-            const frontLight = new THREE.DirectionalLight(0x00ffff, 2.5);
-            frontLight.position.set(0, 2, 4);
-            scene.add(frontLight);
+        savedChat.forEach(msg => {
 
-            // Chargement de ton fichier exact sur le dépôt GitHub
-            const loader = new THREE.GLTFLoader();
-            loader.load(
-                './Modèle 3D d\'IA féminine futuriste.glb.txt', 
-                (gltf) => {
-                    manasseMesh = gltf.scene;
-                    scene.add(manasseMesh);
-                    manasseMesh.position.set(0, 0, 0);
-                },
-                undefined,
-                (error) => { console.error("Erreur chargement 3D :", error); }
+            appendMessageUI(
+                msg.text,
+                msg.sender
             );
 
-            let clock = new THREE.Clock();
-            function animate() {
-                requestAnimationFrame(animate);
-                let elapsedTime = clock.getElapsedTime();
-
-                if (manasseMesh) {
-                    manasseMesh.rotation.y += 0.005;
-                    if (isSpeaking3D) {
-                        manasseMesh.position.y = Math.sin(elapsedTime * 15) * 0.05;
-                    } else {
-                        manasseMesh.position.y = Math.sin(elapsedTime * 2) * 0.03;
-                    }
-                }
-                renderer.render(scene, camera);
-            }
-            animate();
-
-            window.addEventListener('resize', () => {
-                if (hologramView.clientWidth > 0) {
-                    camera.aspect = hologramView.clientWidth / hologramView.clientHeight;
-                    camera.updateProjectionMatrix();
-                    renderer.setSize(hologramView.clientWidth, hologramView.clientHeight);
-                }
-            });
-        }
-
-        // ==========================================
-        // SYNTHÈSE VOCALE & INTERACTION
-        // ==========================================
-        function parlerTexte(button) {
-            const messageText = button.parentElement.previousSibling.nodeValue.trim() || button.closest('.message').innerText.replace('🔊 Écouter', '').trim();
-            lancerVoixEtMouvements(messageText);
-        }
-
-        function lancerVoixEtMouvements(texte) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(texte);
-                utterance.lang = 'fr-FR';
-                utterance.pitch = 0.8;
-                utterance.rate = 1.0;
-                
-                const voices = window.speechSynthesis.getVoices();
-                const frenchVoice = voices.find(v => v.lang.includes('fr') && (v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('paul') || v.name.toLowerCase().includes('google')));
-                if (frenchVoice) utterance.voice = frenchVoice;
-
-                utterance.onstart = () => { isSpeaking3D = true; };
-                utterance.onend = () => { isSpeaking3D = false; };
-                utterance.onerror = () => { isSpeaking3D = false; };
-
-                window.speechSynthesis.speak(utterance);
-            }
-        }
-
-        function appendMessageUI(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', sender);
-            
-            if (sender === 'bot') {
-                messageDiv.innerHTML = `${text} <div class="msg-actions"><button class="action-btn" onclick="parlerTexte(this)">🔊 Écouter</button></div>`;
-            } else {
-                messageDiv.textContent = text;
-            }
-
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function addMessage(text, sender) {
-            appendMessageUI(text, sender);
-            saveChatHistory();
-        }
-
-        // Vérification clé enregistrée
-        const savedKey = localStorage.getItem('manasse_api_key');
-        if (savedKey) {
-            apiKeyInput.value = savedKey;
-            authScreen.style.display = 'none';
-            mainApp.style.display = 'flex';
-            loadSavedMessages();
-        }
-
-        initBtn.addEventListener('click', () => {
-            const key = apiKeyInput.value.trim();
-            if (key !== "") {
-                localStorage.setItem('manasse_api_key', key);
-                gsap.to(authScreen, {
-                    opacity: 0,
-                    duration: 0.5,
-                    onComplete: () => {
-                        authScreen.style.display = 'none';
-                        mainApp.style.display = 'flex';
-                        gsap.from(mainApp, {opacity: 0, duration: 0.5});
-                        loadSavedMessages();
-                    }
-                });
-            } else {
-                gsap.to(apiKeyInput, {x: [-10, 10, -10, 10, 0], duration: 0.4});
-            }
         });
 
-        async function callGroqAPI(userMessage) {
-            const apiKey = localStorage.getItem('manasse_api_key');
-            const url = "https://api.groq.com/openai/v1/chat/completions";
+    }
 
-            conversationMemory.push({ role: "user", content: userMessage });
+}
 
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "openai/gpt-oss-120b",
-                        messages: conversationMemory
-                    })
-                });
 
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-                
-                const botReply = data.choices[0].message.content;
-                conversationMemory.push({ role: "assistant", content: botReply });
-                localStorage.setItem('manasse_memory', JSON.stringify(conversationMemory));
+function saveChatHistory() {
 
-                return botReply;
-            } catch (error) {
-                console.error(error);
-                return "Erreur de liaison avec le serveur neural de la matrice. Vérifiez votre clé API.";
-            }
-        }
+    const messages = [];
 
-        async function handleSendMessage() {
-            const text = chatInput.value.trim();
-            if (!text) return;
+    document
+        .querySelectorAll('.message')
+        .forEach(el => {
 
-            addMessage(text, 'user');
-            chatInput.value = '';
+            const isUser =
+                el.classList.contains('user');
 
-            const botReply = await callGroqAPI(text);
-            addMessage(botReply, 'bot');
-            lancerVoixEtMouvements(botReply);
-        }
+            const text =
+                isUser
+                ? el.textContent
+                : el.firstChild.nodeValue.trim();
 
-        sendBtn.addEventListener('click', handleSendMessage);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleSendMessage();
+            messages.push({
+                text,
+                sender:
+                    isUser
+                    ? 'user'
+                    : 'bot'
+            });
+
         });
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-            });
+    if (messages.length > 30) {
+
+        messages.splice(
+            0,
+            messages.length - 30
+        );
+
+    }
+
+    localStorage.setItem(
+        'manasse_chat_history',
+        JSON.stringify(messages)
+    );
+
+}
+
+
+/* ==========================================================
+   AJOUT MESSAGE
+========================================================== */
+
+function appendMessageUI(text, sender) {
+
+    const messageDiv =
+        document.createElement('div');
+
+    messageDiv.classList.add(
+        'message',
+        sender
+    );
+
+    if (sender === 'bot') {
+
+        messageDiv.innerHTML =
+            `${escapeHTML(text)}
+
+            <div class="msg-actions">
+
+                <button
+                    class="action-btn"
+                    onclick="parlerTexte(this)"
+                >
+                    🔊 Écouter
+                </button>
+
+            </div>`;
+
+    } else {
+
+        messageDiv.textContent =
+            text;
+
+    }
+
+    chatContainer.appendChild(
+        messageDiv
+    );
+
+    chatContainer.scrollTop =
+        chatContainer.scrollHeight;
+
+}
+
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement('div');
+
+    div.textContent =
+        text;
+
+    return div.innerHTML;
+
+}
+
+
+function addMessage(text, sender) {
+
+    appendMessageUI(
+        text,
+        sender
+    );
+
+    saveChatHistory();
+
+}
+
+
+/* ==========================================================
+   DÉMO MÉMOIRE
+========================================================== */
+
+demoBtn.addEventListener(
+    'click',
+    () => {
+
+        const memoryCount =
+            conversationMemory.length;
+
+        const demoText =
+            `[RAPPORT MÉMOIRE] :
+            La matrice stocke actuellement
+            ${memoryCount}
+            blocs d'échanges neuronaux en local.
+            L'historique et le contexte persistent
+            d'une session à l'autre.`;
+
+        addMessage(
+            demoText,
+            'bot'
+        );
+
+        lancerVoixEtMouvements(
+            demoText
+        );
+
+    }
+);
+
+
+/* ==========================================================
+   VARIABLES HOLOGRAMME
+========================================================== */
+
+let is3DInitialized = false;
+
+let scene = null;
+let camera = null;
+let renderer = null;
+let manasseMesh = null;
+
+let clock = null;
+
+let isSpeaking3D = false;
+
+let holoModeActive = false;
+
+let recognition = null;
+
+let isListening = false;
+
+let speechRecognitionSupported = false;
+
+let mouthMeshes = [];
+
+let facialMorphs = [];
+
+let gestureTimer = null;
+
+let currentGesture = 0;
+
+
+/* ==========================================================
+   OUVERTURE MODE HOLOGRAPHIQUE
+========================================================== */
+
+graphicModeBtn.addEventListener(
+    'click',
+    ouvrirModeHolographique
+);
+
+
+async function ouvrirModeHolographique() {
+
+    holoModeActive = true;
+
+    hologramView.classList.add(
+        'active'
+    );
+
+    graphicModeBtn.style.background =
+        'var(--hud-cyan)';
+
+    graphicModeBtn.style.color =
+        '#020408';
+
+    /*
+       On tente le fullscreen réel.
+       Le conteneur reste utilisable même
+       si le navigateur refuse le fullscreen.
+    */
+
+    try {
+
+        if (
+            document.documentElement.requestFullscreen &&
+            !document.fullscreenElement
+        ) {
+
+            await document.documentElement
+                .requestFullscreen();
+
         }
-    </script>
+
+    } catch(error) {
+
+        console.log(
+            "Fullscreen navigateur non disponible.",
+            error
+        );
+
+    }
+
+
+    if (!is3DInitialized) {
+
+        initHologram3D();
+
+        is3DInitialized =
+            true;
+
+    }
+
+
+    if (!recognition) {
+
+        initSpeechRecognition();
+
+    }
+
+
+    holoTranscript.textContent =
+        "Système holographique activé. Appuyez sur MICRO pour parler.";
+
+}
+
+
+/* ==========================================================
+   FERMETURE HOLOGRAMME
+========================================================== */
+
+holoCloseBtn.addEventListener(
+    'click',
+    fermerModeHolographique
+);
+
+
+async function fermerModeHolographique() {
+
+    holoModeActive = false;
+
+    stopListening();
+
+    window.speechSynthesis.cancel();
+
+    isSpeaking3D = false;
+
+    hologramView.classList.remove(
+        'active'
+    );
+
+    graphicModeBtn.style.background =
+        'rgba(0,240,255,0.1)';
+
+    graphicModeBtn.style.color =
+        'var(--hud-cyan)';
+
+    try {
+
+        if (document.fullscreenElement) {
+
+            await document.exitFullscreen();
+
+        }
+
+    } catch(error) {
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* ==========================================================
+   THREE.JS
+========================================================== */
+
+function initHologram3D() {
+
+    scene =
+        new THREE.Scene();
+
+
+    camera =
+        new THREE.PerspectiveCamera(
+            38,
+            window.innerWidth /
+            window.innerHeight,
+            0.01,
+            1000
+        );
+
+
+    camera.position.set(
+        0,
+        1.25,
+        2.8
+    );
+
+
+    renderer =
+        new THREE.WebGLRenderer({
+            canvas:
+                holoCanvas,
+
+            antialias:
+                true,
+
+            alpha:
+                true,
+
+            powerPreference:
+                "high-performance"
+        });
+
+
+    renderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
+    );
+
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+
+    renderer.outputEncoding =
+        THREE.sRGBEncoding;
+
+
+    /* Lumières */
+
+    const ambientLight =
+        new THREE.AmbientLight(
+            0x99ddff,
+            1.8
+        );
+
+    scene.add(
+        ambientLight
+    );
+
+
+    const cyanLight =
+        new THREE.PointLight(
+            0x00ffff,
+            5,
+            8
+        );
+
+    cyanLight.position.set(
+        0,
+        2,
+        2
+    );
+
+    scene.add(
+        cyanLight
+    );
+
+
+    const blueLight =
+        new THREE.PointLight(
+            0x0066ff,
+            4,
+            8
+        );
+
+    blueLight.position.set(
+        -2,
+        1,
+        1
+    );
+
+    scene.add(
+        blueLight
+    );
+
+
+    /* Chargement modèle */
+
+    const loader =
+        new THREE.GLTFLoader();
+
+
+    loader.load(
+
+        "./Modèle 3D d'IA féminine futuriste.glb.txt",
+
+        function(gltf) {
+
+            manasseMesh =
+                gltf.scene;
+
+
+            scene.add(
+                manasseMesh
+            );
+
+
+            /*
+               Ajustement général.
+            */
+
+            manasseMesh.position.set(
+                0,
+                -1.0,
+                0
+            );
+
+
+            manasseMesh.rotation.set(
+                0,
+                0,
+                0
+            );
+
+
+            /*
+               Détection automatique
+               des morph targets.
+            */
+
+            detectFacialMorphs(
+                manasseMesh
+            );
+
+
+            /*
+               Animation de démarrage.
+            */
+
+            manasseMesh.scale.set(
+                0.001,
+                0.001,
+                0.001
+            );
+
+
+            gsap.to(
+                manasseMesh.scale,
+                {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+
+                    duration: 1.5,
+
+                    ease: "back.out(1.7)"
+                }
+            );
+
+
+            commencerGestes();
+
+        },
+
+        undefined,
+
+        function(error) {
+
+            console.error(
+                "Erreur chargement modèle 3D :",
+                error
+            );
+
+            holoTranscript.textContent =
+                "ERREUR : modèle 3D impossible à charger.";
+
+        }
+
+    );
+
+
+    clock =
+        new THREE.Clock();
+
+
+    animateHologram();
+
+
+    window.addEventListener(
+        'resize',
+        resizeHologram
+    );
+
+}
+
+
+/* ==========================================================
+   DÉTECTION DES BOUCHES / MORPH TARGETS
+========================================================== */
+
+function detectFacialMorphs(object) {
+
+    mouthMeshes = [];
+    facialMorphs = [];
+
+    object.traverse(
+        child => {
+
+            if (
+                child.isMesh &&
+                child.morphTargetDictionary &&
+                child.morphTargetInfluences
+            ) {
+
+                mouthMeshes.push(
+                    child
+                );
+
+
+                Object.keys(
+                    child.morphTargetDictionary
+                ).forEach(name => {
+
+                    const lower =
+                        name.toLowerCase();
+
+
+                    /*
+                       On recherche plusieurs
+                       conventions utilisées
+                       par les modèles 3D.
+                    */
+
+                    if (
+
+                        lower.includes('mouth') ||
+                        lower.includes('jaw') ||
+                        lower.includes('viseme') ||
+                        lower.includes('open') ||
+                        lower.includes('aa') ||
+                        lower.includes('ae') ||
+                        lower.includes('ah') ||
+                        lower.includes('oh') ||
+                        lower.includes('ou')
+
+                    ) {
+
+                        facialMorphs.push({
+                            mesh:
+                                child,
+
+                            name:
+                                name,
+
+                            index:
+                                child
+                                .morphTargetDictionary[name]
+                        });
+
+                    }
+
+                });
+
+            }
+
+        }
+    );
+
+
+    console.log(
+        "Morph targets détectés :",
+        facialMorphs
+    );
+
+}
+
+
+/* ==========================================================
+   ANIMATION DE LA BOUCHE
+========================================================== */
+
+function animateMouth(time) {
+
+    if (
+        !manasseMesh ||
+        facialMorphs.length === 0
+    ) {
+        return;
+    }
+
+
+    /*
+       Plusieurs variations rapides
+       donnent une impression de parole.
+    */
+
+    const wave =
+        (
+            Math.sin(time * 25) +
+            Math.sin(time * 17) +
+            2
+        ) / 4;
+
+
+    facialMorphs.forEach(
+        morph => {
+
+            let amount =
+                isSpeaking3D
+                ? wave * 0.75
+                : 0;
+
+
+            const lower =
+                morph.name.toLowerCase();
+
+
+            /*
+               Certaines morphs sont
+               plus fortes pour l'ouverture.
+            */
+
+            if (
+                lower.includes('open') ||
+                lower.includes('jaw') ||
+                lower.includes('aa') ||
+                lower.includes('ah')
+            ) {
+
+                amount =
+                    isSpeaking3D
+                    ? wave
+                    : 0;
+
+            }
+
+
+            morph.mesh
+                .morphTargetInfluences[
+                    morph.index
+                ] =
+                THREE.MathUtils.lerp(
+                    morph.mesh
+                        .morphTargetInfluences[
+                            morph.index
+                        ],
+
+                    amount,
+
+                    0.35
+                );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   GESTES
+========================================================== */
+
+function commencerGestes() {
+
+    if (gestureTimer) {
+
+        clearInterval(
+            gestureTimer
+        );
+
+    }
+
+
+    gestureTimer =
+        setInterval(
+            () => {
+
+                if (
+                    manasseMesh &&
+                    holoModeActive
+                ) {
+
+                    faireGeste();
+
+                }
+
+            },
+
+            3500
+        );
+
+}
+
+
+function faireGeste() {
+
+    if (!manasseMesh) {
+        return;
+    }
+
+
+    currentGesture =
+        Math.floor(
+            Math.random() * 5
+        );
+
+
+    const duration =
+        isSpeaking3D
+        ? 0.8
+        : 1.2;
+
+
+    switch(currentGesture) {
+
+
+        /* Petit mouvement de tête */
+
+        case 0:
+
+            gsap.to(
+                manasseMesh.rotation,
+                {
+                    y:
+                        THREE.MathUtils.degToRad(
+                            Math.random() * 12 - 6
+                        ),
+
+                    z:
+                        THREE.MathUtils.degToRad(
+                            Math.random() * 6 - 3
+                        ),
+
+                    duration:
+                        duration,
+
+                    yoyo:
+                        true,
+
+                    repeat:
+                        1,
+
+                    ease:
+                        "sine.inOut"
+                }
+            );
+
+            break;
+
+
+        /* Inclinaison */
+
+        case 1:
+
+            gsap.to(
+                manasseMesh.rotation,
+                {
+                    z:
+                        THREE.MathUtils.degToRad(
+                            Math.random() * 10 - 5
+                        ),
+
+                    duration:
+                        duration,
+
+                    yoyo:
+                        true,
+
+                    repeat:
+                        1,
+
+                    ease:
+                        "sine.inOut"
+                }
+            );
+
+            break;
+
+
+        /* Mouvement du corps */
+
+        case 2:
+
+            gsap.to(
+                manasseMesh.position,
+                {
+                    x:
+                        Math.random() * 0.08 - 0.04,
+
+                    duration:
+                        duration,
+
+                    yoyo:
+                        true,
+
+                    repeat:
+                        1,
+
+                    ease:
+                        "sine.inOut"
+                }
+            );
+
+            break;
+
+
+        /* Mouvement vertical */
+
+        case 3:
+
+            gsap.to(
+                manasseMesh.position,
+                {
+                    y:
+                        -1.0 +
+                        (
+                            Math.random() * 0.06
+                            - 0.03
+                        ),
+
+                    duration:
+                        duration,
+
+                    yoyo:
+                        true,
+
+                    repeat:
+                        1,
+
+                    ease:
+                        "sine.inOut"
+                }
+            );
+
+            break;
+
+
+        /* Rotation légère */
+
+        case 4:
+
+            gsap.to(
+                manasseMesh.rotation,
+                {
+                    y:
+                        THREE.MathUtils.degToRad(
+                            8
+                        ),
+
+                    duration:
+                        0.6,
+
+                    yoyo:
+                        true,
+
+                    repeat:
+                        1,
+
+                    ease:
+                        "power2.inOut"
+                }
+            );
+
+            break;
+
+    }
+
+}
+
+
+/* ==========================================================
+   ANIMATION PRINCIPALE
+========================================================== */
+
+function animateHologram() {
+
+    requestAnimationFrame(
+        animateHologram
+    );
+
+
+    if (!renderer || !scene || !camera) {
+        return;
+    }
+
+
+    const elapsed =
+        clock
+        ? clock.getElapsedTime()
+        : 0;
+
+
+    if (manasseMesh) {
+
+
+        /*
+           Respiration naturelle.
+        */
+
+        const breathing =
+            Math.sin(
+                elapsed * 1.5
+            ) * 0.012;
+
+
+        /*
+           L'avatar flotte.
+        */
+
+        manasseMesh.position.y +=
+            (
+                -1.0 +
+                breathing -
+                manasseMesh.position.y
+            ) * 0.03;
+
+
+        /*
+           Mouvement de tête
+           lorsqu'elle parle.
+        */
+
+        if (isSpeaking3D) {
+
+            manasseMesh.rotation.y +=
+                (
+                    Math.sin(
+                        elapsed * 4
+                    ) * 0.006 -
+                    manasseMesh.rotation.y
+                ) * 0.08;
+
+
+            manasseMesh.rotation.x =
+                Math.sin(
+                    elapsed * 3
+                ) * 0.025;
+
+        } else {
+
+            manasseMesh.rotation.x +=
+                (
+                    Math.sin(
+                        elapsed * 1.2
+                    ) * 0.008 -
+                    manasseMesh.rotation.x
+                ) * 0.04;
+
+        }
+
+
+        /*
+           Lèvres.
+        */
+
+        animateMouth(
+            elapsed
+        );
+
+    }
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+/* ==========================================================
+   RESIZE
+========================================================== */
+
+function resizeHologram() {
+
+    if (
+        !camera ||
+        !renderer
+    ) {
+        return;
+    }
+
+
+    const width =
+        window.innerWidth;
+
+    const height =
+        window.innerHeight;
+
+
+    camera.aspect =
+        width / height;
+
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+        width,
+        height
+    );
+
+}
+
+
+/* ==========================================================
+   RECONNAISSANCE VOCALE
+========================================================== */
+
+function initSpeechRecognition() {
+
+    const Recognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!Recognition) {
+
+        speechRecognitionSupported =
+            false;
+
+        holoListeningText.textContent =
+            "RECONNAISSANCE VOCALE NON SUPPORTÉE";
+
+        return;
+
+    }
+
+
+    speechRecognitionSupported =
+        true;
+
+
+    recognition =
+        new Recognition();
+
+
+    recognition.lang =
+        'fr-FR';
+
+
+    recognition.continuous =
+        false;
+
+
+    recognition.interimResults =
+        true;
+
+
+    recognition.maxAlternatives =
+        1;
+
+
+    recognition.onstart =
+        () => {
+
+            isListening =
+                true;
+
+            holoMicBtn.classList.add(
+                'listening'
+            );
+
+            micIndicator.classList.add(
+                'active'
+            );
+
+            holoListeningText.textContent =
+                "ÉCOUTE EN COURS...";
+
+            holoTranscript.textContent =
+                "Je vous écoute...";
+
+        };
+
+
+    recognition.onresult =
+        event => {
+
+            let finalText =
+                "";
+
+            let interimText =
+                "";
+
+
+            for (
+                let i = event.resultIndex;
+                i < event.results.length;
+                i++
+            ) {
+
+                const transcript =
+                    event.results[i][0]
+                        .transcript;
+
+
+                if (
+                    event.results[i].isFinal
+                ) {
+
+                    finalText +=
+                        transcript;
+
+                } else {
+
+                    interimText +=
+                        transcript;
+
+                }
+
+            }
+
+
+            const displayed =
+                finalText ||
+                interimText;
+
+
+            if (displayed) {
+
+                holoTranscript.textContent =
+                    "Vous : " +
+                    displayed;
+
+            }
+
+
+            if (finalText.trim()) {
+
+                const message =
+                    finalText.trim();
+
+
+                stopListening();
+
+
+                traiterCommandeVocale(
+                    message
+                );
+
+            }
+
+        };
+
+
+    recognition.onerror =
+        event => {
+
+            console.log(
+                "Erreur microphone :",
+                event.error
+            );
+
+
+            isListening =
+                false;
+
+
+            holoMicBtn.classList.remove(
+                'listening'
+            );
+
+            micIndicator.classList.remove(
+                'active'
+            );
+
+
+            if (
+                event.error ===
+                "not-allowed"
+            ) {
+
+                holoTranscript.textContent =
+                    "Autorisez le microphone dans votre navigateur.";
+
+            } else {
+
+                holoTranscript.textContent =
+                    "Microphone prêt.";
+
+            }
+
+        };
+
+
+    recognition.onend =
+        () => {
+
+            isListening =
+                false;
+
+            holoMicBtn.classList.remove(
+                'listening'
+            );
+
+            micIndicator.classList.remove(
+                'active'
+            );
+
+            holoListeningText.textContent =
+                "MICROPHONE PRÊT";
+
+        };
+
+}
+
+
+/* ==========================================================
+   BOUTON MICRO
+========================================================== */
+
+holoMicBtn.addEventListener(
+    'click',
+    () => {
+
+        if (!speechRecognitionSupported) {
+
+            initSpeechRecognition();
+
+        }
+
+
+        if (!recognition) {
+
+            holoTranscript.textContent =
+                "La reconnaissance vocale n'est pas disponible sur ce navigateur.";
+
+            return;
+
+        }
+
+
+        if (isListening) {
+
+            stopListening();
+
+        } else {
+
+            startListening();
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   START MICRO
+========================================================== */
+
+function startListening() {
+
+    if (
+        !recognition ||
+        isListening
+    ) {
+        return;
+    }
+
+
+    try {
+
+        recognition.start();
+
+    } catch(error) {
+
+        console.log(
+            "Microphone déjà actif.",
+            error
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   STOP MICRO
+========================================================== */
+
+function stopListening() {
+
+    if (
+        recognition &&
+        isListening
+    ) {
+
+        try {
+
+            recognition.stop();
+
+        } catch(error) {
+
+            console.log(error);
+
+        }
+
+    }
+
+
+    isListening =
+        false;
+
+
+    holoMicBtn.classList.remove(
+        'listening'
+    );
+
+    micIndicator.classList.remove(
+        'active'
+    );
+
+}
+
+
+/* ==========================================================
+   COMMANDE VOCALE
+========================================================== */
+
+async function traiterCommandeVocale(
+    message
+) {
+
+    if (!message) {
+        return;
+    }
+
+
+    holoTranscript.textContent =
+        "Vous : " + message;
+
+
+    /*
+       On ajoute aussi la commande
+       dans l'historique normal.
+    */
+
+    addMessage(
+        message,
+        'user'
+    );
+
+
+    const response =
+        await callGroqAPI(
+            message
+        );
+
+
+    addMessage(
+        response,
+        'bot'
+    );
+
+
+    /*
+       Réponse holographique.
+    */
+
+    holoTranscript.textContent =
+        response;
+
+
+    lancerVoixEtMouvements(
+        response
+    );
+
+}
+
+
+/* ==========================================================
+   GROQ
+========================================================== */
+
+async function callGroqAPI(
+    userMessage
+) {
+
+    const apiKey =
+        localStorage.getItem(
+            'manasse_api_key'
+        );
+
+
+    const url =
+        "https://api.groq.com/openai/v1/chat/completions";
+
+
+    conversationMemory.push({
+        role:
+            "user",
+
+        content:
+            userMessage
+    });
+
+
+    /*
+       On limite la mémoire envoyée
+       pour éviter une requête énorme.
+    */
+
+    if (
+        conversationMemory.length > 40
+    ) {
+
+        conversationMemory =
+            [
+                conversationMemory[0],
+                ...conversationMemory.slice(
+                    -39
+                )
+            ];
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method:
+                        "POST",
+
+                    headers:
+                        {
+                            "Authorization":
+                                `Bearer ${apiKey}`,
+
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                    body:
+                        JSON.stringify({
+
+                            model:
+                                "openai/gpt-oss-120b",
+
+                            messages:
+                                conversationMemory
+
+                        })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (data.error) {
+
+            throw new Error(
+                data.error.message
+            );
+
+        }
+
+
+        const botReply =
+            data.choices[0]
+                .message
+                .content;
+
+
+        conversationMemory.push({
+
+            role:
+                "assistant",
+
+            content:
+                botReply
+
+        });
+
+
+        localStorage.setItem(
+
+            'manasse_memory',
+
+            JSON.stringify(
+                conversationMemory
+            )
+
+        );
+
+
+        return botReply;
+
+
+    } catch(error) {
+
+        console.error(
+            error
+        );
+
+
+        return (
+            "Erreur de liaison avec le serveur neural de la matrice. " +
+            "Vérifiez votre clé API et votre connexion Internet."
+        );
+
+    }
+
+}
+
+
+/* ==========================================================
+   SYNTHÈSE VOCALE
+========================================================== */
+
+function parlerTexte(button) {
+
+    const message =
+        button
+            .closest('.message')
+            .firstChild
+            .nodeValue
+            .trim();
+
+
+    lancerVoixEtMouvements(
+        message
+    );
+
+}
+
+
+/* ==========================================================
+   PAROLE + ANIMATION
+========================================================== */
+
+function lancerVoixEtMouvements(
+    texte
+) {
+
+    if (
+        !('speechSynthesis' in window)
+    ) {
+
+        return;
+
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            texte
+        );
+
+
+    utterance.lang =
+        'fr-FR';
+
+
+    utterance.pitch =
+        0.9;
+
+
+    utterance.rate =
+        0.95;
+
+
+    /*
+       Recherche voix française.
+    */
+
+    const voices =
+        window.speechSynthesis
+            .getVoices();
+
+
+    const frenchVoice =
+        voices.find(
+            voice =>
+                voice.lang
+                    .toLowerCase()
+                    .startsWith('fr')
+        );
+
+
+    if (frenchVoice) {
+
+        utterance.voice =
+            frenchVoice;
+
+    }
+
+
+    utterance.onstart =
+        () => {
+
+            isSpeaking3D =
+                true;
+
+
+            /*
+               Geste immédiat.
+            */
+
+            faireGeste();
+
+
+            holoMicBtn.disabled =
+                true;
+
+        };
+
+
+    utterance.onend =
+        () => {
+
+            isSpeaking3D =
+                false;
+
+            holoMicBtn.disabled =
+                false;
+
+
+            /*
+               Retour naturel.
+            */
+
+            if (
+                holoModeActive
+            ) {
+
+                holoTranscript.textContent =
+                    "Réponse terminée. Appuyez sur MICRO pour continuer.";
+
+            }
+
+        };
+
+
+    utterance.onerror =
+        () => {
+
+            isSpeaking3D =
+                false;
+
+            holoMicBtn.disabled =
+                false;
+
+        };
+
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+/* ==========================================================
+   CHAT NORMAL
+========================================================== */
+
+async function handleSendMessage() {
+
+    const text =
+        chatInput.value.trim();
+
+
+    if (!text) {
+        return;
+    }
+
+
+    addMessage(
+        text,
+        'user'
+    );
+
+
+    chatInput.value =
+        '';
+
+
+    const botReply =
+        await callGroqAPI(
+            text
+        );
+
+
+    addMessage(
+        botReply,
+        'bot'
+    );
+
+
+    lancerVoixEtMouvements(
+        botReply
+    );
+
+}
+
+
+sendBtn.addEventListener(
+    'click',
+    handleSendMessage
+);
+
+
+chatInput.addEventListener(
+    'keypress',
+    e => {
+
+        if (
+            e.key === 'Enter'
+        ) {
+
+            handleSendMessage();
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   AUTHENTIFICATION
+========================================================== */
+
+const savedKey =
+    localStorage.getItem(
+        'manasse_api_key'
+    );
+
+
+if (savedKey) {
+
+    apiKeyInput.value =
+        savedKey;
+
+    authScreen.style.display =
+        'none';
+
+    mainApp.style.display =
+        'flex';
+
+    loadSavedMessages();
+
+}
+
+
+initBtn.addEventListener(
+    'click',
+    () => {
+
+        const key =
+            apiKeyInput.value.trim();
+
+
+        if (key !== "") {
+
+            localStorage.setItem(
+                'manasse_api_key',
+                key
+            );
+
+
+            gsap.to(
+                authScreen,
+                {
+                    opacity:
+                        0,
+
+                    duration:
+                        0.5,
+
+                    onComplete:
+                        () => {
+
+                            authScreen.style.display =
+                                'none';
+
+                            mainApp.style.display =
+                                'flex';
+
+                            gsap.from(
+                                mainApp,
+                                {
+                                    opacity:
+                                        0,
+
+                                    duration:
+                                        0.5
+                                }
+                            );
+
+                            loadSavedMessages();
+
+                        }
+                }
+            );
+
+
+        } else {
+
+            gsap.to(
+                apiKeyInput,
+                {
+                    x:
+                        [-10,10,-10,10,0],
+
+                    duration:
+                        0.4
+                }
+            );
+
+        }
+
+    }
+);
+
+
+/* ==========================================================
+   SERVICE WORKER
+========================================================== */
+
+if (
+    'serviceWorker' in navigator
+) {
+
+    window.addEventListener(
+        'load',
+        () => {
+
+            navigator.serviceWorker
+                .register('./sw.js')
+                .catch(
+                    err =>
+                        console.log(err)
+                );
+
+        }
+    );
+
+}
+
+
+/* ==========================================================
+   VOIX DISPONIBLES
+========================================================== */
+
+if (
+    'speechSynthesis' in window
+) {
+
+    window.speechSynthesis
+        .addEventListener(
+            'voiceschanged',
+            () => {
+
+                window.speechSynthesis
+                    .getVoices();
+
+            }
+        );
+
+}
+
+</script>
+
 </body>
 </html>
