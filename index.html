@@ -34,7 +34,7 @@ button:active{background:#00f0ff;color:#020408;}
 #start{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#06212b,#020408 75%);}
 #start button{padding:18px 25px;border-radius:30px;}
 
-#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:85%;z-index:200;text-align:center;color:#00f0ff;font-size:12px;line-height:1.6;display:none;}
+#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:85%;z-index:200;text-align:center;color:#00f0ff;font-size:12px;line-height:1.6;display:none;background:rgba(2,4,8,0.9);padding:15px;border:1px solid #00f0ff;border-radius:10px;}
 </style>
 </head>
 <body>
@@ -46,7 +46,7 @@ button:active{background:#00f0ff;color:#020408;}
     <div id="grid"></div>
     <div id="title">MANASSÉ MATRIX</div>
     <div id="dialogue"></div>
-    <div id="status">SYSTÈME EN ATTENTE</div>
+    <div id="status">SYSTÈMES EN ATTENTE</div>
     <div id="micLight"></div>
 
     <div id="controls">
@@ -61,7 +61,6 @@ button:active{background:#00f0ff;color:#020408;}
 </div>
 
 <script>
-// Nom exact du fichier 3D fourni
 const AVATAR = "./Modèle 3D d'IA féminine futuriste.glb.txt";
 const GROQ = "https://api.groq.com/openai/v1/chat/completions";
 const MODEL = "llama-3.3-70b-versatile";
@@ -85,23 +84,16 @@ let processing = false;
 let lastAnswer = "";
 
 let avatar = null;
-let jawMesh = null; // Élément ou os détecté pour la bouche/mâchoire
+let jawMesh = null;
 let scene = null;
 let camera3D = null;
 let renderer = null;
 let clock = null;
 
-// Audio Analyser pour synchronisation labiale en direct
-let audioCtx = null;
-let analyser = null;
-let dataArray = null;
-let sourceAudioNode = null;
-let audioDestination = null;
-
 let memory = [
     {
         role: "system",
-        content: "Tu es MANASSÉ MATRIX. Une intelligence artificielle personnelle holographique. Tu parles naturellement en français, de façon intelligente, précise et concise."
+        content: "Tu es MANASSÉ MATRIX. Une intelligence artificielle personnelle holographique féminine. Tu réponds de manière concise, vive et directe en français."
     }
 ];
 
@@ -119,26 +111,18 @@ function getKey() {
 
 async function startMedia() {
     try {
-        status.innerText = "ACTIVATION DES CAPTEURS...";
+        status.innerText = "ACTIVATION MICRO & CAMÉRA...";
         stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true },
-            video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }
+            audio: true,
+            video: { facingMode: "user" }
         });
         video.srcObject = stream;
         await video.play();
-
-        // Initialisation de l'AudioContext pour l'analyse vocale
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-        analyser = audioCtx.createAnalyser();
-        analyser.fftSize = 256;
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-        status.innerText = "CAMÉRA + MICRO ACTIVÉS";
+        status.innerText = "CAPTEURS OK";
         return true;
     } catch (error) {
         console.error(error);
-        showError("Accès refusé au micro ou à la caméra. Vérifie les autorisations HTTPS.");
+        showError("Accès refusé au micro ou à la caméra.<br>Vérifie dans les paramètres de ton navigateur (icône cadenas à côté de l'URL) que le micro et la caméra sont autorisés.");
         return false;
     }
 }
@@ -146,7 +130,7 @@ async function startMedia() {
 function setupRecognition() {
     const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Speech) {
-        showError("La reconnaissance vocale n'est pas supportée par ce navigateur. Utilise Google Chrome.");
+        showError("La reconnaissance vocale n'est pas supportée par ce navigateur. Utilise Google Chrome sur Android.");
         return false;
     }
 
@@ -159,19 +143,25 @@ function setupRecognition() {
         listening = true;
         micLight.classList.add("active");
         micBtn.innerText = "🔴 ÉCOUTE...";
-        status.innerText = "JE VOUS ÉCOUTE...";
+        status.innerText = "JE T'ÉCOUTE...";
     };
 
     recognition.onresult = async (event) => {
         const text = event.results[0][0].transcript.trim();
         if (text) {
-            dialogue.innerText = "Vous : " + text;
+            dialogue.innerText = "Moi : " + text;
             await askGroq(text);
         }
     };
 
-    recognition.onerror = () => { stopListeningState(); };
-    recognition.onend = () => { stopListeningState(); };
+    recognition.onerror = (e) => {
+        console.warn("Speech recognition error:", e.error);
+        stopListeningState();
+    };
+
+    recognition.onend = () => {
+        stopListeningState();
+    };
     return true;
 }
 
@@ -186,7 +176,11 @@ function stopListeningState() {
 
 function listen() {
     if (!recognition || listening || speaking || processing) return;
-    try { recognition.start(); } catch (e) {}
+    try { 
+        recognition.start(); 
+    } catch (e) {
+        console.log("Recognition start error:", e);
+    }
 }
 
 micBtn.onclick = () => {
@@ -200,17 +194,15 @@ micBtn.onclick = () => {
 function getImage() {
     if (!video.videoWidth || !video.videoHeight) return null;
     const c = document.createElement("canvas");
-    const width = 640;
-    const height = Math.round(video.videoHeight / video.videoWidth * width);
-    c.width = width;
-    c.height = height;
+    c.width = 480;
+    c.height = Math.round(video.videoHeight / video.videoWidth * 480);
     const ctx = c.getContext("2d");
     ctx.save();
-    ctx.translate(width, 0);
+    ctx.translate(c.width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, width, height);
+    ctx.drawImage(video, 0, 0, c.width, c.height);
     ctx.restore();
-    return c.toDataURL("image/jpeg", 0.6);
+    return c.toDataURL("image/jpeg", 0.5);
 }
 
 async function askGroq(text) {
@@ -218,17 +210,17 @@ async function askGroq(text) {
     processing = true;
     if (recognition) { try { recognition.stop(); } catch(e){} }
 
-    status.innerText = "ANALYSE NEURONALE...";
+    status.innerText = "RÉFLEXION...";
     const key = getKey();
     if (!key) { processing = false; return; }
 
     memory.push({ role: "user", content: text });
     const image = getImage();
-    let messages = memory.slice(-10);
+    let messages = memory.slice(-8);
 
     messages[messages.length - 1] = {
         role: "user",
-        content: [{ type: "text", text: "L'utilisateur dit : " + text }]
+        content: [{ type: "text", text: text }]
     };
 
     if (image) {
@@ -239,7 +231,7 @@ async function askGroq(text) {
         const response = await fetch(GROQ, {
             method: "POST",
             headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
-            body: JSON.stringify({ model: MODEL, messages: messages, temperature: 0.7, max_tokens: 300 })
+            body: JSON.stringify({ model: MODEL, messages: messages, temperature: 0.7, max_tokens: 250 })
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data?.error?.message || "Erreur API");
@@ -253,8 +245,8 @@ async function askGroq(text) {
     } catch (error) {
         console.error(error);
         processing = false;
-        status.innerText = "ERREUR RÉSEAU";
-        dialogue.innerText = "Erreur de liaison avec le serveur Groq.";
+        status.innerText = "ERREUR";
+        dialogue.innerText = "Erreur de connexion.";
         setTimeout(listen, 1500);
     }
 }
@@ -262,38 +254,37 @@ async function askGroq(text) {
 function speak(text) {
     if (!text || !window.speechSynthesis) return;
     speechSynthesis.cancel();
-    if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-    }
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "fr-FR";
-    utterance.rate = 1.0;
-    utterance.pitch = 0.9;
+    utterance.rate = 1.25; // Voix rapide et dynamique
+    utterance.pitch = 1.2;  // Tonalité plus féminine/vive
 
     const voices = speechSynthesis.getVoices();
-    const french = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("fr"));
-    if (french) utterance.voice = french;
+    // Cherche en priorité une voix féminine française (ex: Google français, Hortense, etc.)
+    const frenchVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('hortense') || v.name.toLowerCase().includes('amélie')));
+    if (frenchVoice) {
+        utterance.voice = frenchVoice;
+    } else {
+        const anyFrench = voices.find(v => v.lang.startsWith("fr"));
+        if (anyFrench) utterance.voice = anyFrench;
+    }
 
-    // Capture audio stream de la synthèse pour l'analyseur
     utterance.onstart = () => {
         speaking = true;
         status.innerText = "MANASSÉ PARLE...";
-        
-        // Création d'un nœud audio à partir de l'élément lu (Web Speech API ne stream pas directement partout, 
-        // on utilise donc l'analyseur de fréquence couplé aux ticks d'animation pour simuler le lipsync dynamique basé sur le temps de parole)
     };
 
     utterance.onend = () => {
         speaking = false;
         status.innerText = "PRÊT";
-        setTimeout(listen, 800);
+        setTimeout(listen, 600); // Relance instantanée du micro
     };
 
     utterance.onerror = () => {
         speaking = false;
         status.innerText = "PRÊT";
-        setTimeout(listen, 800);
+        setTimeout(listen, 600);
     };
 
     speechSynthesis.speak(utterance);
@@ -336,7 +327,6 @@ function loadAvatar() {
         }
     }, (error) => {
         console.error("Avatar error:", error);
-        showError("Impossible de charger le fichier 3D.");
     });
 }
 
@@ -359,7 +349,6 @@ function normalizeAvatar() {
     });
 }
 
-// Recherche automatique d'un os ou d'une pièce mesh correspondant à la mâchoire / bouche
 function detectJaw() {
     avatar.traverse((node) => {
         const name = node.name.toLowerCase();
@@ -374,25 +363,19 @@ function animate() {
     const t = clock.getElapsedTime();
 
     if (avatar) {
-        // Mouvement général de l'hologramme (lévitation subtile)
         avatar.position.y = -1.25 + Math.sin(t * 1.5) * 0.018;
         avatar.rotation.y = Math.sin(t * 0.5) * 0.04;
 
         if (speaking) {
-            // Animation synchrone poussée de la tête et du corps pendant la parole
-            avatar.position.y = -1.25 + Math.sin(t * 9) * 0.035;
-            avatar.rotation.y = Math.sin(t * 4) * 0.08;
-            avatar.rotation.z = Math.sin(t * 6) * 0.02;
+            avatar.position.y = -1.25 + Math.sin(t * 10) * 0.04;
+            avatar.rotation.y = Math.sin(t * 5) * 0.10;
+            avatar.rotation.z = Math.sin(t * 7) * 0.03;
 
-            // Synchronisation labiale / mâchoire dynamique en temps réel basée sur le rythme de la parole
-            let lipOpen = Math.abs(Math.sin(t * 22)) * 0.12 + Math.abs(Math.sin(t * 13)) * 0.08;
-            
+            let lipOpen = Math.abs(Math.sin(t * 25)) * 0.15;
             if (jawMesh) {
-                // Si un os ou mesh de mâchoire/bouche existe dans le modèle
                 jawMesh.rotation.x = lipOpen;
             } else {
-                // Si pas d'os spécifique, on applique une variation globale sur l'inclinaison de la tête/menton
-                avatar.rotation.x = Math.sin(t * 18) * 0.03;
+                avatar.rotation.x = Math.sin(t * 20) * 0.04;
             }
         } else {
             avatar.rotation.x = 0;
@@ -403,12 +386,12 @@ function animate() {
 }
 
 function showError(text) {
-    errorBox.innerText = text;
+    errorBox.innerHTML = text;
     errorBox.style.display = "block";
 }
 
 startBtn.onclick = async () => {
-    startBtn.innerText = "INITIALISATION...";
+    startBtn.innerText = "LANCEMENT...";
     const mediaOK = await startMedia();
     if (!mediaOK) { startBtn.innerText = "RÉESSAYER"; return; }
 
