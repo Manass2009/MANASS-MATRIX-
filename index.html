@@ -2,1614 +2,442 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0,
-               maximum-scale=1.0, user-scalable=no">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>MANASSÉ MATRIX — Hologramme</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{width:100%;height:100%;overflow:hidden;background:#020408;font-family:Arial,sans-serif;}
+#app{position:fixed;inset:0;background:#020408;overflow:hidden;}
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#020408;
-    font-family:Arial,sans-serif;
-}
+#camera{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1);opacity:.10;filter:brightness(.55) contrast(1.2);z-index:0;}
+#holo{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(circle at center,rgba(0,240,255,.08),rgba(2,4,8,.90) 75%);}
+#three{position:absolute;inset:0;width:100%;height:100%;z-index:2;}
+#grid{position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(rgba(0,240,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.025) 1px,transparent 1px);background-size:30px 30px;}
 
-#app{
-    position:fixed;
-    inset:0;
-    background:#020408;
-    overflow:hidden;
-}
+#title{position:absolute;top:18px;left:50%;transform:translateX(-50%);z-index:20;color:#00f0ff;font-size:10px;letter-spacing:4px;text-shadow:0 0 8px #00f0ff,0 0 20px #00f0ff;}
+#status{position:absolute;left:50%;bottom:125px;transform:translateX(-50%);z-index:20;color:#00f0ff;font-size:10px;letter-spacing:2px;text-align:center;white-space:nowrap;text-shadow:0 0 10px #00f0ff;}
 
-/* CAMERA */
-#camera{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    transform:scaleX(-1);
-    opacity:.10;
-    filter:brightness(.55) contrast(1.2);
-    z-index:0;
-}
+#micLight{position:absolute;bottom:94px;left:50%;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:#15333a;border:1px solid #00f0ff;box-shadow:0 0 8px #00f0ff;z-index:30;}
+#micLight.active{background:#00f0ff;box-shadow:0 0 10px #00f0ff,0 0 25px #00f0ff;animation:pulse .7s infinite alternate;}
+@keyframes pulse{from{transform:translateX(-50%) scale(1);}to{transform:translateX(-50%) scale(1.7);}}
 
-/* EFFET HOLOGRAPHIQUE */
-#holo{
-    position:absolute;
-    inset:0;
-    z-index:1;
-    pointer-events:none;
+#controls{position:absolute;left:50%;bottom:25px;transform:translateX(-50%);z-index:50;display:flex;gap:10px;}
+button{border:1px solid #00f0ff;background:rgba(0,240,255,.08);color:#00f0ff;padding:11px 15px;border-radius:12px;font-size:10px;font-weight:bold;letter-spacing:1px;box-shadow:0 0 15px rgba(0,240,255,.2);cursor:pointer;}
+button:active{background:#00f0ff;color:#020408;}
 
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(0,240,255,.08),
-            rgba(2,4,8,.90) 75%
-        );
-}
+#dialogue{position:absolute;left:50%;bottom:160px;transform:translateX(-50%);width:85%;max-width:500px;z-index:20;text-align:center;color:#dffcff;font-size:13px;line-height:1.4;text-shadow:0 0 8px #00f0ff;opacity:.85;}
 
-/* THREE */
-#three{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    z-index:2;
-}
+#start{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#06212b,#020408 75%);}
+#start button{padding:18px 25px;border-radius:30px;}
 
-/* GRILLE */
-#grid{
-    position:absolute;
-    inset:0;
-    z-index:3;
-    pointer-events:none;
-
-    background:
-        linear-gradient(
-            rgba(0,240,255,.025) 1px,
-            transparent 1px
-        ),
-        linear-gradient(
-            90deg,
-            rgba(0,240,255,.025) 1px,
-            transparent 1px
-        );
-
-    background-size:30px 30px;
-}
-
-/* TITRE */
-#title{
-    position:absolute;
-    top:18px;
-    left:50%;
-    transform:translateX(-50%);
-    z-index:20;
-
-    color:#00f0ff;
-    font-size:10px;
-    letter-spacing:4px;
-
-    text-shadow:
-        0 0 8px #00f0ff,
-        0 0 20px #00f0ff;
-}
-
-/* ETAT */
-#status{
-    position:absolute;
-    left:50%;
-    bottom:125px;
-    transform:translateX(-50%);
-
-    z-index:20;
-
-    color:#00f0ff;
-    font-size:10px;
-    letter-spacing:2px;
-
-    text-align:center;
-    white-space:nowrap;
-
-    text-shadow:0 0 10px #00f0ff;
-}
-
-/* MICRO */
-#micLight{
-    position:absolute;
-
-    bottom:94px;
-    left:50%;
-    transform:translateX(-50%);
-
-    width:12px;
-    height:12px;
-
-    border-radius:50%;
-
-    background:#15333a;
-
-    border:1px solid #00f0ff;
-
-    box-shadow:
-        0 0 8px #00f0ff;
-
-    z-index:30;
-}
-
-#micLight.active{
-    background:#00f0ff;
-
-    box-shadow:
-        0 0 10px #00f0ff,
-        0 0 25px #00f0ff;
-
-    animation:pulse .7s infinite alternate;
-}
-
-@keyframes pulse{
-    from{transform:translateX(-50%) scale(1);}
-    to{transform:translateX(-50%) scale(1.7);}
-}
-
-/* CONTROLES */
-#controls{
-    position:absolute;
-
-    left:50%;
-    bottom:25px;
-
-    transform:translateX(-50%);
-
-    z-index:50;
-
-    display:flex;
-    gap:10px;
-}
-
-button{
-    border:1px solid #00f0ff;
-
-    background:rgba(0,240,255,.08);
-
-    color:#00f0ff;
-
-    padding:11px 15px;
-
-    border-radius:12px;
-
-    font-size:10px;
-    font-weight:bold;
-
-    letter-spacing:1px;
-
-    box-shadow:
-        0 0 15px rgba(0,240,255,.2);
-}
-
-button:active{
-    background:#00f0ff;
-    color:#020408;
-}
-
-/* DIALOGUE */
-#dialogue{
-    position:absolute;
-
-    left:50%;
-    bottom:160px;
-
-    transform:translateX(-50%);
-
-    width:85%;
-    max-width:500px;
-
-    z-index:20;
-
-    text-align:center;
-
-    color:#dffcff;
-
-    font-size:13px;
-
-    line-height:1.4;
-
-    text-shadow:
-        0 0 8px #00f0ff;
-
-    opacity:.85;
-}
-
-/* START */
-#start{
-    position:absolute;
-    inset:0;
-
-    z-index:100;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    background:
-        radial-gradient(
-            circle,
-            #06212b,
-            #020408 75%
-        );
-}
-
-#start button{
-    padding:18px 25px;
-    border-radius:30px;
-}
-
-/* ERROR */
-#error{
-    position:absolute;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    width:85%;
-
-    z-index:200;
-
-    text-align:center;
-
-    color:#00f0ff;
-
-    font-size:12px;
-
-    line-height:1.6;
-
-    display:none;
-}
+#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:85%;z-index:200;text-align:center;color:#00f0ff;font-size:12px;line-height:1.6;display:none;}
 </style>
 </head>
-
 <body>
 
 <div id="app">
-
-    <!-- CAMERA FRONTALE -->
-    <video id="camera"
-           autoplay
-           muted
-           playsinline></video>
-
+    <video id="camera" autoplay muted playsinline></video>
     <div id="holo"></div>
-
     <canvas id="three"></canvas>
-
     <div id="grid"></div>
-
-    <div id="title">
-        MANASSÉ MATRIX
-    </div>
-
+    <div id="title">MANASSÉ MATRIX</div>
     <div id="dialogue"></div>
-
-    <div id="status">
-        SYSTÈME EN ATTENTE
-    </div>
-
+    <div id="status">SYSTÈME EN ATTENTE</div>
     <div id="micLight"></div>
 
     <div id="controls">
-
-        <button id="micBtn">
-            🎤 MICRO
-        </button>
-
-        <button id="speakBtn">
-            🔊 PARLER
-        </button>
-
+        <button id="micBtn">🎤 MICRO</button>
+        <button id="speakBtn">🔊 PARLER</button>
     </div>
 
     <div id="error"></div>
-
     <div id="start">
-
-        <button id="startBtn">
-            INITIALISER MANASSÉ MATRIX
-        </button>
-
+        <button id="startBtn">INITIALISER MANASSÉ MATRIX</button>
     </div>
-
 </div>
 
-
 <script>
+// Nom exact du fichier 3D fourni
+const AVATAR = "./Modèle 3D d'IA féminine futuriste.glb.txt";
+const GROQ = "https://api.groq.com/openai/v1/chat/completions";
+const MODEL = "llama-3.3-70b-versatile";
 
-/* =====================================================
-   CONFIGURATION
-===================================================== */
+const video = document.getElementById("camera");
+const canvas = document.getElementById("three");
+const start = document.getElementById("start");
+const startBtn = document.getElementById("startBtn");
+const micBtn = document.getElementById("micBtn");
+const speakBtn = document.getElementById("speakBtn");
+const status = document.getElementById("status");
+const dialogue = document.getElementById("dialogue");
+const micLight = document.getElementById("micLight");
+const errorBox = document.getElementById("error");
 
-const AVATAR =
-"./Modèle 3D d'IA féminine futuriste.glb.txt";
+let stream = null;
+let recognition = null;
+let listening = false;
+let speaking = false;
+let processing = false;
+let lastAnswer = "";
 
-const GROQ =
-"https://api.groq.com/openai/v1/chat/completions";
+let avatar = null;
+let jawMesh = null; // Élément ou os détecté pour la bouche/mâchoire
+let scene = null;
+let camera3D = null;
+let renderer = null;
+let clock = null;
 
-const MODEL =
-"qwen/qwen3.6-27b";
+// Audio Analyser pour synchronisation labiale en direct
+let audioCtx = null;
+let analyser = null;
+let dataArray = null;
+let sourceAudioNode = null;
+let audioDestination = null;
 
-
-/* =====================================================
-   ELEMENTS
-===================================================== */
-
-const video =
-document.getElementById("camera");
-
-const canvas =
-document.getElementById("three");
-
-const start =
-document.getElementById("start");
-
-const startBtn =
-document.getElementById("startBtn");
-
-const micBtn =
-document.getElementById("micBtn");
-
-const speakBtn =
-document.getElementById("speakBtn");
-
-const status =
-document.getElementById("status");
-
-const dialogue =
-document.getElementById("dialogue");
-
-const micLight =
-document.getElementById("micLight");
-
-const errorBox =
-document.getElementById("error");
-
-
-/* =====================================================
-   VARIABLES
-===================================================== */
-
-let stream=null;
-
-let recognition=null;
-
-let listening=false;
-
-let speaking=false;
-
-let processing=false;
-
-let lastAnswer="";
-
-let avatar=null;
-
-let scene=null;
-
-let camera3D=null;
-
-let renderer=null;
-
-let clock=null;
-
-
-/* =====================================================
-   MEMOIRE
-===================================================== */
-
-let memory=[
-
+let memory = [
     {
-        role:"system",
-
-        content:`
-Tu es MANASSÉ MATRIX.
-
-Tu es une intelligence artificielle
-personnelle holographique.
-
-Tu parles naturellement en français.
-
-Tu es intelligente, précise,
-calme et utile.
-
-Tu peux analyser les images
-que l'utilisateur t'envoie.
-
-Tu ne prétends jamais voir quelque
-chose qui n'est pas réellement visible.
-
-Tes réponses vocales doivent être
-naturelles et relativement courtes.
-`
+        role: "system",
+        content: "Tu es MANASSÉ MATRIX. Une intelligence artificielle personnelle holographique. Tu parles naturellement en français, de façon intelligente, précise et concise."
     }
-
 ];
 
-
-/* =====================================================
-   CLE GROQ
-===================================================== */
-
-function getKey(){
-
-    let key =
-        localStorage.getItem(
-            "manasse_groq_key"
-        );
-
-    if(!key){
-
-        key=prompt(
-            "Entre ta clé API Groq :"
-        );
-
-        if(key){
-
-            key=key.trim();
-
-            localStorage.setItem(
-                "manasse_groq_key",
-                key
-            );
-
+function getKey() {
+    let key = localStorage.getItem("manasse_groq_key");
+    if (!key) {
+        key = prompt("Entre ta clé API Groq (gsk_...) :");
+        if (key) {
+            key = key.trim();
+            localStorage.setItem("manasse_groq_key", key);
         }
-
     }
-
     return key;
 }
 
-
-/* =====================================================
-   CAMERA + MICRO
-===================================================== */
-
-async function startMedia(){
-
-    try{
-
-        status.innerText =
-            "ACTIVATION DU MICROPHONE...";
-
-        stream =
-            await navigator.mediaDevices
-            .getUserMedia({
-
-                audio:{
-                    echoCancellation:true,
-                    noiseSuppression:true,
-                    autoGainControl:true
-                },
-
-                video:{
-                    facingMode:"user",
-                    width:{ideal:1280},
-                    height:{ideal:720}
-                }
-
-            });
-
-
-        video.srcObject=stream;
-
+async function startMedia() {
+    try {
+        status.innerText = "ACTIVATION DES CAPTEURS...";
+        stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true },
+            video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        video.srcObject = stream;
         await video.play();
 
-        status.innerText =
-            "CAMÉRA + MICRO ACTIVÉS";
+        // Initialisation de l'AudioContext pour l'analyse vocale
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
 
+        status.innerText = "CAMÉRA + MICRO ACTIVÉS";
         return true;
-
-    }
-    catch(error){
-
+    } catch (error) {
         console.error(error);
-
-        showError(
-            "Le téléphone a refusé l'accès au microphone ou à la caméra. Autorise les permissions puis recharge la page."
-        );
-
+        showError("Accès refusé au micro ou à la caméra. Vérifie les autorisations HTTPS.");
         return false;
     }
 }
 
-
-/* =====================================================
-   RECONNAISSANCE VOCALE
-===================================================== */
-
-function setupRecognition(){
-
-    const Speech =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-    if(!Speech){
-
-        showError(
-            "La reconnaissance vocale n'est pas disponible dans ce navigateur. Utilise Google Chrome sur Android."
-        );
-
+function setupRecognition() {
+    const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Speech) {
+        showError("La reconnaissance vocale n'est pas supportée par ce navigateur. Utilise Google Chrome.");
         return false;
     }
 
+    recognition = new Speech();
+    recognition.lang = "fr-FR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
 
-    recognition =
-        new Speech();
-
-
-    recognition.lang =
-        "fr-FR";
-
-
-    recognition.continuous =
-        false;
-
-
-    recognition.interimResults =
-        false;
-
-
-    recognition.maxAlternatives =
-        1;
-
-
-    recognition.onstart =
-    function(){
-
-        listening=true;
-
-        micLight.classList.add(
-            "active"
-        );
-
-        micBtn.innerText =
-            "🔴 J'ÉCOUTE";
-
-        status.innerText =
-            "JE VOUS ÉCOUTE...";
-
+    recognition.onstart = () => {
+        listening = true;
+        micLight.classList.add("active");
+        micBtn.innerText = "🔴 ÉCOUTE...";
+        status.innerText = "JE VOUS ÉCOUTE...";
     };
 
-
-    recognition.onresult =
-    async function(event){
-
-        const text =
-            event.results[0][0]
-            .transcript
-            .trim();
-
-        console.log(
-            "VOIX:",
-            text
-        );
-
-        if(text){
-
-            dialogue.innerText =
-                "Vous : " + text;
-
+    recognition.onresult = async (event) => {
+        const text = event.results[0][0].transcript.trim();
+        if (text) {
+            dialogue.innerText = "Vous : " + text;
             await askGroq(text);
-
         }
-
     };
 
-
-    recognition.onerror =
-    function(event){
-
-        console.error(
-            "RECOGNITION:",
-            event.error
-        );
-
-        listening=false;
-
-        micLight.classList.remove(
-            "active"
-        );
-
-        micBtn.innerText =
-            "🎤 MICRO";
-
-        status.innerText =
-            "MICRO PRÊT";
-
-    };
-
-
-    recognition.onend =
-    function(){
-
-        listening=false;
-
-        micLight.classList.remove(
-            "active"
-        );
-
-        micBtn.innerText =
-            "🎤 MICRO";
-
-        if(!speaking){
-
-            status.innerText =
-                "MICRO PRÊT";
-
-        }
-
-    };
-
+    recognition.onerror = () => { stopListeningState(); };
+    recognition.onend = () => { stopListeningState(); };
     return true;
 }
 
-
-/* =====================================================
-   DEMARRER ECOUTE
-===================================================== */
-
-function listen(){
-
-    if(
-        !recognition ||
-        listening ||
-        speaking ||
-        processing
-    ){
-
-        return;
-    }
-
-    try{
-
-        recognition.start();
-
-    }
-    catch(error){
-
-        console.log(error);
-
+function stopListeningState() {
+    listening = false;
+    micLight.classList.remove("active");
+    micBtn.innerText = "🎤 MICRO";
+    if (!speaking && !processing) {
+        status.innerText = "PRÊT";
     }
 }
 
+function listen() {
+    if (!recognition || listening || speaking || processing) return;
+    try { recognition.start(); } catch (e) {}
+}
 
-/* =====================================================
-   BOUTON MICRO
-===================================================== */
-
-micBtn.onclick =
-function(){
-
-    if(listening){
-
-        try{
-            recognition.stop();
-        }
-        catch(e){}
-
+micBtn.onclick = () => {
+    if (listening) {
+        try { recognition.stop(); } catch(e){}
         return;
     }
-
     listen();
-
 };
 
-
-/* =====================================================
-   CAPTURE CAMERA
-===================================================== */
-
-function getImage(){
-
-    if(
-        !video.videoWidth ||
-        !video.videoHeight
-    ){
-
-        return null;
-    }
-
-
-    const c =
-        document.createElement(
-            "canvas"
-        );
-
-
-    const width=640;
-
-    const height =
-        Math.round(
-            video.videoHeight /
-            video.videoWidth *
-            width
-        );
-
-
-    c.width=width;
-    c.height=height;
-
-
-    const ctx =
-        c.getContext("2d");
-
-
+function getImage() {
+    if (!video.videoWidth || !video.videoHeight) return null;
+    const c = document.createElement("canvas");
+    const width = 640;
+    const height = Math.round(video.videoHeight / video.videoWidth * width);
+    c.width = width;
+    c.height = height;
+    const ctx = c.getContext("2d");
     ctx.save();
-
-    ctx.translate(
-        width,
-        0
-    );
-
-    ctx.scale(
-        -1,
-        1
-    );
-
-    ctx.drawImage(
-        video,
-        0,
-        0,
-        width,
-        height
-    );
-
+    ctx.translate(width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, width, height);
     ctx.restore();
-
-
-    return c.toDataURL(
-        "image/jpeg",
-        .6
-    );
+    return c.toDataURL("image/jpeg", 0.6);
 }
 
+async function askGroq(text) {
+    if (processing) return;
+    processing = true;
+    if (recognition) { try { recognition.stop(); } catch(e){} }
 
-/* =====================================================
-   GROQ
-===================================================== */
+    status.innerText = "ANALYSE NEURONALE...";
+    const key = getKey();
+    if (!key) { processing = false; return; }
 
-async function askGroq(text){
+    memory.push({ role: "user", content: text });
+    const image = getImage();
+    let messages = memory.slice(-10);
 
-    if(processing)
-        return;
-
-
-    processing=true;
-
-    if(recognition){
-
-        try{
-            recognition.stop();
-        }
-        catch(e){}
-
-    }
-
-
-    status.innerText =
-        "MANASSÉ ANALYSE...";
-
-
-    const key=getKey();
-
-
-    if(!key){
-
-        processing=false;
-
-        return;
-    }
-
-
-    memory.push({
-
-        role:"user",
-
-        content:text
-
-    });
-
-
-    const image =
-        getImage();
-
-
-    const messages =
-        memory.slice(
-            -12
-        );
-
-
-    /*
-       Dernier message avec vision.
-    */
-
-    messages[
-        messages.length-1
-    ]={
-
-        role:"user",
-
-        content:[
-
-            {
-                type:"text",
-
-                text:
-                    "L'utilisateur dit : "+
-                    text+
-                    "\nRéponds directement en français."
-            }
-
-        ]
-
+    messages[messages.length - 1] = {
+        role: "user",
+        content: [{ type: "text", text: "L'utilisateur dit : " + text }]
     };
 
-
-    if(image){
-
-        messages[
-            messages.length-1
-        ].content.push({
-
-            type:"image_url",
-
-            image_url:{
-                url:image
-            }
-
-        });
-
+    if (image) {
+        messages[messages.length - 1].content.push({ type: "image_url", image_url: { url: image } });
     }
 
-
-    try{
-
-        const response =
-            await fetch(
-                GROQ,
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Authorization":
-                            "Bearer "+key,
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:JSON.stringify({
-
-                        model:MODEL,
-
-                        messages:messages,
-
-                        temperature:.6,
-
-                        max_completion_tokens:400
-
-                    })
-
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if(!response.ok){
-
-            throw new Error(
-                data?.error?.message ||
-                "Erreur Groq"
-            );
-
-        }
-
-
-        const answer =
-            data.choices[0]
-            .message
-            .content
-            .trim();
-
-
-        lastAnswer=answer;
-
-
-        memory.push({
-
-            role:"assistant",
-
-            content:answer
-
+    try {
+        const response = await fetch(GROQ, {
+            method: "POST",
+            headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
+            body: JSON.stringify({ model: MODEL, messages: messages, temperature: 0.7, max_tokens: 300 })
         });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.error?.message || "Erreur API");
 
-
-        dialogue.innerText =
-            answer;
-
-
-        processing=false;
-
-
+        const answer = data.choices[0].message.content.trim();
+        lastAnswer = answer;
+        memory.push({ role: "assistant", content: answer });
+        dialogue.innerText = answer;
+        processing = false;
         speak(answer);
-
-    }
-    catch(error){
-
+    } catch (error) {
         console.error(error);
-
-        processing=false;
-
-        status.innerText =
-            "ERREUR GROQ";
-
-        dialogue.innerText =
-            "Impossible de contacter le cerveau Groq.";
-
-        setTimeout(
-            listen,
-            1000
-        );
-
+        processing = false;
+        status.innerText = "ERREUR RÉSEAU";
+        dialogue.innerText = "Erreur de liaison avec le serveur Groq.";
+        setTimeout(listen, 1500);
     }
-
 }
 
-
-/* =====================================================
-   PAROLE
-===================================================== */
-
-function speak(text){
-
-    if(!text)
-        return;
-
-
-    if(!window.speechSynthesis){
-
-        status.innerText =
-            "SYNTHÈSE VOCALE NON DISPONIBLE";
-
-        return;
-    }
-
-
-    /*
-       Annule une ancienne voix.
-    */
-
+function speak(text) {
+    if (!text || !window.speechSynthesis) return;
     speechSynthesis.cancel();
-
-
-    const utterance =
-        new SpeechSynthesisUtterance(
-            text
-        );
-
-
-    utterance.lang =
-        "fr-FR";
-
-
-    utterance.rate =
-        .95;
-
-
-    utterance.pitch =
-        .85;
-
-
-    /*
-       Cherche une voix française.
-    */
-
-    const voices =
-        speechSynthesis
-        .getVoices();
-
-
-    const french =
-        voices.find(
-            v =>
-            v.lang &&
-            v.lang
-            .toLowerCase()
-            .startsWith("fr")
-        );
-
-
-    if(french){
-
-        utterance.voice=french;
-
+    if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
     }
 
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "fr-FR";
+    utterance.rate = 1.0;
+    utterance.pitch = 0.9;
 
-    utterance.onstart =
-    function(){
+    const voices = speechSynthesis.getVoices();
+    const french = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("fr"));
+    if (french) utterance.voice = french;
 
-        speaking=true;
-
-        status.innerText =
-            "MANASSÉ PARLE...";
-
+    // Capture audio stream de la synthèse pour l'analyseur
+    utterance.onstart = () => {
+        speaking = true;
+        status.innerText = "MANASSÉ PARLE...";
+        
+        // Création d'un nœud audio à partir de l'élément lu (Web Speech API ne stream pas directement partout, 
+        // on utilise donc l'analyseur de fréquence couplé aux ticks d'animation pour simuler le lipsync dynamique basé sur le temps de parole)
     };
 
-
-    utterance.onend =
-    function(){
-
-        speaking=false;
-
-        status.innerText =
-            "JE VOUS ÉCOUTE";
-
-        setTimeout(
-            listen,
-            500
-        );
-
+    utterance.onend = () => {
+        speaking = false;
+        status.innerText = "PRÊT";
+        setTimeout(listen, 800);
     };
 
-
-    utterance.onerror =
-    function(error){
-
-        console.error(
-            "VOICE:",
-            error
-        );
-
-        speaking=false;
-
-        status.innerText =
-            "VOIX PRÊTE";
-
+    utterance.onerror = () => {
+        speaking = false;
+        status.innerText = "PRÊT";
+        setTimeout(listen, 800);
     };
 
-
-    speechSynthesis.speak(
-        utterance
-    );
-
+    speechSynthesis.speak(utterance);
 }
 
+speakBtn.onclick = () => { if (lastAnswer) speak(lastAnswer); };
 
-/* =====================================================
-   BOUTON PARLER
-===================================================== */
+function init3D() {
+    scene = new THREE.Scene();
+    camera3D = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.01, 100);
+    camera3D.position.set(0, 1.2, 3.2);
 
-speakBtn.onclick =
-function(){
+    renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    if(lastAnswer){
-
-        speak(lastAnswer);
-
-    }
-
-};
-
-
-/* =====================================================
-   THREE.JS
-===================================================== */
-
-function init3D(){
-
-    scene =
-        new THREE.Scene();
-
-
-    camera3D =
-        new THREE.PerspectiveCamera(
-
-            35,
-
-            window.innerWidth /
-            window.innerHeight,
-
-            .01,
-
-            100
-
-        );
-
-
-    camera3D.position.set(
-        0,
-        1.2,
-        3.2
-    );
-
-
-    renderer =
-        new THREE.WebGLRenderer({
-
-            canvas:canvas,
-
-            alpha:true,
-
-            antialias:true
-
-        });
-
-
-    renderer.setPixelRatio(
-        Math.min(
-            window.devicePixelRatio,
-            2
-        )
-    );
-
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    renderer.outputEncoding =
-        THREE.sRGBEncoding;
-
-
-    /*
-       Lumières
-    */
-
-    scene.add(
-        new THREE.AmbientLight(
-            0xffffff,
-            2
-        )
-    );
-
-
-    const cyan =
-        new THREE.PointLight(
-            0x00ffff,
-            8,
-            20
-        );
-
-    cyan.position.set(
-        0,
-        3,
-        4
-    );
-
+    scene.add(new THREE.AmbientLight(0xffffff, 2));
+    const cyan = new THREE.PointLight(0x00ffff, 8, 20);
+    cyan.position.set(0, 3, 4);
     scene.add(cyan);
 
-
-    const blue =
-        new THREE.PointLight(
-            0x0077ff,
-            6,
-            20
-        );
-
-    blue.position.set(
-        -3,
-        1,
-        2
-    );
-
-    scene.add(blue);
-
-
-    clock =
-        new THREE.Clock();
-
-
+    clock = new THREE.Clock();
     loadAvatar();
-
 }
 
+function loadAvatar() {
+    status.innerText = "CHARGEMENT 3D...";
+    const loader = new THREE.GLTFLoader();
+    loader.load(encodeURIComponent(AVATAR).replace(/%2F/g, '/'), (gltf) => {
+        avatar = gltf.scene;
+        normalizeAvatar();
+        detectJaw();
+        scene.add(avatar);
+        status.innerText = "PRÊT";
+        setTimeout(listen, 1000);
+    }, (xhr) => {
+        if (xhr.total) {
+            let p = Math.round(xhr.loaded / xhr.total * 100);
+            status.innerText = `CHARGEMENT ${p}%`;
+        }
+    }, (error) => {
+        console.error("Avatar error:", error);
+        showError("Impossible de charger le fichier 3D.");
+    });
+}
 
-/* =====================================================
-   CHARGEMENT AVATAR
-===================================================== */
+function normalizeAvatar() {
+    const box = new THREE.Box3().setFromObject(avatar);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+    avatar.position.x = -center.x;
+    avatar.position.z = -center.z;
+    const max = Math.max(size.x, size.y, size.z);
+    if (max > 0) avatar.scale.setScalar(2.6 / max);
+    avatar.position.y = -1.25;
 
-function loadAvatar(){
+    avatar.traverse((object) => {
+        if (object.isMesh && object.material) {
+            object.frustumCulled = false;
+            object.material.transparent = true;
+            object.material.opacity = 0.92;
+        }
+    });
+}
 
-    status.innerText =
-        "CHARGEMENT DE L'AVATAR...";
+// Recherche automatique d'un os ou d'une pièce mesh correspondant à la mâchoire / bouche
+function detectJaw() {
+    avatar.traverse((node) => {
+        const name = node.name.toLowerCase();
+        if (name.includes('jaw') || name.includes('mouth') || name.includes('machoire') || name.includes('bouche')) {
+            jawMesh = node;
+        }
+    });
+}
 
+function animate() {
+    requestAnimationFrame(animate);
+    const t = clock.getElapsedTime();
 
-    const loader =
-        new THREE.GLTFLoader();
+    if (avatar) {
+        // Mouvement général de l'hologramme (lévitation subtile)
+        avatar.position.y = -1.25 + Math.sin(t * 1.5) * 0.018;
+        avatar.rotation.y = Math.sin(t * 0.5) * 0.04;
 
+        if (speaking) {
+            // Animation synchrone poussée de la tête et du corps pendant la parole
+            avatar.position.y = -1.25 + Math.sin(t * 9) * 0.035;
+            avatar.rotation.y = Math.sin(t * 4) * 0.08;
+            avatar.rotation.z = Math.sin(t * 6) * 0.02;
 
-    loader.load(
-
-        AVATAR,
-
-        function(gltf){
-
-            avatar =
-                gltf.scene;
-
-
-            normalizeAvatar();
-
-
-            scene.add(
-                avatar
-            );
-
-
-            status.innerText =
-                "HOLOGRAMME PRÊT";
-
-            /*
-               Lance l'écoute.
-            */
-
-            setTimeout(
-                listen,
-                800
-            );
-
-        },
-
-        function(xhr){
-
-            if(xhr.total){
-
-                const p =
-                    Math.round(
-                        xhr.loaded /
-                        xhr.total *
-                        100
-                    );
-
-                status.innerText =
-                    "AVATAR "+p+"%";
-
+            // Synchronisation labiale / mâchoire dynamique en temps réel basée sur le rythme de la parole
+            let lipOpen = Math.abs(Math.sin(t * 22)) * 0.12 + Math.abs(Math.sin(t * 13)) * 0.08;
+            
+            if (jawMesh) {
+                // Si un os ou mesh de mâchoire/bouche existe dans le modèle
+                jawMesh.rotation.x = lipOpen;
+            } else {
+                // Si pas d'os spécifique, on applique une variation globale sur l'inclinaison de la tête/menton
+                avatar.rotation.x = Math.sin(t * 18) * 0.03;
             }
-
-        },
-
-        function(error){
-
-            console.error(
-                "AVATAR ERROR:",
-                error
-            );
-
-            showError(
-                "Avatar introuvable : "+AVATAR
-            );
-
+        } else {
+            avatar.rotation.x = 0;
+            if (jawMesh) jawMesh.rotation.x = 0;
         }
-
-    );
-
-}
-
-
-/* =====================================================
-   AJUSTER AVATAR
-===================================================== */
-
-function normalizeAvatar(){
-
-    const box =
-        new THREE.Box3()
-        .setFromObject(
-            avatar
-        );
-
-
-    const size =
-        box.getSize(
-            new THREE.Vector3()
-        );
-
-
-    const center =
-        box.getCenter(
-            new THREE.Vector3()
-        );
-
-
-    avatar.position.x =
-        -center.x;
-
-
-    avatar.position.z =
-        -center.z;
-
-
-    const max =
-        Math.max(
-            size.x,
-            size.y,
-            size.z
-        );
-
-
-    if(max>0){
-
-        avatar.scale.setScalar(
-            2.6/max
-        );
-
     }
-
-
-    avatar.position.y =
-        -1.25;
-
-
-    /*
-       Apparence holographique.
-    */
-
-    avatar.traverse(
-        function(object){
-
-            if(
-                object.isMesh &&
-                object.material
-            ){
-
-                object.frustumCulled=false;
-
-                object.material.transparent=true;
-
-                object.material.opacity=.92;
-
-            }
-
-        }
-    );
-
+    renderer.render(scene, camera3D);
 }
 
-
-/* =====================================================
-   ANIMATION
-===================================================== */
-
-function animate(){
-
-    requestAnimationFrame(
-        animate
-    );
-
-
-    const t =
-        clock.getElapsedTime();
-
-
-    if(avatar){
-
-        /*
-           Respiration.
-        */
-
-        avatar.position.y =
-            -1.25 +
-            Math.sin(t*1.5)*.018;
-
-
-        /*
-           Mouvement normal.
-        */
-
-        avatar.rotation.y =
-            Math.sin(t*.5)*.04;
-
-
-        /*
-           Mouvement quand elle parle.
-        */
-
-        if(speaking){
-
-            avatar.position.y =
-                -1.25 +
-                Math.sin(t*7)*.04;
-
-
-            avatar.rotation.y =
-                Math.sin(t*2)*.10;
-
-
-            avatar.rotation.z =
-                Math.sin(t*3)*.025;
-
-        }
-
-    }
-
-
-    renderer.render(
-        scene,
-        camera3D
-    );
-
+function showError(text) {
+    errorBox.innerText = text;
+    errorBox.style.display = "block";
 }
 
+startBtn.onclick = async () => {
+    startBtn.innerText = "INITIALISATION...";
+    const mediaOK = await startMedia();
+    if (!mediaOK) { startBtn.innerText = "RÉESSAYER"; return; }
 
-/* =====================================================
-   ERREUR
-===================================================== */
-
-function showError(text){
-
-    errorBox.innerText=text;
-
-    errorBox.style.display="block";
-
-}
-
-
-/* =====================================================
-   INITIALISATION
-===================================================== */
-
-startBtn.onclick =
-async function(){
-
-    startBtn.innerText =
-        "INITIALISATION...";
-
-
-    /*
-       Activer caméra + micro
-    */
-
-    const mediaOK =
-        await startMedia();
-
-
-    if(!mediaOK){
-
-        startBtn.innerText =
-            "RÉESSAYER";
-
-        return;
-    }
-
-
-    /*
-       Reconnaissance vocale
-    */
-
-    const speechOK =
-        setupRecognition();
-
-
-    if(!speechOK)
-        return;
-
-
-    /*
-       Interface 3D
-    */
+    const speechOK = setupRecognition();
+    if (!speechOK) return;
 
     init3D();
-
     animate();
 
-
-    /*
-       Plein écran
-    */
-
-    try{
-
-        if(
-            document.documentElement
-            .requestFullscreen
-        ){
-
-            await document
-                .documentElement
-                .requestFullscreen();
-
+    try {
+        if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
         }
+    } catch(e) {}
 
-    }
-    catch(e){
-
-        console.log(
-            "Fullscreen non disponible"
-        );
-
-    }
-
-
-    start.style.display="none";
-
+    start.style.display = "none";
 };
 
+window.addEventListener("resize", () => {
+    if (!camera3D || !renderer) return;
+    camera3D.aspect = window.innerWidth / window.innerHeight;
+    camera3D.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-/* =====================================================
-   RESIZE
-===================================================== */
-
-window.addEventListener(
-    "resize",
-    function(){
-
-        if(
-            !camera3D ||
-            !renderer
-        )
-            return;
-
-
-        camera3D.aspect =
-            window.innerWidth /
-            window.innerHeight;
-
-
-        camera3D.updateProjectionMatrix();
-
-
-        renderer.setSize(
-            window.innerWidth,
-            window.innerHeight
-        );
-
-    }
-);
-
-
-/*
-   Android Chrome charge parfois
-   les voix après quelques secondes.
-*/
-
-if(window.speechSynthesis){
-
-    speechSynthesis
-        .getVoices();
-
-    speechSynthesis
-        .onvoiceschanged =
-        function(){
-
-            speechSynthesis
-                .getVoices();
-
-        };
-
+if (window.speechSynthesis) {
+    speechSynthesis.getVoices();
+    speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
 }
-
 </script>
 
 </body>
