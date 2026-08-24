@@ -2,265 +2,54 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>Manassé Matrix - Édition HUD Ultime</title>
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
 
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#020408">
-<link rel="apple-touch-icon" href="logo.png">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<title>MANASSÉ MATRIX — HOLOGRAM</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
 
-:root {
-    --hud-cyan:#00f0ff;
-    --hud-blue:#0077ff;
-    --hud-glow:rgba(0,240,255,.5);
-    --bg-dark:#020408;
-    --card-dark:rgba(5,12,24,.9);
-    --border-hud:rgba(0,240,255,.3);
-    --text-light:#f1f5f9;
-    --text-muted:#64748b;
-}
-
-* {
-    box-sizing:border-box;
+*{
     margin:0;
     padding:0;
-    font-family:'Plus Jakarta Sans',sans-serif;
+    box-sizing:border-box;
     -webkit-tap-highlight-color:transparent;
 }
 
 html,
-body {
+body{
+
     width:100%;
     height:100%;
+
     overflow:hidden;
+
     background:#020408;
-    color:var(--text-light);
+
+    font-family:Arial,sans-serif;
+
 }
 
-.app-container {
-    width:100vw;
-    height:100vh;
-    height:100dvh;
-    position:relative;
-}
+body{
 
-.auth-screen {
     position:fixed;
     inset:0;
-    z-index:1000;
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:20px;
-
-    background:rgba(2,4,8,.96);
-
-    backdrop-filter:blur(12px);
-}
-
-.auth-card {
-    width:100%;
-    max-width:380px;
-
-    padding:32px 20px;
-
-    text-align:center;
-
-    background:var(--card-dark);
-
-    border:1px solid var(--hud-cyan);
-    border-radius:24px;
-
-    box-shadow:
-        0 0 40px var(--hud-glow),
-        inset 0 0 20px rgba(0,240,255,.15);
-}
-
-.auth-logo {
-    width:75px;
-    height:75px;
-
-    border-radius:50%;
-
-    border:2px solid var(--hud-cyan);
-
-    margin-bottom:15px;
-
-    object-fit:cover;
-
-    box-shadow:0 0 20px var(--hud-cyan);
-}
-
-.auth-title {
-    color:var(--hud-cyan);
-    font-size:1.5rem;
-    font-weight:800;
-
-    margin-bottom:5px;
-
-    text-transform:uppercase;
-    letter-spacing:2px;
-
-    text-shadow:0 0 10px var(--hud-glow);
-}
-
-.auth-subtitle {
-    color:var(--text-muted);
-    font-size:.8rem;
-
-    margin-bottom:20px;
-}
-
-.hud-input {
-    width:100%;
-
-    padding:14px 16px;
-
-    margin-bottom:15px;
-
-    background:rgba(0,240,255,.05);
-
-    border:1px solid var(--border-hud);
-
-    color:var(--text-light);
-
-    border-radius:12px;
-
-    outline:none;
-}
-
-.hud-btn {
-    width:100%;
-
-    padding:14px;
-
-    border:0;
-    border-radius:12px;
-
-    background:linear-gradient(
-        135deg,
-        var(--hud-cyan),
-        var(--hud-blue)
-    );
-
-    color:#020408;
-
-    font-weight:800;
-
-    cursor:pointer;
-}
-
-.main-app {
-    display:none;
-
-    flex-direction:column;
-
-    width:100%;
-    height:100%;
-}
-
-.app-header {
-    display:flex;
-
-    align-items:center;
-    justify-content:space-between;
-
-    padding:12px 16px;
-
-    background:var(--card-dark);
-
-    border-bottom:1px solid var(--border-hud);
-
-    flex-wrap:wrap;
-
-    gap:8px;
-}
-
-.app-title-container {
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.app-logo-mini {
-    width:34px;
-    height:34px;
-
-    border-radius:50%;
-
-    border:1px solid var(--hud-cyan);
-
-    box-shadow:0 0 10px var(--hud-cyan);
-}
-
-.app-title {
-    color:var(--hud-cyan);
-
-    font-size:1rem;
-
-    font-weight:800;
-
-    letter-spacing:1px;
-}
-
-.header-controls {
-    display:flex;
-    gap:6px;
-}
-
-.control-btn {
-    padding:6px 9px;
-
-    border-radius:8px;
-
-    border:1px solid var(--border-hud);
-
-    background:rgba(0,240,255,.1);
-
-    color:var(--hud-cyan);
-
-    font-size:.65rem;
-
-    font-weight:700;
-
-    cursor:pointer;
-}
-
-.status-badge {
-    padding:5px 10px;
-
-    border-radius:20px;
-
-    border:1px solid var(--border-hud);
-
-    background:rgba(0,240,255,.1);
-
-    color:var(--hud-cyan);
-
-    font-size:.7rem;
 }
 
 
-/* =========================================================
-   CONTENEUR HOLOGRAMME
-   ========================================================= */
+/* =====================================================
+   MONDE HOLOGRAPHIQUE
+   ===================================================== */
 
-#hologram-view {
-    display:none;
+#hologram{
 
     position:fixed;
 
@@ -269,740 +58,452 @@ body {
     width:100vw;
     height:100vh;
     height:100dvh;
-
-    z-index:9999;
 
     overflow:hidden;
 
     background:
+
         radial-gradient(
-            circle at center,
-            rgba(0,45,70,.95) 0%,
-            rgba(2,8,15,.98) 48%,
-            #020408 100%
+            ellipse at center,
+            rgba(0,70,100,.30) 0%,
+            rgba(0,20,35,.18) 35%,
+            rgba(2,4,8,1) 78%
         );
+
 }
 
-#hologram-view.active {
-    display:block;
 
-    width:100vw;
-    height:100vh;
-    height:100dvh;
-}
+/* =====================================================
+   CANVAS 3D
+   ===================================================== */
 
-#hologram-view canvas {
+#canvas{
+
     position:absolute;
 
     inset:0;
 
-    width:100% !important;
-    height:100% !important;
+    width:100%;
+    height:100%;
 
-    display:block;
+    z-index:1;
+
 }
 
 
-/* =========================================================
-   HUD HOLOGRAMME
-   ========================================================= */
+/* =====================================================
+   GRILLE HOLOGRAPHIQUE
+   ===================================================== */
 
-.holo-grid {
+#grid{
+
     position:absolute;
 
     inset:0;
+
+    z-index:2;
 
     pointer-events:none;
 
     background:
+
         linear-gradient(
-            rgba(0,240,255,.035) 1px,
+            rgba(0,240,255,.025) 1px,
             transparent 1px
         ),
+
         linear-gradient(
             90deg,
-            rgba(0,240,255,.035) 1px,
+            rgba(0,240,255,.025) 1px,
             transparent 1px
         );
 
-    background-size:30px 30px;
+    background-size:35px 35px;
 
-    z-index:2;
+    opacity:.45;
+
 }
 
-.holo-title {
+
+/* =====================================================
+   VIGNETTE
+   ===================================================== */
+
+#vignette{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:3;
+
+    pointer-events:none;
+
+    background:
+
+        radial-gradient(
+            ellipse at center,
+            transparent 35%,
+            rgba(0,0,0,.35) 100%
+        );
+
+}
+
+
+/* =====================================================
+   TITRE DISCRET
+   ===================================================== */
+
+#systemName{
+
     position:absolute;
 
     top:20px;
-    left:20px;
+    left:50%;
+
+    transform:translateX(-50%);
 
     z-index:10;
 
-    color:var(--hud-cyan);
+    color:#00f0ff;
 
-    font-size:.8rem;
+    font-size:11px;
+
+    letter-spacing:4px;
+
+    white-space:nowrap;
+
+    text-shadow:
+        0 0 5px #00f0ff,
+        0 0 15px #00f0ff;
+
+    opacity:.75;
+
+}
+
+
+/* =====================================================
+   ÉTAT SYSTÈME
+   ===================================================== */
+
+#status{
+
+    position:absolute;
+
+    bottom:25px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    color:#00f0ff;
+
+    font-size:10px;
 
     letter-spacing:2px;
 
-    text-shadow:0 0 12px var(--hud-cyan);
+    text-align:center;
+
+    white-space:nowrap;
+
+    text-shadow:
+        0 0 8px #00f0ff;
+
 }
 
-.holo-status {
+
+/* =====================================================
+   INDICATEUR MICRO
+   ===================================================== */
+
+#micro{
+
     position:absolute;
 
-    left:20px;
-    bottom:25px;
+    bottom:50px;
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:8px;
+    height:8px;
+
+    border-radius:50%;
+
+    background:#00f0ff;
+
+    box-shadow:
+        0 0 8px #00f0ff,
+        0 0 20px #00f0ff;
 
     z-index:10;
 
-    color:var(--hud-cyan);
+    opacity:.3;
 
-    font-size:.7rem;
-
-    letter-spacing:1px;
-
-    text-shadow:0 0 10px var(--hud-cyan);
 }
 
-.holo-close {
+
+/* MICRO ACTIF */
+
+#micro.active{
+
+    opacity:1;
+
+    animation:
+        microphonePulse .8s infinite alternate;
+
+}
+
+
+@keyframes microphonePulse{
+
+    from{
+
+        transform:
+            translateX(-50%)
+            scale(1);
+
+        box-shadow:
+            0 0 8px #00f0ff,
+            0 0 20px #00f0ff;
+
+    }
+
+    to{
+
+        transform:
+            translateX(-50%)
+            scale(2);
+
+        box-shadow:
+            0 0 15px #00f0ff,
+            0 0 40px #00f0ff;
+
+    }
+
+}
+
+
+/* =====================================================
+   ÉCRAN DE DÉMARRAGE MINIMAL
+   ===================================================== */
+
+#start{
+
     position:absolute;
 
-    top:18px;
-    right:18px;
+    inset:0;
 
-    z-index:20;
-
-    padding:9px 13px;
-
-    border:1px solid rgba(0,240,255,.5);
-
-    border-radius:10px;
-
-    background:rgba(0,20,30,.75);
-
-    color:var(--hud-cyan);
-
-    font-weight:800;
-
-    cursor:pointer;
-
-    box-shadow:0 0 15px rgba(0,240,255,.15);
-}
-
-
-/* =========================================================
-   CHAT
-   ========================================================= */
-
-.chat-container {
-    flex:1;
-
-    overflow-y:auto;
-
-    padding:16px;
+    z-index:100;
 
     display:flex;
 
-    flex-direction:column;
+    align-items:center;
 
-    gap:14px;
+    justify-content:center;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,30,45,.98),
+            #020408
+        );
+
 }
 
-.message {
-    max-width:88%;
 
-    padding:14px 16px;
+#startButton{
 
-    border-radius:16px;
+    padding:18px 30px;
 
-    font-size:.9rem;
+    border:1px solid #00f0ff;
 
-    line-height:1.5;
-}
+    border-radius:50px;
 
-.message.user {
-    align-self:flex-end;
+    background:rgba(0,240,255,.08);
 
-    background:linear-gradient(
-        135deg,
-        rgba(0,240,255,.25),
-        rgba(0,119,255,.25)
-    );
+    color:#00f0ff;
 
-    border:1px solid var(--hud-cyan);
-}
+    font-size:13px;
 
-.message.bot {
-    align-self:flex-start;
+    font-weight:bold;
 
-    background:var(--card-dark);
+    letter-spacing:3px;
 
-    border:1px solid var(--border-hud);
-}
-
-.msg-actions {
-    display:flex;
-    gap:8px;
-    margin-top:8px;
-}
-
-.action-btn {
-    padding:4px 10px;
-
-    border-radius:6px;
-
-    border:1px solid var(--border-hud);
-
-    background:rgba(0,240,255,.1);
-
-    color:var(--hud-cyan);
+    box-shadow:
+        0 0 20px rgba(0,240,255,.35);
 
     cursor:pointer;
+
 }
 
-.input-area {
-    padding:12px 16px;
 
-    display:flex;
+/* =====================================================
+   MASQUER LE DÉMARRAGE
+   ===================================================== */
 
-    gap:10px;
+#start.hidden{
 
-    background:var(--card-dark);
+    display:none;
 
-    border-top:1px solid var(--border-hud);
-}
-
-.chat-input {
-    flex:1;
-
-    padding:12px 16px;
-
-    border-radius:12px;
-
-    border:1px solid var(--border-hud);
-
-    background:rgba(0,240,255,.03);
-
-    color:white;
-
-    outline:none;
-}
-
-.send-btn {
-    padding:0 20px;
-
-    border:0;
-
-    border-radius:12px;
-
-    background:var(--hud-cyan);
-
-    color:#020408;
-
-    font-weight:800;
-
-    cursor:pointer;
 }
 
 </style>
+
 </head>
 
 
 <body>
 
-<div class="app-container">
+
+<div id="hologram">
 
 
-<!-- =====================================================
-     AUTHENTIFICATION
-     ===================================================== -->
-
-<div class="auth-screen" id="authScreen">
-
-    <div class="auth-card">
-
-        <img
-            src="logo.png"
-            class="auth-logo"
-            alt="Logo"
-        >
-
-        <h1 class="auth-title">
-            Manassé Matrix
-        </h1>
-
-        <p class="auth-subtitle">
-            Système HUD Neural - Double Vision
-        </p>
-
-        <input
-            type="password"
-            id="apiKeyInput"
-            class="hud-input"
-            placeholder="Entrez votre clé API Groq (gsk_...)"
-        >
-
-        <button
-            class="hud-btn"
-            id="initBtn"
-        >
-            Initialiser le système
-        </button>
-
-    </div>
-
-</div>
+    <canvas id="canvas"></canvas>
 
 
-<!-- =====================================================
-     APPLICATION
-     ===================================================== -->
+    <div id="grid"></div>
 
-<div class="main-app" id="mainApp">
+    <div id="vignette"></div>
 
 
-<header class="app-header">
-
-    <div class="app-title-container">
-
-        <img
-            src="logo.png"
-            class="app-logo-mini"
-            alt="Logo"
-        >
-
-        <span class="app-title">
-            Manassé Matrix
-        </span>
-
+    <div id="systemName">
+        MANASSÉ MATRIX
     </div>
 
 
-    <div class="header-controls">
-
-        <button
-            class="control-btn"
-            id="demoBtn"
-        >
-            📁 Démo Mémoire
-        </button>
+    <div id="status">
+        INITIALISATION...
+    </div>
 
 
-        <button
-            class="control-btn"
-            id="graphicModeBtn"
-        >
-            👁️ Mode 3D
+    <div id="micro"></div>
+
+
+    <div id="start">
+
+        <button id="startButton">
+            ACTIVER L'HOLOGRAMME
         </button>
 
     </div>
 
 
-    <span class="status-badge">
-        HUD Actif
-    </span>
-
-</header>
-
-
-<!-- =====================================================
-     ÉCRAN HOLOGRAPHIQUE
-     ===================================================== -->
-
-<div id="hologram-view">
-
-    <div class="holo-grid"></div>
-
-    <div class="holo-title">
-        MANASSÉ MATRIX // HOLOGRAPHIC CORE
-    </div>
-
-    <button
-        class="holo-close"
-        id="holoClose"
-    >
-        ✕ SORTIR
-    </button>
-
-    <div class="holo-status" id="holoStatus">
-        INITIALISATION DU NOYAU VISUEL...
-    </div>
-
 </div>
 
-
-<!-- =====================================================
-     CHAT
-     ===================================================== -->
-
-<div
-    class="chat-container"
-    id="chatContainer"
->
-
-    <div class="message bot">
-
-        Matrice initialisée, Maître Manassé.
-        Systèmes holographiques et liaisons
-        neuronales prêts. Que commandez-vous ?
-
-        <div class="msg-actions">
-
-            <button
-                class="action-btn"
-                onclick="parlerTexte(this)"
-            >
-                🔊 Écouter
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<div class="input-area">
-
-    <input
-        type="text"
-        class="chat-input"
-        id="chatInput"
-        placeholder="Commandez l'IA ici..."
-    >
-
-    <button
-        class="send-btn"
-        id="sendBtn"
-    >
-        ➤
-    </button>
-
-</div>
-
-
-</div>
-
-</div>
 
 
 <script>
 
-/* =========================================================
-   VARIABLES PRINCIPALES
-   ========================================================= */
+/* =====================================================
+   CONFIGURATION
+   ===================================================== */
 
-const authScreen =
-    document.getElementById("authScreen");
-
-const mainApp =
-    document.getElementById("mainApp");
-
-const apiKeyInput =
-    document.getElementById("apiKeyInput");
-
-const initBtn =
-    document.getElementById("initBtn");
-
-const chatContainer =
-    document.getElementById("chatContainer");
-
-const chatInput =
-    document.getElementById("chatInput");
-
-const sendBtn =
-    document.getElementById("sendBtn");
-
-const demoBtn =
-    document.getElementById("demoBtn");
-
-const graphicModeBtn =
-    document.getElementById("graphicModeBtn");
-
-const hologramView =
-    document.getElementById("hologram-view");
-
-const holoClose =
-    document.getElementById("holoClose");
-
-const holoStatus =
-    document.getElementById("holoStatus");
-
-
-/* =========================================================
-   MÉMOIRE
-   ========================================================= */
-
-let conversationMemory =
-    JSON.parse(
-        localStorage.getItem("manasse_memory")
-    ) || [
-
-        {
-            role:"system",
-
-            content:
-            "Tu es Manassé Matrix, une intelligence artificielle futuriste de pointe. Tes réponses sont précises, percutantes et élégantes."
-        }
-
-    ];
-
-
-function loadSavedMessages(){
-
-    const saved =
-        JSON.parse(
-            localStorage.getItem(
-                "manasse_chat_history"
-            )
-        ) || [];
-
-    if(saved.length){
-
-        chatContainer.innerHTML = "";
-
-        saved.forEach(msg => {
-
-            appendMessageUI(
-                msg.text,
-                msg.sender
-            );
-
-        });
-
-    }
-
-}
-
-
-function saveChatHistory(){
-
-    const messages = [];
-
-    document
-        .querySelectorAll(".message")
-        .forEach(el => {
-
-            messages.push({
-
-                text:el.innerText
-                    .replace("🔊 Écouter","")
-                    .trim(),
-
-                sender:
-                    el.classList.contains("user")
-                    ? "user"
-                    : "bot"
-
-            });
-
-        });
-
-    if(messages.length > 30){
-
-        messages.splice(
-            0,
-            messages.length - 30
-        );
-
-    }
-
-    localStorage.setItem(
-        "manasse_chat_history",
-        JSON.stringify(messages)
-    );
-
-}
-
-
-/* =========================================================
-   DÉMO MÉMOIRE
-   ========================================================= */
-
-demoBtn.addEventListener(
-"click",
-() => {
-
-    const text =
-    `[RAPPORT MÉMOIRE] : La matrice stocke actuellement ${conversationMemory.length} blocs d'échanges neuronaux en local.`;
-
-    addMessage(
-        text,
-        "bot"
-    );
-
-    lancerVoixEtMouvements(
-        text
-    );
-
-});
-
-
-/* =========================================================
-   AVATAR
-   ========================================================= */
-
-const AVATAR_FILE =
+const AVATAR =
     "./Modèle 3D d'IA féminine futuriste.glb.txt";
 
 
-let scene = null;
-let camera = null;
-let renderer = null;
+const GROQ_URL =
+    "https://api.groq.com/openai/v1/chat/completions";
+
+
+const GROQ_MODEL =
+    "openai/gpt-oss-120b";
+
+
+/* =====================================================
+   VARIABLES
+   ===================================================== */
+
+let scene;
+
+let camera;
+
+let renderer;
+
 let avatar = null;
 
-let hologramInitialized = false;
-let hologramActive = false;
+let clock;
 
-let clock = null;
+let recognition = null;
 
-let isSpeaking3D = false;
+let listening = false;
 
+let speaking = false;
 
-/* =========================================================
-   MODE HOLOGRAPHIQUE
-   ========================================================= */
+let audioContext = null;
 
-graphicModeBtn.addEventListener(
-"click",
-() => {
+let audioAnalyser = null;
 
-    if(hologramActive){
+let audioSource = null;
 
-        closeHologram();
+let audioData = null;
 
-    }else{
-
-        openHologram();
-
-    }
-
-});
+let currentAudio = null;
 
 
-holoClose.addEventListener(
-"click",
-closeHologram
-);
+/* =====================================================
+   ÉLÉMENTS
+   ===================================================== */
+
+const canvas =
+    document.getElementById("canvas");
+
+const status =
+    document.getElementById("status");
+
+const micro =
+    document.getElementById("micro");
+
+const start =
+    document.getElementById("start");
+
+const startButton =
+    document.getElementById("startButton");
 
 
-function openHologram(){
+/* =====================================================
+   MÉMOIRE IA
+   ===================================================== */
 
-    hologramActive = true;
+let memory = [
 
-    hologramView.classList.add(
-        "active"
-    );
+    {
+        role:"system",
 
+        content:`
 
-    /*
-       On cache complètement
-       l'interface principale.
-    */
+Tu es MANASSÉ MATRIX.
 
-    const elements =
-        mainApp.children;
+Tu es une intelligence artificielle personnelle
+holographique futuriste.
 
-    for(
-        let i = 0;
-        i < elements.length;
-        i++
-    ){
+Tu parles naturellement en français.
 
-        if(
-            elements[i] !==
-            hologramView
-        ){
+Tu dois comprendre les questions de l'utilisateur,
+raisonner, expliquer, aider et tenir compte du contexte
+de la conversation.
 
-            elements[i].style.visibility =
-                "hidden";
+Tes réponses vocales doivent être naturelles,
+claires et relativement courtes.
 
-        }
+Tu ne dois jamais dire que tu es un simple chatbot.
 
-    }
+Tu es l'assistante holographique de Manassé.
 
-
-    graphicModeBtn.style.background =
-        "#00f0ff";
-
-    graphicModeBtn.style.color =
-        "#020408";
-
-
-    if(!hologramInitialized){
-
-        initHologram();
-
-        hologramInitialized = true;
+`
 
     }
 
-
-    /*
-       Passage plein écran du téléphone
-    */
-
-    if(
-        document.documentElement.requestFullscreen
-    ){
-
-        document.documentElement
-            .requestFullscreen()
-            .catch(()=>{});
-
-    }
-
-}
+];
 
 
-function closeHologram(){
-
-    hologramActive = false;
-
-    hologramView.classList.remove(
-        "active"
-    );
-
-
-    const elements =
-        mainApp.children;
-
-    for(
-        let i = 0;
-        i < elements.length;
-        i++
-    ){
-
-        elements[i].style.visibility =
-            "visible";
-
-    }
-
-
-    graphicModeBtn.style.background =
-        "rgba(0,240,255,.1)";
-
-    graphicModeBtn.style.color =
-        "#00f0ff";
-
-
-    if(
-        document.fullscreenElement
-    ){
-
-        document.exitFullscreen()
-            .catch(()=>{});
-
-    }
-
-}
-
-
-/* =========================================================
+/* =====================================================
    INITIALISATION THREE.JS
-   ========================================================= */
+   ===================================================== */
 
-function initHologram(){
+function init3D(){
 
     scene =
         new THREE.Scene();
@@ -1010,23 +511,32 @@ function initHologram(){
 
     camera =
         new THREE.PerspectiveCamera(
+
             35,
+
             window.innerWidth /
             window.innerHeight,
+
             .01,
+
             1000
+
         );
 
 
     camera.position.set(
+
         0,
-        1.35,
-        3.4
+        1.25,
+        3.2
+
     );
 
 
     renderer =
         new THREE.WebGLRenderer({
+
+            canvas:canvas,
 
             antialias:true,
 
@@ -1039,16 +549,20 @@ function initHologram(){
 
 
     renderer.setPixelRatio(
+
         Math.min(
             window.devicePixelRatio,
             2
         )
+
     );
 
 
     renderer.setSize(
+
         window.innerWidth,
         window.innerHeight
+
     );
 
 
@@ -1056,45 +570,51 @@ function initHologram(){
         THREE.sRGBEncoding;
 
 
-    hologramView.appendChild(
-        renderer.domElement
-    );
-
-
-    /* =====================================================
+    /* =================================================
        LUMIÈRES
-       ===================================================== */
+       ================================================= */
 
-    scene.add(
+    const ambient =
         new THREE.AmbientLight(
+
             0xffffff,
             2.5
-        )
-    );
+
+        );
+
+
+    scene.add(ambient);
 
 
     const cyan =
         new THREE.PointLight(
+
             0x00ffff,
-            6,
+            8,
             20
+
         );
+
 
     cyan.position.set(
         0,
-        3,
+        2,
         4
     );
+
 
     scene.add(cyan);
 
 
     const blue =
         new THREE.PointLight(
+
             0x0077ff,
             5,
-            15
+            20
+
         );
+
 
     blue.position.set(
         -3,
@@ -1102,15 +622,19 @@ function initHologram(){
         2
     );
 
+
     scene.add(blue);
 
 
     const back =
         new THREE.PointLight(
+
             0x00ffff,
-            5,
-            15
+            6,
+            20
+
         );
+
 
     back.position.set(
         0,
@@ -1118,54 +642,45 @@ function initHologram(){
         -3
     );
 
+
     scene.add(back);
-
-
-    /* =====================================================
-       CHARGEMENT DE L'AVATAR
-       ===================================================== */
-
-    chargerAvatar();
 
 
     clock =
         new THREE.Clock();
 
 
-    animateHologram();
+    chargerAvatar();
 
 }
 
 
-/* =========================================================
+/* =====================================================
    CHARGEMENT AVATAR
-   ========================================================= */
+   ===================================================== */
 
 async function chargerAvatar(){
 
-    holoStatus.innerText =
-        "CHARGEMENT DE L'AVATAR 3D...";
+    status.innerText =
+        "CHARGEMENT DU NOYAU HOLOGRAPHIQUE";
 
 
     try{
 
         const response =
-            await fetch(
-                AVATAR_FILE
-            );
+            await fetch(AVATAR);
 
 
         if(!response.ok){
 
             throw new Error(
-                "Fichier introuvable : " +
-                AVATAR_FILE
+                "Avatar introuvable"
             );
 
         }
 
 
-        const data =
+        const buffer =
             await response.arrayBuffer();
 
 
@@ -1174,17 +689,18 @@ async function chargerAvatar(){
 
 
         loader.parse(
-            data,
+
+            buffer,
+
             "",
-            gltf => {
+
+            function(gltf){
 
                 avatar =
                     gltf.scene;
 
 
-                preparerAvatar(
-                    avatar
-                );
+                preparerAvatar();
 
 
                 scene.add(
@@ -1192,22 +708,22 @@ async function chargerAvatar(){
                 );
 
 
-                holoStatus.innerText =
-                    "● AVATAR CONNECTÉ // SYSTÈME HOLOGRAPHIQUE ACTIF";
+                status.innerText =
+                    "HOLOGRAMME ACTIF • JE VOUS ÉCOUTE";
 
 
-                faireApparaitreAvatar();
+                demarrerEcoute();
 
             },
 
-            error => {
+            function(error){
 
                 console.error(
                     error
                 );
 
-                holoStatus.innerText =
-                    "⚠ ERREUR DE LECTURE DU MODÈLE 3D";
+                status.innerText =
+                    "ERREUR DE CHARGEMENT DE L'AVATAR";
 
             }
 
@@ -1220,24 +736,23 @@ async function chargerAvatar(){
             error
         );
 
-        holoStatus.innerText =
-            "⚠ AVATAR INTROUVABLE : " +
-            AVATAR_FILE;
+        status.innerText =
+            "AVATAR INTROUVABLE";
 
     }
 
 }
 
 
-/* =========================================================
-   PRÉPARATION AVATAR
-   ========================================================= */
+/* =====================================================
+   PRÉPARER AVATAR
+   ===================================================== */
 
-function preparerAvatar(model){
+function preparerAvatar(){
 
     const box =
         new THREE.Box3()
-        .setFromObject(model);
+        .setFromObject(avatar);
 
 
     const size =
@@ -1252,194 +767,154 @@ function preparerAvatar(model){
         );
 
 
-    model.position.x -=
+    avatar.position.x -=
         center.x;
 
-    model.position.z -=
+
+    avatar.position.z -=
         center.z;
 
 
     const max =
         Math.max(
+
             size.x,
             size.y,
             size.z
+
         );
 
 
     if(max > 0){
 
-        const target =
-            2.8;
-
         const scale =
-            target / max;
+            2.7 / max;
 
-        model.scale.setScalar(
+
+        avatar.scale.setScalar(
             scale
         );
 
     }
 
 
-    /*
-       Position de l'avatar.
-    */
-
-    model.position.y =
-        -1.35;
+    avatar.position.y =
+        -1.25;
 
 
-    /*
-       Apparence holographique.
-    */
+    /* ================================================
+       APPARENCE HOLOGRAPHIQUE
+       ================================================ */
 
-    model.traverse(
-    object => {
-
-        if(
-            object.isMesh
-        ){
-
-            object.frustumCulled =
-                false;
+    avatar.traverse(
+        object => {
 
             if(
-                object.material
+                object.isMesh
             ){
 
-                object.material.transparent =
-                    true;
+                object.frustumCulled =
+                    false;
 
-                object.material.opacity =
-                    .96;
+
+                if(
+                    object.material
+                ){
+
+                    object.material.transparent =
+                        true;
+
+
+                    object.material.opacity =
+                        .94;
+
+                }
 
             }
 
         }
-
-    });
-
-}
-
-
-/* =========================================================
-   APPARITION
-   ========================================================= */
-
-function faireApparaitreAvatar(){
-
-    if(!avatar)
-        return;
-
-
-    avatar.scale.multiplyScalar(
-        .01
-    );
-
-
-    let progress = .01;
-
-
-    const timer =
-        setInterval(
-        () => {
-
-            progress += .035;
-
-
-            if(avatar){
-
-                avatar.scale.setScalar(
-                    progress
-                );
-
-            }
-
-
-            if(progress >= 1){
-
-                clearInterval(
-                    timer
-                );
-
-            }
-
-        },
-        20
     );
 
 }
 
 
-/* =========================================================
-   ANIMATION
-   ========================================================= */
+/* =====================================================
+   ANIMATION AVATAR
+   ===================================================== */
 
-function animateHologram(){
+function animate(){
 
     requestAnimationFrame(
-        animateHologram
+        animate
     );
 
 
-    if(
-        !renderer ||
-        !scene ||
-        !camera
-    ){
-
-        return;
-
-    }
-
-
-    const t =
+    const time =
         clock.getElapsedTime();
 
 
     if(avatar){
 
         /*
-           Respiration.
+         Respiration normale
         */
 
         avatar.position.y =
-            -1.35 +
-            Math.sin(t * 1.4) *
-            .018;
+            -1.25 +
+            Math.sin(time * 1.5)
+            * .015;
 
 
         /*
-           Mouvement naturel.
+         Mouvement naturel
         */
 
         avatar.rotation.y =
-            Math.sin(t * .35) *
-            .08;
+            Math.sin(time * .35)
+            * .06;
 
 
         /*
-           Quand l'IA parle :
-           mouvements plus expressifs.
+         IA EN TRAIN DE PARLER
         */
 
-        if(isSpeaking3D){
+        if(speaking){
+
+            const intensity =
+                audioData
+                ? getAudioLevel()
+                : .04;
+
 
             avatar.position.y =
-                -1.35 +
-                Math.sin(t * 7) *
-                .035;
+                -1.25 +
+                Math.sin(time * 7)
+                * (.025 + intensity*.08);
 
 
             avatar.rotation.y =
-                Math.sin(t * 2.2) *
-                .14;
+                Math.sin(time * 2)
+                * (.08 + intensity*.12);
 
 
             avatar.rotation.z =
-                Math.sin(t * 3) *
-                .025;
+                Math.sin(time * 3)
+                * .025;
+
+
+            /*
+             Effet holographique
+            */
+
+            const pulse =
+                0.90 +
+                intensity*.3;
+
+
+            avatar.scale.setScalar(
+                pulse *
+                getBaseScale()
+            );
 
         }
 
@@ -1454,18 +929,578 @@ function animateHologram(){
 }
 
 
-/* =========================================================
-   RESIZE
-   ========================================================= */
+/* =====================================================
+   ÉCHELLE AVATAR
+   ===================================================== */
+
+let baseScale = 1;
+
+
+function getBaseScale(){
+
+    return baseScale;
+
+}
+
+
+/* =====================================================
+   MICROPHONE
+   ===================================================== */
+
+function initialiserMicro(){
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if(!SpeechRecognition){
+
+        status.innerText =
+            "RECONNAISSANCE VOCALE NON DISPONIBLE";
+
+        return;
+
+    }
+
+
+    recognition =
+        new SpeechRecognition();
+
+
+    recognition.lang =
+        "fr-FR";
+
+
+    recognition.continuous =
+        true;
+
+
+    recognition.interimResults =
+        false;
+
+
+    recognition.maxAlternatives =
+        1;
+
+
+    recognition.onstart =
+        function(){
+
+            listening = true;
+
+            micro.classList.add(
+                "active"
+            );
+
+            status.innerText =
+                "JE VOUS ÉCOUTE...";
+
+        };
+
+
+    recognition.onresult =
+        function(event){
+
+            const result =
+                event.results[
+                    event.results.length - 1
+                ];
+
+
+            if(!result.isFinal)
+                return;
+
+
+            const text =
+                result[0]
+                .transcript
+                .trim();
+
+
+            if(text){
+
+                traiterQuestion(
+                    text
+                );
+
+            }
+
+        };
+
+
+    recognition.onerror =
+        function(event){
+
+            console.log(
+                "Micro:",
+                event.error
+            );
+
+
+            listening =
+                false;
+
+
+            micro.classList.remove(
+                "active"
+            );
+
+
+            /*
+             On relance automatiquement
+             sauf erreur de permission.
+            */
+
+            if(
+                event.error !==
+                "not-allowed"
+            ){
+
+                setTimeout(
+                    demarrerEcoute,
+                    1000
+                );
+
+            }
+
+        };
+
+
+    recognition.onend =
+        function(){
+
+            listening =
+                false;
+
+
+            micro.classList.remove(
+                "active"
+            );
+
+
+            /*
+             L'hologramme reste
+             en écoute.
+            */
+
+            setTimeout(
+                demarrerEcoute,
+                500
+            );
+
+        };
+
+}
+
+
+/* =====================================================
+   DÉMARRER ÉCOUTE
+   ===================================================== */
+
+function demarrerEcoute(){
+
+    if(!recognition)
+        return;
+
+
+    if(listening)
+        return;
+
+
+    try{
+
+        recognition.start();
+
+    }
+    catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+
+/* =====================================================
+   QUESTION → GROQ
+   ===================================================== */
+
+async function traiterQuestion(
+    question
+){
+
+    status.innerText =
+        "ANALYSE NEURALE...";
+
+
+    memory.push({
+
+        role:"user",
+
+        content:question
+
+    });
+
+
+    /*
+     Maximum de mémoire pour éviter
+     une requête énorme.
+    */
+
+    if(memory.length > 21){
+
+        memory =
+            [
+                memory[0],
+                ...memory.slice(
+                    -20
+                )
+            ];
+
+    }
+
+
+    try{
+
+        const key =
+            obtenirCle();
+
+
+        if(!key){
+
+            status.innerText =
+                "CLÉ GROQ MANQUANTE";
+
+            return;
+
+        }
+
+
+        const response =
+            await fetch(
+
+                GROQ_URL,
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Authorization":
+                            "Bearer " + key,
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                    JSON.stringify({
+
+                        model:
+                            GROQ_MODEL,
+
+                        messages:
+                            memory,
+
+                        temperature:
+                            .7,
+
+                        max_tokens:
+                            500
+
+                    })
+
+                }
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(
+            data.error
+        ){
+
+            throw new Error(
+                data.error.message
+            );
+
+        }
+
+
+        const answer =
+            data.choices[0]
+            .message
+            .content;
+
+
+        memory.push({
+
+            role:"assistant",
+
+            content:answer
+
+        });
+
+
+        status.innerText =
+            "MANASSÉ MATRIX • RÉPONSE";
+
+
+        parler(answer);
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+
+        status.innerText =
+            "ERREUR DE CONNEXION GROQ";
+
+    }
+
+}
+
+
+/* =====================================================
+   CLÉ GROQ
+   ===================================================== */
+
+function obtenirCle(){
+
+    let key =
+        localStorage.getItem(
+            "manasse_groq_key"
+        );
+
+
+    if(!key){
+
+        key =
+            prompt(
+                "Entrez votre clé API Groq :"
+            );
+
+
+        if(key){
+
+            key =
+                key.trim();
+
+
+            localStorage.setItem(
+                "manasse_groq_key",
+                key
+            );
+
+        }
+
+    }
+
+
+    return key;
+
+}
+
+
+/* =====================================================
+   SYNTHÈSE VOCALE
+   ===================================================== */
+
+function parler(
+    text
+){
+
+    /*
+     Arrêter l'écoute pendant
+     que l'IA parle pour éviter
+     qu'elle entende sa propre voix.
+    */
+
+    if(
+        recognition &&
+        listening
+    ){
+
+        try{
+
+            recognition.stop();
+
+        }
+        catch(e){}
+
+    }
+
+
+    if(
+        !("speechSynthesis"
+        in window)
+    ){
+
+        demarrerEcoute();
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    const utterance =
+        new SpeechSynthesisUtterance(
+            text
+        );
+
+
+    utterance.lang =
+        "fr-FR";
+
+
+    utterance.rate =
+        .95;
+
+
+    utterance.pitch =
+        .85;
+
+
+    const voices =
+        speechSynthesis
+        .getVoices();
+
+
+    const frenchVoice =
+        voices.find(
+
+            voice =>
+            voice.lang
+            &&
+            voice.lang
+                .toLowerCase()
+                .startsWith("fr")
+
+        );
+
+
+    if(frenchVoice){
+
+        utterance.voice =
+            frenchVoice;
+
+    }
+
+
+    utterance.onstart =
+        function(){
+
+            speaking =
+                true;
+
+            status.innerText =
+                "MANASSÉ MATRIX • RÉPONSE EN COURS";
+
+        };
+
+
+    utterance.onend =
+        function(){
+
+            speaking =
+                false;
+
+
+            status.innerText =
+                "JE VOUS ÉCOUTE...";
+
+
+            demarrerEcoute();
+
+        };
+
+
+    utterance.onerror =
+        function(){
+
+            speaking =
+                false;
+
+
+            demarrerEcoute();
+
+        };
+
+
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+/* =====================================================
+   AUDIO ANALYSER
+   ===================================================== */
+
+function getAudioLevel(){
+
+    if(
+        !audioAnalyser ||
+        !audioData
+    ){
+
+        return .05;
+
+    }
+
+
+    audioAnalyser.getByteFrequencyData(
+        audioData
+    );
+
+
+    let total = 0;
+
+
+    for(
+        let i=0;
+        i<audioData.length;
+        i++
+    ){
+
+        total +=
+            audioData[i];
+
+    }
+
+
+    return Math.min(
+        total /
+        audioData.length /
+        255,
+        1
+    );
+
+}
+
+
+/* =====================================================
+   REDIMENSIONNEMENT
+   ===================================================== */
 
 window.addEventListener(
 "resize",
-() => {
+function(){
 
-    if(
-        !camera ||
-        !renderer
-    )
+    if(!camera || !renderer)
         return;
 
 
@@ -1478,500 +1513,100 @@ window.addEventListener(
 
 
     renderer.setSize(
+
         window.innerWidth,
         window.innerHeight
+
     );
 
 });
 
 
-/* =========================================================
-   VOIX
-   ========================================================= */
-
-function parlerTexte(button){
-
-    const message =
-        button.closest(
-            ".message"
-        );
-
-
-    if(!message)
-        return;
-
-
-    const text =
-        message.innerText
-        .replace(
-            "🔊 Écouter",
-            ""
-        )
-        .trim();
-
-
-    lancerVoixEtMouvements(
-        text
-    );
-
-}
-
-
-function lancerVoixEtMouvements(
-    texte
-){
-
-    if(
-        !("speechSynthesis" in window)
-    )
-        return;
-
-
-    speechSynthesis.cancel();
-
-
-    const utterance =
-        new SpeechSynthesisUtterance(
-            texte
-        );
-
-
-    utterance.lang =
-        "fr-FR";
-
-
-    utterance.pitch =
-        .85;
-
-
-    utterance.rate =
-        .95;
-
-
-    const voices =
-        speechSynthesis
-        .getVoices();
-
-
-    const french =
-        voices.find(
-            v =>
-            v.lang &&
-            v.lang
-            .toLowerCase()
-            .startsWith("fr")
-        );
-
-
-    if(french){
-
-        utterance.voice =
-            french;
-
-    }
-
-
-    utterance.onstart =
-        () => {
-
-            isSpeaking3D =
-                true;
-
-        };
-
-
-    utterance.onend =
-        () => {
-
-            isSpeaking3D =
-                false;
-
-        };
-
-
-    utterance.onerror =
-        () => {
-
-            isSpeaking3D =
-                false;
-
-        };
-
-
-    speechSynthesis.speak(
-        utterance
-    );
-
-}
-
-
-/* =========================================================
-   MESSAGES
-   ========================================================= */
-
-function appendMessageUI(
-    text,
-    sender
-){
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.className =
-        "message " +
-        sender;
-
-
-    if(sender === "bot"){
-
-        div.innerHTML =
-            `${escapeHTML(text)}
-            <div class="msg-actions">
-                <button
-                    class="action-btn"
-                    onclick="parlerTexte(this)"
-                >
-                    🔊 Écouter
-                </button>
-            </div>`;
-
-    }
-    else{
-
-        div.textContent =
-            text;
-
-    }
-
-
-    chatContainer.appendChild(
-        div
-    );
-
-
-    chatContainer.scrollTop =
-        chatContainer.scrollHeight;
-
-}
-
-
-function escapeHTML(text){
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-    div.textContent =
-        text;
-
-    return div.innerHTML;
-
-}
-
-
-function addMessage(
-    text,
-    sender
-){
-
-    appendMessageUI(
-        text,
-        sender
-    );
-
-    saveChatHistory();
-
-}
-
-
-/* =========================================================
-   CLÉ API
-   ========================================================= */
-
-const savedKey =
-    localStorage.getItem(
-        "manasse_api_key"
-    );
-
-
-if(savedKey){
-
-    apiKeyInput.value =
-        savedKey;
-
-    authScreen.style.display =
-        "none";
-
-    mainApp.style.display =
-        "flex";
-
-    loadSavedMessages();
-
-}
-
-
-initBtn.addEventListener(
+/* =====================================================
+   ACTIVATION
+   ===================================================== */
+
+startButton.addEventListener(
 "click",
-() => {
+async function(){
 
-    const key =
-        apiKeyInput.value.trim();
-
-
-    if(!key){
-
-        gsap.to(
-            apiKeyInput,
-            {
-                x:[-10,10,-10,10,0],
-                duration:.4
-            }
-        );
-
-        return;
-
-    }
-
-
-    localStorage.setItem(
-        "manasse_api_key",
-        key
-    );
-
-
-    gsap.to(
-        authScreen,
-        {
-
-            opacity:0,
-
-            duration:.5,
-
-            onComplete:() => {
-
-                authScreen.style.display =
-                    "none";
-
-                mainApp.style.display =
-                    "flex";
-
-                gsap.from(
-                    mainApp,
-                    {
-                        opacity:0,
-                        duration:.5
-                    }
-                );
-
-                loadSavedMessages();
-
-            }
-
-        }
-    );
-
-});
-
-
-/* =========================================================
-   GROQ
-   ========================================================= */
-
-async function callGroqAPI(
-    userMessage
-){
-
-    const apiKey =
-        localStorage.getItem(
-            "manasse_api_key"
-        );
-
-
-    conversationMemory.push({
-
-        role:"user",
-
-        content:userMessage
-
-    });
-
+    /*
+     Activation du microphone
+     après interaction utilisateur.
+    */
 
     try{
 
-        const response =
-            await fetch(
-                "https://api.groq.com/openai/v1/chat/completions",
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Authorization":
-                            `Bearer ${apiKey}`,
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:JSON.stringify({
-
-                        model:
-                            "openai/gpt-oss-120b",
-
-                        messages:
-                            conversationMemory
-
-                    })
-
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if(data.error){
-
-            throw new Error(
-                data.error.message
-            );
-
-        }
-
-
-        const reply =
-            data.choices[0]
-            .message
-            .content;
-
-
-        conversationMemory.push({
-
-            role:"assistant",
-
-            content:reply
-
-        });
-
-
-        localStorage.setItem(
-            "manasse_memory",
-            JSON.stringify(
-                conversationMemory
-            )
-        );
-
-
-        return reply;
+        await navigator.mediaDevices
+            .getUserMedia({
+                audio:true
+            });
 
     }
     catch(error){
+
+        status.innerText =
+            "MICROPHONE REFUSÉ";
 
         console.error(
             error
         );
 
-
-        return "Erreur de liaison avec le serveur neural de la matrice. Vérifiez votre clé API.";
-
     }
 
-}
+
+    /*
+     Initialisation du système.
+    */
+
+    initialiserMicro();
 
 
-/* =========================================================
-   ENVOI MESSAGE
-   ========================================================= */
-
-async function handleSendMessage(){
-
-    const text =
-        chatInput.value.trim();
+    init3D();
 
 
-    if(!text)
-        return;
+    animate();
 
 
-    addMessage(
-        text,
-        "user"
+    start.classList.add(
+        "hidden"
     );
 
 
-    chatInput.value =
-        "";
+    /*
+     Plein écran du téléphone.
+    */
 
+    if(
+        document.documentElement
+        .requestFullscreen
+    ){
 
-    const reply =
-        await callGroqAPI(
-            text
-        );
+        try{
 
-
-    addMessage(
-        reply,
-        "bot"
-    );
-
-
-    lancerVoixEtMouvements(
-        reply
-    );
-
-}
-
-
-sendBtn.addEventListener(
-    "click",
-    handleSendMessage
-);
-
-
-chatInput.addEventListener(
-    "keypress",
-    e => {
-
-        if(
-            e.key === "Enter"
-        ){
-
-            handleSendMessage();
+            await document
+                .documentElement
+                .requestFullscreen();
 
         }
+        catch(e){}
 
     }
-);
+
+});
 
 
-/* =========================================================
-   SERVICE WORKER
-   ========================================================= */
+/* =====================================================
+   VOIX DISPONIBLES
+   ===================================================== */
 
 if(
-    "serviceWorker" in navigator
+    "speechSynthesis"
+    in window
 ){
 
-    window.addEventListener(
-        "load",
-        () => {
-
-            navigator.serviceWorker
-            .register("./sw.js")
-            .catch(
-                err =>
-                console.log(err)
-            );
-
-        }
-    );
+    speechSynthesis
+        .getVoices();
 
 }
 
