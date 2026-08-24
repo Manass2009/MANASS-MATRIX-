@@ -34,7 +34,7 @@ button:active{background:#00f0ff;color:#020408;}
 #start{position:absolute;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#06212b,#020408 75%);}
 #start button{padding:18px 25px;border-radius:30px;}
 
-#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:85%;z-index:200;text-align:center;color:#00f0ff;font-size:12px;line-height:1.6;display:none;background:rgba(2,4,8,0.9);padding:15px;border:1px solid #00f0ff;border-radius:10px;}
+#error{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:85%;z-index:200;text-align:center;color:#00f0ff;font-size:12px;line-height:1.6;display:none;background:rgba(2,4,8,0.95);padding:15px;border:1px solid #00f0ff;border-radius:10px;}
 </style>
 </head>
 <body>
@@ -93,7 +93,7 @@ let clock = null;
 let memory = [
     {
         role: "system",
-        content: "Tu es MANASSÉ MATRIX. Une intelligence artificielle personnelle holographique féminine. Tu réponds de manière concise, vive et directe en français."
+        content: "Tu es MANASSÉ MATRIX. Une intelligence artificielle personnelle holographique féminine. Tu réponds de manière concise, vive, intelligente et directe en français."
     }
 ];
 
@@ -111,18 +111,18 @@ function getKey() {
 
 async function startMedia() {
     try {
-        status.innerText = "ACTIVATION MICRO & CAMÉRA...";
+        status.innerText = "ACTIVATION CAMÉRA & MICRO...";
         stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
+            audio: { echoCancellation: true, noiseSuppression: true },
             video: { facingMode: "user" }
         });
         video.srcObject = stream;
         await video.play();
-        status.innerText = "CAPTEURS OK";
+        status.innerText = "CAPTEURS ACTIVÉS";
         return true;
     } catch (error) {
         console.error(error);
-        showError("Accès refusé au micro ou à la caméra.<br>Vérifie dans les paramètres de ton navigateur (icône cadenas à côté de l'URL) que le micro et la caméra sont autorisés.");
+        showError("Impossible d'accéder au micro ou à la caméra.<br>Vérifie que ton téléphone n'utilise pas déjà la caméra dans une autre application.");
         return false;
     }
 }
@@ -130,7 +130,7 @@ async function startMedia() {
 function setupRecognition() {
     const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Speech) {
-        showError("La reconnaissance vocale n'est pas supportée par ce navigateur. Utilise Google Chrome sur Android.");
+        showError("La reconnaissance vocale n'est pas supportée par ce navigateur. Utilise Google Chrome sur ton mobile.");
         return false;
     }
 
@@ -155,7 +155,7 @@ function setupRecognition() {
     };
 
     recognition.onerror = (e) => {
-        console.warn("Speech recognition error:", e.error);
+        console.warn("Speech error:", e.error);
         stopListeningState();
     };
 
@@ -179,7 +179,7 @@ function listen() {
     try { 
         recognition.start(); 
     } catch (e) {
-        console.log("Recognition start error:", e);
+        console.log("Recognition error:", e);
     }
 }
 
@@ -246,7 +246,7 @@ async function askGroq(text) {
         console.error(error);
         processing = false;
         status.innerText = "ERREUR";
-        dialogue.innerText = "Erreur de connexion.";
+        dialogue.innerText = "Erreur de connexion avec l'IA.";
         setTimeout(listen, 1500);
     }
 }
@@ -257,12 +257,11 @@ function speak(text) {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "fr-FR";
-    utterance.rate = 1.25; // Voix rapide et dynamique
-    utterance.pitch = 1.2;  // Tonalité plus féminine/vive
+    utterance.rate = 1.25; // Vitesse rapide et dynamique
+    utterance.pitch = 1.2;  // Tonalité féminine vive
 
     const voices = speechSynthesis.getVoices();
-    // Cherche en priorité une voix féminine française (ex: Google français, Hortense, etc.)
-    const frenchVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('hortense') || v.name.toLowerCase().includes('amélie')));
+    const frenchVoice = voices.find(v => v.lang.startsWith("fr") && (v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('google') || v.name.toLowerCase().includes('hortense') || v.name.toLowerCase().includes('amélie') || v.name.toLowerCase().includes('Julie')));
     if (frenchVoice) {
         utterance.voice = frenchVoice;
     } else {
@@ -278,13 +277,13 @@ function speak(text) {
     utterance.onend = () => {
         speaking = false;
         status.innerText = "PRÊT";
-        setTimeout(listen, 600); // Relance instantanée du micro
+        setTimeout(listen, 500); // Relance instantanée du micro pour t'écouter
     };
 
     utterance.onerror = () => {
         speaking = false;
         status.innerText = "PRÊT";
-        setTimeout(listen, 600);
+        setTimeout(listen, 500);
     };
 
     speechSynthesis.speak(utterance);
@@ -319,7 +318,7 @@ function loadAvatar() {
         detectJaw();
         scene.add(avatar);
         status.innerText = "PRÊT";
-        setTimeout(listen, 1000);
+        setTimeout(listen, 800);
     }, (xhr) => {
         if (xhr.total) {
             let p = Math.round(xhr.loaded / xhr.total * 100);
@@ -390,8 +389,10 @@ function showError(text) {
     errorBox.style.display = "block";
 }
 
+// Lancement direct sur le clic pour satisfaire les exigences de sécurité du navigateur mobile
 startBtn.onclick = async () => {
-    startBtn.innerText = "LANCEMENT...";
+    startBtn.innerText = "CHARGEMENT...";
+    
     const mediaOK = await startMedia();
     if (!mediaOK) { startBtn.innerText = "RÉESSAYER"; return; }
 
