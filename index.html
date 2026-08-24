@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               user-scalable=no">
+content="width=device-width,
+initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
 
-<title>MANASSÉ MATRIX — HOLOGRAM</title>
+<title>MANASSÉ MATRIX — HOLOGRAM AI</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
@@ -44,12 +47,7 @@ body{
 
 }
 
-
-/* =====================================================
-   MONDE HOLOGRAPHIQUE
-   ===================================================== */
-
-#hologram{
+#app{
 
     position:fixed;
 
@@ -62,19 +60,71 @@ body{
     overflow:hidden;
 
     background:
-
-        radial-gradient(
-            ellipse at center,
-            rgba(0,70,100,.30) 0%,
-            rgba(0,20,35,.18) 35%,
-            rgba(2,4,8,1) 78%
-        );
+    radial-gradient(
+        ellipse at center,
+        rgba(0,70,100,.35),
+        rgba(2,4,8,1) 75%
+    );
 
 }
 
 
 /* =====================================================
-   CANVAS 3D
+   CAMÉRA
+   ===================================================== */
+
+#camera{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    transform:scaleX(-1);
+
+    opacity:.16;
+
+    filter:
+    brightness(.65)
+    contrast(1.15)
+    saturate(.5);
+
+    z-index:0;
+
+}
+
+
+/* =====================================================
+   VOILE HOLOGRAPHIQUE
+   ===================================================== */
+
+#cameraOverlay{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:1;
+
+    pointer-events:none;
+
+    background:
+
+    radial-gradient(
+        ellipse at center,
+        rgba(0,240,255,.05),
+        rgba(0,0,0,.72) 85%
+    );
+
+}
+
+
+/* =====================================================
+   THREE.JS
    ===================================================== */
 
 #canvas{
@@ -86,50 +136,16 @@ body{
     width:100%;
     height:100%;
 
-    z-index:1;
+    z-index:2;
 
 }
 
 
 /* =====================================================
-   GRILLE HOLOGRAPHIQUE
+   GRILLE
    ===================================================== */
 
 #grid{
-
-    position:absolute;
-
-    inset:0;
-
-    z-index:2;
-
-    pointer-events:none;
-
-    background:
-
-        linear-gradient(
-            rgba(0,240,255,.025) 1px,
-            transparent 1px
-        ),
-
-        linear-gradient(
-            90deg,
-            rgba(0,240,255,.025) 1px,
-            transparent 1px
-        );
-
-    background-size:35px 35px;
-
-    opacity:.45;
-
-}
-
-
-/* =====================================================
-   VIGNETTE
-   ===================================================== */
-
-#vignette{
 
     position:absolute;
 
@@ -141,61 +157,64 @@ body{
 
     background:
 
-        radial-gradient(
-            ellipse at center,
-            transparent 35%,
-            rgba(0,0,0,.35) 100%
-        );
+    linear-gradient(
+        rgba(0,240,255,.025) 1px,
+        transparent 1px
+    ),
+
+    linear-gradient(
+        90deg,
+        rgba(0,240,255,.025) 1px,
+        transparent 1px
+    );
+
+    background-size:30px 30px;
 
 }
 
 
 /* =====================================================
-   TITRE DISCRET
+   HUD
    ===================================================== */
 
-#systemName{
+#title{
 
     position:absolute;
 
     top:20px;
+
     left:50%;
 
     transform:translateX(-50%);
 
-    z-index:10;
+    z-index:20;
 
     color:#00f0ff;
 
-    font-size:11px;
+    font-size:10px;
 
     letter-spacing:4px;
 
     white-space:nowrap;
 
     text-shadow:
-        0 0 5px #00f0ff,
-        0 0 15px #00f0ff;
-
-    opacity:.75;
+    0 0 8px #00f0ff,
+    0 0 20px #00f0ff;
 
 }
 
-
-/* =====================================================
-   ÉTAT SYSTÈME
-   ===================================================== */
 
 #status{
 
     position:absolute;
 
-    bottom:25px;
+    bottom:28px;
+
     left:50%;
 
     transform:translateX(-50%);
 
-    z-index:10;
+    z-index:20;
 
     color:#00f0ff;
 
@@ -203,82 +222,66 @@ body{
 
     letter-spacing:2px;
 
-    text-align:center;
-
     white-space:nowrap;
 
     text-shadow:
-        0 0 8px #00f0ff;
+    0 0 8px #00f0ff;
 
 }
 
 
-/* =====================================================
-   INDICATEUR MICRO
-   ===================================================== */
-
-#micro{
+#microIndicator{
 
     position:absolute;
 
-    bottom:50px;
+    bottom:52px;
+
     left:50%;
 
     transform:translateX(-50%);
 
     width:8px;
+
     height:8px;
 
     border-radius:50%;
 
     background:#00f0ff;
 
+    opacity:.35;
+
+    z-index:20;
+
     box-shadow:
-        0 0 8px #00f0ff,
-        0 0 20px #00f0ff;
-
-    z-index:10;
-
-    opacity:.3;
+    0 0 8px #00f0ff;
 
 }
 
 
-/* MICRO ACTIF */
-
-#micro.active{
+#microIndicator.active{
 
     opacity:1;
 
-    animation:
-        microphonePulse .8s infinite alternate;
+    animation:micPulse .7s infinite alternate;
 
 }
 
 
-@keyframes microphonePulse{
+@keyframes micPulse{
 
     from{
 
         transform:
-            translateX(-50%)
-            scale(1);
-
-        box-shadow:
-            0 0 8px #00f0ff,
-            0 0 20px #00f0ff;
+        translateX(-50%)
+        scale(1);
 
     }
 
     to{
 
         transform:
-            translateX(-50%)
-            scale(2);
-
-        box-shadow:
-            0 0 15px #00f0ff,
-            0 0 40px #00f0ff;
+        translateX(-50%)
+        scale(2);
 
     }
 
@@ -286,10 +289,41 @@ body{
 
 
 /* =====================================================
-   ÉCRAN DE DÉMARRAGE MINIMAL
+   CAMÉRA HUD
    ===================================================== */
 
-#start{
+#vision{
+
+    position:absolute;
+
+    top:65px;
+
+    right:15px;
+
+    z-index:20;
+
+    padding:7px 10px;
+
+    border:1px solid rgba(0,240,255,.35);
+
+    border-radius:8px;
+
+    background:rgba(0,10,20,.5);
+
+    color:#00f0ff;
+
+    font-size:8px;
+
+    letter-spacing:1px;
+
+}
+
+
+/* =====================================================
+   DÉMARRAGE
+   ===================================================== */
+
+#startScreen{
 
     position:absolute;
 
@@ -299,16 +333,16 @@ body{
 
     display:flex;
 
-    align-items:center;
-
     justify-content:center;
 
+    align-items:center;
+
     background:
-        radial-gradient(
-            circle,
-            rgba(0,30,45,.98),
-            #020408
-        );
+    radial-gradient(
+        circle,
+        rgba(0,30,45,.98),
+        #020408
+    );
 
 }
 
@@ -317,33 +351,56 @@ body{
 
     padding:18px 30px;
 
-    border:1px solid #00f0ff;
-
     border-radius:50px;
+
+    border:1px solid #00f0ff;
 
     background:rgba(0,240,255,.08);
 
     color:#00f0ff;
 
-    font-size:13px;
-
     font-weight:bold;
+
+    font-size:12px;
 
     letter-spacing:3px;
 
     box-shadow:
-        0 0 20px rgba(0,240,255,.35);
+    0 0 25px rgba(0,240,255,.35);
 
-    cursor:pointer;
+}
+
+
+#startScreen.hidden{
+
+    display:none;
 
 }
 
 
 /* =====================================================
-   MASQUER LE DÉMARRAGE
+   ERREUR
    ===================================================== */
 
-#start.hidden{
+#error{
+
+    position:absolute;
+
+    left:50%;
+
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    z-index:200;
+
+    color:#00f0ff;
+
+    font-size:11px;
+
+    text-align:center;
+
+    max-width:80%;
 
     display:none;
 
@@ -357,7 +414,20 @@ body{
 <body>
 
 
-<div id="hologram">
+<div id="app">
+
+
+    <!-- CAMÉRA FRONTALE -->
+
+    <video
+        id="camera"
+        autoplay
+        playsinline
+        muted>
+    </video>
+
+
+    <div id="cameraOverlay"></div>
 
 
     <canvas id="canvas"></canvas>
@@ -365,12 +435,18 @@ body{
 
     <div id="grid"></div>
 
-    <div id="vignette"></div>
 
-
-    <div id="systemName">
+    <div id="title">
         MANASSÉ MATRIX
     </div>
+
+
+    <div id="vision">
+        👁 VISION ACTIVE
+    </div>
+
+
+    <div id="microIndicator"></div>
 
 
     <div id="status">
@@ -378,13 +454,13 @@ body{
     </div>
 
 
-    <div id="micro"></div>
+    <div id="error"></div>
 
 
-    <div id="start">
+    <div id="startScreen">
 
         <button id="startButton">
-            ACTIVER L'HOLOGRAMME
+            ACTIVER MANASSÉ MATRIX
         </button>
 
     </div>
@@ -400,16 +476,49 @@ body{
    CONFIGURATION
    ===================================================== */
 
-const AVATAR =
-    "./Modèle 3D d'IA féminine futuriste.glb.txt";
+const AVATAR_FILE =
+"./Modèle 3D d'IA féminine futuriste.glb.txt";
 
 
-const GROQ_URL =
-    "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_ENDPOINT =
+"https://api.groq.com/openai/v1/chat/completions";
 
+
+/*
+   Modèle Groq avec vision.
+*/
 
 const GROQ_MODEL =
-    "openai/gpt-oss-120b";
+"qwen/qwen3.6-27b";
+
+
+/* =====================================================
+   ÉLÉMENTS
+   ===================================================== */
+
+const video =
+document.getElementById("camera");
+
+const canvas =
+document.getElementById("canvas");
+
+const startScreen =
+document.getElementById("startScreen");
+
+const startButton =
+document.getElementById("startButton");
+
+const status =
+document.getElementById("status");
+
+const microIndicator =
+document.getElementById("microIndicator");
+
+const vision =
+document.getElementById("vision");
+
+const errorBox =
+document.getElementById("error");
 
 
 /* =====================================================
@@ -422,106 +531,856 @@ let camera;
 
 let renderer;
 
-let avatar = null;
+let avatar;
 
 let clock;
 
-let recognition = null;
+let recognition;
 
-let listening = false;
+let mediaStream;
 
-let speaking = false;
+let listening=false;
 
-let audioContext = null;
+let speaking=false;
 
-let audioAnalyser = null;
+let processing=false;
 
-let audioSource = null;
+let visionCanvas;
 
-let audioData = null;
-
-let currentAudio = null;
+let lastVisionTime=0;
 
 
 /* =====================================================
-   ÉLÉMENTS
+   MÉMOIRE
    ===================================================== */
 
-const canvas =
-    document.getElementById("canvas");
+let memory=[
 
-const status =
-    document.getElementById("status");
+{
 
-const micro =
-    document.getElementById("micro");
+role:"system",
 
-const start =
-    document.getElementById("start");
-
-const startButton =
-    document.getElementById("startButton");
-
-
-/* =====================================================
-   MÉMOIRE IA
-   ===================================================== */
-
-let memory = [
-
-    {
-        role:"system",
-
-        content:`
+content:`
 
 Tu es MANASSÉ MATRIX.
 
-Tu es une intelligence artificielle personnelle
-holographique futuriste.
+Tu es une intelligence artificielle holographique
+personnelle, intelligente et futuriste.
 
-Tu parles naturellement en français.
+Tu communiques naturellement en français.
 
-Tu dois comprendre les questions de l'utilisateur,
-raisonner, expliquer, aider et tenir compte du contexte
-de la conversation.
+Tu peux comprendre ce que l'utilisateur dit
+et analyser ce que la caméra montre.
 
-Tes réponses vocales doivent être naturelles,
-claires et relativement courtes.
+Tu dois répondre comme une véritable assistante
+personnelle.
 
-Tu ne dois jamais dire que tu es un simple chatbot.
+Tu dois être précise, intelligente, naturelle
+et utile.
 
-Tu es l'assistante holographique de Manassé.
+Ne parle pas de programmation interne.
+
+Lorsque tu vois l'utilisateur à travers la caméra,
+tu peux décrire uniquement ce qui est réellement
+visible.
+
+Ne prétends jamais voir quelque chose qui n'est
+pas visible.
+
+Réponds de manière concise lorsque la réponse
+est destinée à être prononcée à voix haute.
 
 `
 
-    }
+}
 
 ];
 
 
 /* =====================================================
-   INITIALISATION THREE.JS
+   CLÉ GROQ
+   ===================================================== */
+
+function getGroqKey(){
+
+    let key=
+    localStorage.getItem(
+        "manasse_groq_key"
+    );
+
+
+    if(!key){
+
+        key=prompt(
+            "Entrez votre clé API Groq :"
+        );
+
+
+        if(key){
+
+            key=key.trim();
+
+            localStorage.setItem(
+                "manasse_groq_key",
+                key
+            );
+
+        }
+
+    }
+
+
+    return key;
+
+}
+
+
+/* =====================================================
+   CAMÉRA + MICRO
+   ===================================================== */
+
+async function activateMedia(){
+
+    status.innerText=
+    "ACTIVATION DU MICROPHONE ET DE LA CAMÉRA...";
+
+
+    try{
+
+        mediaStream=
+        await navigator.mediaDevices.getUserMedia({
+
+            audio:{
+                echoCancellation:true,
+                noiseSuppression:true,
+                autoGainControl:true
+            },
+
+            video:{
+                facingMode:{
+                    ideal:"user"
+                },
+
+                width:{
+                    ideal:1280
+                },
+
+                height:{
+                    ideal:720
+                }
+            }
+
+        });
+
+
+        video.srcObject=
+        mediaStream;
+
+
+        await video.play();
+
+
+        vision.innerText=
+        "👁 VISION ACTIVE • CAMÉRA FRONTALE";
+
+
+        status.innerText=
+        "CAMÉRA + MICRO ACTIVÉS";
+
+
+        return true;
+
+    }
+    catch(error){
+
+        console.error(
+            "MEDIA ERROR:",
+            error
+        );
+
+
+        showError(
+
+        "Impossible d'accéder à la caméra ou au microphone. Autorise les deux dans ton navigateur."
+
+        );
+
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   RECONNAISSANCE VOCALE
+   ===================================================== */
+
+function initSpeechRecognition(){
+
+    const SpeechRecognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+    if(!SpeechRecognition){
+
+        showError(
+
+        "La reconnaissance vocale n'est pas disponible dans ce navigateur. Utilise Chrome."
+
+        );
+
+        return false;
+
+    }
+
+
+    recognition=
+    new SpeechRecognition();
+
+
+    recognition.lang=
+    "fr-FR";
+
+
+    recognition.continuous=
+    true;
+
+
+    recognition.interimResults=
+    false;
+
+
+    recognition.maxAlternatives=
+    1;
+
+
+    recognition.onstart=()=>{
+
+        listening=true;
+
+        microIndicator.classList.add(
+            "active"
+        );
+
+        status.innerText=
+        "JE VOUS ÉCOUTE...";
+
+    };
+
+
+    recognition.onresult=
+    async(event)=>{
+
+        const result=
+        event.results[
+            event.results.length-1
+        ];
+
+
+        if(!result.isFinal)
+        return;
+
+
+        const text=
+        result[0]
+        .transcript
+        .trim();
+
+
+        if(!text)
+        return;
+
+
+        console.log(
+            "Utilisateur:",
+            text
+        );
+
+
+        await askAI(text);
+
+    };
+
+
+    recognition.onerror=
+    event=>{
+
+        console.log(
+            "Speech error:",
+            event.error
+        );
+
+
+        listening=false;
+
+        microIndicator.classList.remove(
+            "active"
+        );
+
+
+        if(
+            event.error==="not-allowed" ||
+            event.error==="service-not-allowed"
+        ){
+
+            showError(
+
+            "Le microphone a été refusé. Autorise le microphone puis recharge la page."
+
+            );
+
+            return;
+
+        }
+
+
+        setTimeout(
+            startListening,
+            800
+        );
+
+    };
+
+
+    recognition.onend=()=>{
+
+        listening=false;
+
+        microIndicator.classList.remove(
+            "active"
+        );
+
+
+        if(
+            !speaking &&
+            !processing
+        ){
+
+            setTimeout(
+                startListening,
+                500
+            );
+
+        }
+
+    };
+
+
+    return true;
+
+}
+
+
+/* =====================================================
+   ÉCOUTER
+   ===================================================== */
+
+function startListening(){
+
+    if(
+        !recognition ||
+        listening ||
+        speaking ||
+        processing
+    )
+    return;
+
+
+    try{
+
+        recognition.start();
+
+    }
+    catch(error){
+
+        console.log(
+            error
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CAPTURE DE LA CAMÉRA
+   ===================================================== */
+
+function captureCameraImage(){
+
+    if(
+        !video.videoWidth ||
+        !video.videoHeight
+    ){
+
+        return null;
+
+    }
+
+
+    if(!visionCanvas){
+
+        visionCanvas=
+        document.createElement(
+            "canvas"
+        );
+
+    }
+
+
+    /*
+       Résolution raisonnable pour
+       éviter une requête énorme.
+    */
+
+    const width=640;
+
+    const height=
+    Math.round(
+        video.videoHeight /
+        video.videoWidth *
+        width
+    );
+
+
+    visionCanvas.width=
+    width;
+
+    visionCanvas.height=
+    height;
+
+
+    const ctx=
+    visionCanvas.getContext(
+        "2d"
+    );
+
+
+    /*
+       Comme la vidéo est miroir
+       à l'écran, on capture aussi
+       une image normale.
+    */
+
+    ctx.save();
+
+    ctx.translate(
+        width,
+        0
+    );
+
+    ctx.scale(
+        -1,
+        1
+    );
+
+
+    ctx.drawImage(
+        video,
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    ctx.restore();
+
+
+    return visionCanvas.toDataURL(
+        "image/jpeg",
+        .65
+    );
+
+}
+
+
+/* =====================================================
+   ENVOYER QUESTION À GROQ
+   ===================================================== */
+
+async function askAI(question){
+
+    if(processing)
+    return;
+
+
+    processing=true;
+
+
+    if(
+        recognition &&
+        listening
+    ){
+
+        try{
+            recognition.stop();
+        }
+        catch(e){}
+
+    }
+
+
+    status.innerText=
+    "ANALYSE NEURALE + VISION...";
+
+
+    const apiKey=
+    getGroqKey();
+
+
+    if(!apiKey){
+
+        processing=false;
+
+        status.innerText=
+        "CLÉ GROQ REQUISE";
+
+        startListening();
+
+        return;
+
+    }
+
+
+    /*
+       Capture de ce que voit
+       la caméra.
+    */
+
+    const image=
+    captureCameraImage();
+
+
+    /*
+       Mémoire textuelle.
+    */
+
+    memory.push({
+
+        role:"user",
+
+        content:question
+
+    });
+
+
+    if(
+        memory.length>15
+    ){
+
+        memory=[
+            memory[0],
+            ...memory.slice(-14)
+        ];
+
+    }
+
+
+    /*
+       Messages envoyés à Groq.
+    */
+
+    const messages=[
+        ...memory.slice(
+            0,
+            -1
+        )
+    ];
+
+
+    /*
+       La question + image caméra.
+    */
+
+    const userContent=[
+
+        {
+            type:"text",
+
+            text:
+
+            `L'utilisateur dit :
+
+"${question}"
+
+Analyse aussi l'image de la caméra si elle est fournie.
+Réponds directement à l'utilisateur en français.`
+
+        }
+
+    ];
+
+
+    if(image){
+
+        userContent.push({
+
+            type:"image_url",
+
+            image_url:{
+
+                url:image
+
+            }
+
+        });
+
+    }
+
+
+    messages.push({
+
+        role:"user",
+
+        content:userContent
+
+    });
+
+
+    try{
+
+        const response=
+        await fetch(
+            GROQ_ENDPOINT,
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "Authorization":
+                    "Bearer "+apiKey,
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+                body:JSON.stringify({
+
+                    model:GROQ_MODEL,
+
+                    messages:messages,
+
+                    temperature:.6,
+
+                    max_completion_tokens:500
+
+                })
+
+            }
+
+        );
+
+
+        const data=
+        await response.json();
+
+
+        if(
+            !response.ok ||
+            data.error
+        ){
+
+            throw new Error(
+
+                data.error
+                ? data.error.message
+                : "Erreur Groq"
+
+            );
+
+        }
+
+
+        const answer=
+        data.choices[0]
+        .message
+        .content
+        .trim();
+
+
+        memory.push({
+
+            role:"assistant",
+
+            content:answer
+
+        });
+
+
+        status.innerText=
+        "RÉPONSE DE MANASSÉ MATRIX";
+
+
+        speak(answer);
+
+    }
+    catch(error){
+
+        console.error(
+            error
+        );
+
+
+        status.innerText=
+        "ERREUR DE CONNEXION GROQ";
+
+
+        /*
+           On permet de réécouter
+           même après une erreur.
+        */
+
+        setTimeout(
+            startListening,
+            1000
+        );
+
+    }
+
+
+    processing=false;
+
+}
+
+
+/* =====================================================
+   PAROLE
+   ===================================================== */
+
+function speak(text){
+
+    if(
+        !("speechSynthesis"
+        in window)
+    ){
+
+        speaking=false;
+
+        startListening();
+
+        return;
+
+    }
+
+
+    speechSynthesis.cancel();
+
+
+    const utterance=
+    new SpeechSynthesisUtterance(
+        text
+    );
+
+
+    utterance.lang=
+    "fr-FR";
+
+
+    utterance.rate=
+    .95;
+
+
+    utterance.pitch=
+    .82;
+
+
+    const voices=
+    speechSynthesis
+    .getVoices();
+
+
+    const french=
+    voices.find(
+        voice=>
+        voice.lang &&
+        voice.lang
+        .toLowerCase()
+        .startsWith("fr")
+    );
+
+
+    if(french){
+
+        utterance.voice=
+        french;
+
+    }
+
+
+    utterance.onstart=()=>{
+
+        speaking=true;
+
+        status.innerText=
+        "MANASSÉ MATRIX PARLE...";
+
+    };
+
+
+    utterance.onend=()=>{
+
+        speaking=false;
+
+        status.innerText=
+        "JE VOUS ÉCOUTE...";
+
+
+        setTimeout(
+            startListening,
+            300
+        );
+
+    };
+
+
+    utterance.onerror=()=>{
+
+        speaking=false;
+
+        setTimeout(
+            startListening,
+            500
+        );
+
+    };
+
+
+    speechSynthesis.speak(
+        utterance
+    );
+
+}
+
+
+/* =====================================================
+   THREE.JS
    ===================================================== */
 
 function init3D(){
 
-    scene =
-        new THREE.Scene();
+    scene=
+    new THREE.Scene();
 
 
-    camera =
-        new THREE.PerspectiveCamera(
+    camera=
+    new THREE.PerspectiveCamera(
 
-            35,
+        35,
 
-            window.innerWidth /
-            window.innerHeight,
+        window.innerWidth/
+        window.innerHeight,
 
-            .01,
+        .01,
 
-            1000
+        1000
 
-        );
+    );
 
 
     camera.position.set(
@@ -533,19 +1392,19 @@ function init3D(){
     );
 
 
-    renderer =
-        new THREE.WebGLRenderer({
+    renderer=
+    new THREE.WebGLRenderer({
 
-            canvas:canvas,
+        canvas:canvas,
 
-            antialias:true,
+        alpha:true,
 
-            alpha:true,
+        antialias:true,
 
-            powerPreference:
-                "high-performance"
+        powerPreference:
+        "high-performance"
 
-        });
+    });
 
 
     renderer.setPixelRatio(
@@ -566,39 +1425,33 @@ function init3D(){
     );
 
 
-    renderer.outputEncoding =
-        THREE.sRGBEncoding;
+    renderer.outputEncoding=
+    THREE.sRGBEncoding;
 
 
-    /* =================================================
-       LUMIÈRES
-       ================================================= */
+    /*
+       Lumière générale.
+    */
 
-    const ambient =
+    scene.add(
         new THREE.AmbientLight(
-
             0xffffff,
-            2.5
-
-        );
-
-
-    scene.add(ambient);
+            2.2
+        )
+    );
 
 
-    const cyan =
-        new THREE.PointLight(
-
-            0x00ffff,
-            8,
-            20
-
-        );
+    const cyan=
+    new THREE.PointLight(
+        0x00ffff,
+        8,
+        20
+    );
 
 
     cyan.position.set(
         0,
-        2,
+        3,
         4
     );
 
@@ -606,14 +1459,12 @@ function init3D(){
     scene.add(cyan);
 
 
-    const blue =
-        new THREE.PointLight(
-
-            0x0077ff,
-            5,
-            20
-
-        );
+    const blue=
+    new THREE.PointLight(
+        0x0077ff,
+        6,
+        20
+    );
 
 
     blue.position.set(
@@ -626,14 +1477,12 @@ function init3D(){
     scene.add(blue);
 
 
-    const back =
-        new THREE.PointLight(
-
-            0x00ffff,
-            6,
-            20
-
-        );
+    const back=
+    new THREE.PointLight(
+        0x00ffff,
+        7,
+        20
+    );
 
 
     back.position.set(
@@ -646,100 +1495,81 @@ function init3D(){
     scene.add(back);
 
 
-    clock =
-        new THREE.Clock();
+    clock=
+    new THREE.Clock();
 
 
-    chargerAvatar();
+    loadAvatar();
 
 }
 
 
 /* =====================================================
-   CHARGEMENT AVATAR
+   AVATAR
    ===================================================== */
 
-async function chargerAvatar(){
+function loadAvatar(){
 
-    status.innerText =
-        "CHARGEMENT DU NOYAU HOLOGRAPHIQUE";
-
-
-    try{
-
-        const response =
-            await fetch(AVATAR);
+    status.innerText=
+    "CHARGEMENT DE L'AVATAR...";
 
 
-        if(!response.ok){
+    const loader=
+    new THREE.GLTFLoader();
 
-            throw new Error(
-                "Avatar introuvable"
+
+    /*
+       NOM EXACT DU FICHIER.
+    */
+
+    loader.load(
+
+        AVATAR_FILE,
+
+        gltf=>{
+
+            avatar=
+            gltf.scene;
+
+
+            prepareAvatar();
+
+
+            scene.add(
+                avatar
+            );
+
+
+            status.innerText=
+            "HOLOGRAMME ACTIF • JE VOUS ÉCOUTE";
+
+
+            startListening();
+
+        },
+
+        undefined,
+
+        error=>{
+
+            console.error(
+                error
+            );
+
+
+            status.innerText=
+            "ERREUR AVATAR 3D";
+
+
+            showError(
+
+            "Le modèle 3D n'a pas pu être chargé. Vérifie que le fichier est exactement : Modèle 3D d'IA féminine futuriste.glb.txt"
+
             );
 
         }
 
-
-        const buffer =
-            await response.arrayBuffer();
-
-
-        const loader =
-            new THREE.GLTFLoader();
-
-
-        loader.parse(
-
-            buffer,
-
-            "",
-
-            function(gltf){
-
-                avatar =
-                    gltf.scene;
-
-
-                preparerAvatar();
-
-
-                scene.add(
-                    avatar
-                );
-
-
-                status.innerText =
-                    "HOLOGRAMME ACTIF • JE VOUS ÉCOUTE";
-
-
-                demarrerEcoute();
-
-            },
-
-            function(error){
-
-                console.error(
-                    error
-                );
-
-                status.innerText =
-                    "ERREUR DE CHARGEMENT DE L'AVATAR";
-
-            }
-
-        );
-
-    }
-    catch(error){
-
-        console.error(
-            error
-        );
-
-        status.innerText =
-            "AVATAR INTROUVABLE";
-
-    }
+    );
 
 }
 
@@ -748,47 +1578,47 @@ async function chargerAvatar(){
    PRÉPARER AVATAR
    ===================================================== */
 
-function preparerAvatar(){
+function prepareAvatar(){
 
-    const box =
-        new THREE.Box3()
-        .setFromObject(avatar);
-
-
-    const size =
-        box.getSize(
-            new THREE.Vector3()
-        );
+    const box=
+    new THREE.Box3()
+    .setFromObject(
+        avatar
+    );
 
 
-    const center =
-        box.getCenter(
-            new THREE.Vector3()
-        );
+    const size=
+    box.getSize(
+        new THREE.Vector3()
+    );
 
 
-    avatar.position.x -=
-        center.x;
+    const center=
+    box.getCenter(
+        new THREE.Vector3()
+    );
 
 
-    avatar.position.z -=
-        center.z;
+    avatar.position.x-=
+    center.x;
 
 
-    const max =
-        Math.max(
-
-            size.x,
-            size.y,
-            size.z
-
-        );
+    avatar.position.z-=
+    center.z;
 
 
-    if(max > 0){
+    const max=
+    Math.max(
+        size.x,
+        size.y,
+        size.z
+    );
 
-        const scale =
-            2.7 / max;
+
+    if(max>0){
+
+        const scale=
+        2.7/max;
 
 
         avatar.scale.setScalar(
@@ -798,35 +1628,35 @@ function preparerAvatar(){
     }
 
 
-    avatar.position.y =
-        -1.25;
+    avatar.position.y=
+    -1.25;
 
 
-    /* ================================================
-       APPARENCE HOLOGRAPHIQUE
-       ================================================ */
+    /*
+       Matériaux holographiques.
+    */
 
     avatar.traverse(
-        object => {
+        object=>{
 
             if(
                 object.isMesh
             ){
 
-                object.frustumCulled =
-                    false;
+                object.frustumCulled=
+                false;
 
 
                 if(
                     object.material
                 ){
 
-                    object.material.transparent =
-                        true;
+                    object.material.transparent=
+                    true;
 
 
-                    object.material.opacity =
-                        .94;
+                    object.material.opacity=
+                    .95;
 
                 }
 
@@ -839,7 +1669,7 @@ function preparerAvatar(){
 
 
 /* =====================================================
-   ANIMATION AVATAR
+   ANIMATION
    ===================================================== */
 
 function animate(){
@@ -849,72 +1679,57 @@ function animate(){
     );
 
 
-    const time =
-        clock.getElapsedTime();
+    const time=
+    clock.getElapsedTime();
 
 
     if(avatar){
 
         /*
-         Respiration normale
+           Respiration.
         */
 
-        avatar.position.y =
-            -1.25 +
-            Math.sin(time * 1.5)
-            * .015;
+        avatar.position.y=
+        -1.25+
+        Math.sin(
+            time*1.5
+        )*.018;
 
 
         /*
-         Mouvement naturel
+           Mouvement naturel.
         */
 
-        avatar.rotation.y =
-            Math.sin(time * .35)
-            * .06;
+        avatar.rotation.y=
+        Math.sin(
+            time*.4
+        )*.06;
 
 
         /*
-         IA EN TRAIN DE PARLER
+           Mouvement pendant
+           la parole.
         */
 
         if(speaking){
 
-            const intensity =
-                audioData
-                ? getAudioLevel()
-                : .04;
+            avatar.position.y=
+            -1.25+
+            Math.sin(
+                time*6
+            )*.035;
 
 
-            avatar.position.y =
-                -1.25 +
-                Math.sin(time * 7)
-                * (.025 + intensity*.08);
+            avatar.rotation.y=
+            Math.sin(
+                time*2
+            )*.12;
 
 
-            avatar.rotation.y =
-                Math.sin(time * 2)
-                * (.08 + intensity*.12);
-
-
-            avatar.rotation.z =
-                Math.sin(time * 3)
-                * .025;
-
-
-            /*
-             Effet holographique
-            */
-
-            const pulse =
-                0.90 +
-                intensity*.3;
-
-
-            avatar.scale.setScalar(
-                pulse *
-                getBaseScale()
-            );
+            avatar.rotation.z=
+            Math.sin(
+                time*3
+            )*.02;
 
         }
 
@@ -930,583 +1745,138 @@ function animate(){
 
 
 /* =====================================================
-   ÉCHELLE AVATAR
+   ERREUR
    ===================================================== */
 
-let baseScale = 1;
+function showError(text){
+
+    errorBox.innerText=
+    text;
+
+    errorBox.style.display=
+    "block";
 
 
-function getBaseScale(){
-
-    return baseScale;
+    setTimeout(
+        ()=>{
+            errorBox.style.display=
+            "none";
+        },
+        5000
+    );
 
 }
 
 
 /* =====================================================
-   MICROPHONE
+   DÉMARRAGE
    ===================================================== */
 
-function initialiserMicro(){
-
-    const SpeechRecognition =
-        window.SpeechRecognition ||
-        window.webkitSpeechRecognition;
-
-
-    if(!SpeechRecognition){
-
-        status.innerText =
-            "RECONNAISSANCE VOCALE NON DISPONIBLE";
-
-        return;
-
-    }
-
-
-    recognition =
-        new SpeechRecognition();
-
-
-    recognition.lang =
-        "fr-FR";
-
-
-    recognition.continuous =
-        true;
-
-
-    recognition.interimResults =
-        false;
-
-
-    recognition.maxAlternatives =
-        1;
-
-
-    recognition.onstart =
-        function(){
-
-            listening = true;
-
-            micro.classList.add(
-                "active"
-            );
-
-            status.innerText =
-                "JE VOUS ÉCOUTE...";
-
-        };
-
-
-    recognition.onresult =
-        function(event){
-
-            const result =
-                event.results[
-                    event.results.length - 1
-                ];
-
-
-            if(!result.isFinal)
-                return;
-
-
-            const text =
-                result[0]
-                .transcript
-                .trim();
-
-
-            if(text){
-
-                traiterQuestion(
-                    text
-                );
-
-            }
-
-        };
-
-
-    recognition.onerror =
-        function(event){
-
-            console.log(
-                "Micro:",
-                event.error
-            );
-
-
-            listening =
-                false;
-
-
-            micro.classList.remove(
-                "active"
-            );
-
-
-            /*
-             On relance automatiquement
-             sauf erreur de permission.
-            */
-
-            if(
-                event.error !==
-                "not-allowed"
-            ){
-
-                setTimeout(
-                    demarrerEcoute,
-                    1000
-                );
-
-            }
-
-        };
-
-
-    recognition.onend =
-        function(){
-
-            listening =
-                false;
-
-
-            micro.classList.remove(
-                "active"
-            );
-
-
-            /*
-             L'hologramme reste
-             en écoute.
-            */
-
-            setTimeout(
-                demarrerEcoute,
-                500
-            );
-
-        };
-
-}
-
-
-/* =====================================================
-   DÉMARRER ÉCOUTE
-   ===================================================== */
-
-function demarrerEcoute(){
-
-    if(!recognition)
-        return;
-
-
-    if(listening)
-        return;
-
-
-    try{
-
-        recognition.start();
-
-    }
-    catch(error){
-
-        console.log(error);
-
-    }
-
-}
-
-
-/* =====================================================
-   QUESTION → GROQ
-   ===================================================== */
-
-async function traiterQuestion(
-    question
-){
-
-    status.innerText =
-        "ANALYSE NEURALE...";
-
-
-    memory.push({
-
-        role:"user",
-
-        content:question
-
-    });
+startButton.addEventListener(
+"click",
+async()=>{
+
+    startButton.innerText=
+    "CONNEXION...";
 
 
     /*
-     Maximum de mémoire pour éviter
-     une requête énorme.
+       1. Caméra + microphone
     */
 
-    if(memory.length > 21){
+    const mediaOK=
+    await activateMedia();
 
-        memory =
-            [
-                memory[0],
-                ...memory.slice(
-                    -20
-                )
-            ];
+
+    if(!mediaOK){
+
+        startButton.innerText=
+        "RÉESSAYER";
+
+        return;
 
     }
 
 
+    /*
+       2. Reconnaissance vocale
+    */
+
+    const speechOK=
+    initSpeechRecognition();
+
+
+    if(!speechOK)
+    return;
+
+
+    /*
+       3. Three.js
+    */
+
+    init3D();
+
+
+    /*
+       4. Animation
+    */
+
+    animate();
+
+
+    /*
+       5. Plein écran
+    */
+
     try{
-
-        const key =
-            obtenirCle();
-
-
-        if(!key){
-
-            status.innerText =
-                "CLÉ GROQ MANQUANTE";
-
-            return;
-
-        }
-
-
-        const response =
-            await fetch(
-
-                GROQ_URL,
-
-                {
-
-                    method:"POST",
-
-                    headers:{
-
-                        "Authorization":
-                            "Bearer " + key,
-
-                        "Content-Type":
-                            "application/json"
-
-                    },
-
-                    body:
-                    JSON.stringify({
-
-                        model:
-                            GROQ_MODEL,
-
-                        messages:
-                            memory,
-
-                        temperature:
-                            .7,
-
-                        max_tokens:
-                            500
-
-                    })
-
-                }
-
-            );
-
-
-        const data =
-            await response.json();
-
 
         if(
-            data.error
+            document.documentElement
+            .requestFullscreen
         ){
 
-            throw new Error(
-                data.error.message
-            );
-
-        }
-
-
-        const answer =
-            data.choices[0]
-            .message
-            .content;
-
-
-        memory.push({
-
-            role:"assistant",
-
-            content:answer
-
-        });
-
-
-        status.innerText =
-            "MANASSÉ MATRIX • RÉPONSE";
-
-
-        parler(answer);
-
-    }
-    catch(error){
-
-        console.error(
-            error
-        );
-
-
-        status.innerText =
-            "ERREUR DE CONNEXION GROQ";
-
-    }
-
-}
-
-
-/* =====================================================
-   CLÉ GROQ
-   ===================================================== */
-
-function obtenirCle(){
-
-    let key =
-        localStorage.getItem(
-            "manasse_groq_key"
-        );
-
-
-    if(!key){
-
-        key =
-            prompt(
-                "Entrez votre clé API Groq :"
-            );
-
-
-        if(key){
-
-            key =
-                key.trim();
-
-
-            localStorage.setItem(
-                "manasse_groq_key",
-                key
-            );
+            await document
+            .documentElement
+            .requestFullscreen();
 
         }
 
     }
+    catch(e){
 
-
-    return key;
-
-}
-
-
-/* =====================================================
-   SYNTHÈSE VOCALE
-   ===================================================== */
-
-function parler(
-    text
-){
-
-    /*
-     Arrêter l'écoute pendant
-     que l'IA parle pour éviter
-     qu'elle entende sa propre voix.
-    */
-
-    if(
-        recognition &&
-        listening
-    ){
-
-        try{
-
-            recognition.stop();
-
-        }
-        catch(e){}
-
-    }
-
-
-    if(
-        !("speechSynthesis"
-        in window)
-    ){
-
-        demarrerEcoute();
-
-        return;
-
-    }
-
-
-    speechSynthesis.cancel();
-
-
-    const utterance =
-        new SpeechSynthesisUtterance(
-            text
+        console.log(
+            "Fullscreen:",
+            e
         );
 
-
-    utterance.lang =
-        "fr-FR";
-
-
-    utterance.rate =
-        .95;
-
-
-    utterance.pitch =
-        .85;
-
-
-    const voices =
-        speechSynthesis
-        .getVoices();
-
-
-    const frenchVoice =
-        voices.find(
-
-            voice =>
-            voice.lang
-            &&
-            voice.lang
-                .toLowerCase()
-                .startsWith("fr")
-
-        );
-
-
-    if(frenchVoice){
-
-        utterance.voice =
-            frenchVoice;
-
     }
 
 
-    utterance.onstart =
-        function(){
-
-            speaking =
-                true;
-
-            status.innerText =
-                "MANASSÉ MATRIX • RÉPONSE EN COURS";
-
-        };
-
-
-    utterance.onend =
-        function(){
-
-            speaking =
-                false;
-
-
-            status.innerText =
-                "JE VOUS ÉCOUTE...";
-
-
-            demarrerEcoute();
-
-        };
-
-
-    utterance.onerror =
-        function(){
-
-            speaking =
-                false;
-
-
-            demarrerEcoute();
-
-        };
-
-
-    speechSynthesis.speak(
-        utterance
+    startScreen.classList.add(
+        "hidden"
     );
 
-}
+});
 
 
 /* =====================================================
-   AUDIO ANALYSER
-   ===================================================== */
-
-function getAudioLevel(){
-
-    if(
-        !audioAnalyser ||
-        !audioData
-    ){
-
-        return .05;
-
-    }
-
-
-    audioAnalyser.getByteFrequencyData(
-        audioData
-    );
-
-
-    let total = 0;
-
-
-    for(
-        let i=0;
-        i<audioData.length;
-        i++
-    ){
-
-        total +=
-            audioData[i];
-
-    }
-
-
-    return Math.min(
-        total /
-        audioData.length /
-        255,
-        1
-    );
-
-}
-
-
-/* =====================================================
-   REDIMENSIONNEMENT
+   RESIZE
    ===================================================== */
 
 window.addEventListener(
 "resize",
-function(){
+()=>{
 
-    if(!camera || !renderer)
-        return;
+    if(
+        !camera ||
+        !renderer
+    )
+    return;
 
 
-    camera.aspect =
-        window.innerWidth /
-        window.innerHeight;
+    camera.aspect=
+    window.innerWidth/
+    window.innerHeight;
 
 
     camera.updateProjectionMatrix();
@@ -1523,80 +1893,6 @@ function(){
 
 
 /* =====================================================
-   ACTIVATION
-   ===================================================== */
-
-startButton.addEventListener(
-"click",
-async function(){
-
-    /*
-     Activation du microphone
-     après interaction utilisateur.
-    */
-
-    try{
-
-        await navigator.mediaDevices
-            .getUserMedia({
-                audio:true
-            });
-
-    }
-    catch(error){
-
-        status.innerText =
-            "MICROPHONE REFUSÉ";
-
-        console.error(
-            error
-        );
-
-    }
-
-
-    /*
-     Initialisation du système.
-    */
-
-    initialiserMicro();
-
-
-    init3D();
-
-
-    animate();
-
-
-    start.classList.add(
-        "hidden"
-    );
-
-
-    /*
-     Plein écran du téléphone.
-    */
-
-    if(
-        document.documentElement
-        .requestFullscreen
-    ){
-
-        try{
-
-            await document
-                .documentElement
-                .requestFullscreen();
-
-        }
-        catch(e){}
-
-    }
-
-});
-
-
-/* =====================================================
    VOIX DISPONIBLES
    ===================================================== */
 
@@ -1606,11 +1902,12 @@ if(
 ){
 
     speechSynthesis
-        .getVoices();
+    .getVoices();
 
 }
 
 </script>
 
 </body>
+
 </html>
